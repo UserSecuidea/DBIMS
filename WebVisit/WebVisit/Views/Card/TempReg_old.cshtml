@@ -1,0 +1,189 @@
+@model TempCardIssueApplyRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Issue Temporary Access Card"]; //"임시증 발급";
+}
+<script>
+    
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+
+    function searchPerson(){
+        ///visit/getsearchperson
+        var myform = document.fmSearchPerson;
+        var name = myform.searchName.value.trim();
+        var department = '';
+        console.log("name length: "+ name.length);
+        if (name.length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.searchName.focus();
+            return;
+        }
+        $.ajax({
+            url: "/person/getsearchperson",
+            data: { name, department },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[searchPerson]", json);
+            var rows= "";
+            // name, sabun, tel, mobile, email, orgID, orgNameKor, orgNameEng location, locationName, companyID, companyName, personTypeID, personTypeIDName  
+
+            for(var m of json){
+                console.log("[searchPerson]", m);  
+                rows+="<tr onclick=\"selectRow(this, '"+m.location+"','"+m.companyID+"','"+m.companyName+"','"+m.personTypeID+"','"+m.sabun+"','"+m.name+"','"+m.orgID+"','"+m.orgNameKor+"','"+m.orgNameEng+"','"+m.gradeID+"','"+m.gradeName+"','"+m.mobile+"','"+m.tel+"')\">";
+                rows+="<td>"+m.name+"</td><td>"+m.orgNameKor+"</td><td>"+m.gradeName+"</td></tr>";
+            }
+            // dvSearchPersonList
+            var o = document.getElementById("dvSearchPersonList");
+            o.innerHTML = rows;
+            @* o.innerHTML = "<tr onclick='selectRow(this, 1);''><td>홍길동</td><td>B12541254</td><td>인사</td><td>031-259-96996</td><td>010-2159-96996</td><td>hone@test.com</td></tr>";
+            o.innerHTML += "<tr onclick='selectRow(this, 1);''><td>홍길동</td><td>B12541254</td><td>인사</td><td>031-259-96996</td><td>010-2159-96996</td><td>hone@test.com</td></tr>";
+            o.innerHTML += "<tr onclick='selectRow(this, 1);''><td>홍길동</td><td>B12541254</td><td>인사</td><td>031-259-96996</td><td>010-2159-96996</td><td>hone@test.com</td></tr>";
+            o.innerHTML += "<tr onclick='selectRow(this, 1);''><td>홍길동</td><td>B12541254</td><td>인사</td><td>031-259-96996</td><td>010-2159-96996</td><td>hone@test.com</td></tr>";
+            o.innerHTML += "<tr onclick='selectRow(this, 1);''><td>홍길동</td><td>B12541254</td><td>인사</td><td>031-259-96996</td><td>010-2159-96996</td><td>hone@test.com</td></tr>"; *@
+            /*
+            <table class="tbl02" aria-label="사원 리스트">
+                <tr onclick="selectRow(this, 1);">
+                    <td>홍길동</td>
+                    <td>B12541254</td>
+                    <td>인사</td>
+                    <td>031-259-96996</td>
+                    <td>010-2159-96996</td>
+                    <td>hone@test.com</td>
+                </tr>
+            </table>
+            */
+        });
+    }
+
+    var selectedRowObj;
+    function selectRow(row, location, companyID, companyName, personTypeID, sabun, name, orgID, orgNameKor, orgNameEng, gradeID, gradeName, mobile, tel){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        var myform = document.fmAddTempCardIssueApply;
+        if(location){
+            myform.Location.value = location;
+            myform.CompanyID.value = companyID;
+            myform.CompanyName.value = companyName;
+            myform.PersonTypeID.value = personTypeID;
+            myform.Sabun.value = sabun;
+            myform.Name.value = name;
+            myform.OrgID.value = orgID;
+            myform.OrgNameKor.value = orgNameKor;
+            myform.OrgNameEng.value = orgNameEng;
+            myform.GradeID.value = gradeID;
+            myform.GradeName.value = gradeName;
+            myform.Mobile.value = mobile;
+            myform.Tel.value = tel;
+        }
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddTempCardIssueApply;
+        if(myform.Sabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select an employee after searching for it"]';
+            myform.Sabun.focus();
+            return;
+        }
+        if(myform.CardNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter access cardNo"]';
+            myform.CardNo.focus();
+            return;
+        }
+        
+        var con = confirm('@Localizer["Would you like to register for temporary certificate issuance"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Search Person"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Name"]</div>
+            <div class="form-item-wrap">
+<form name="fmSearchPerson"> 
+                <input type="text" class="inp" name="searchName" maxlength="30" placeholder='@Localizer["Name"]' />
+</form>
+                &nbsp;               
+                <button type="button" class="btn-gray" onclick="searchPerson();">@Localizer["Search"]</button>
+                @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+            </div>
+        </li>
+        <li>
+            <div class="label s03">&nbsp;&nbsp;&nbsp;&nbsp;@Localizer["Access CardNo"]</div>
+            <div class="form-item-wrap">
+<form name="fmAddTempCardIssueApply" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="Location" value="" />
+    <input type="hidden" name="CompanyID" value="" />
+    <input type="hidden" name="CompanyName" value="" />
+    <input type="hidden" name="PersonTypeID" value="" />
+    <input type="hidden" name="Sabun" value="" />
+    <input type="hidden" name="Name" value="" />
+    <input type="hidden" name="OrgID" value="" />
+    <input type="hidden" name="OrgNameKor" value="" />
+    <input type="hidden" name="OrgNameEng" value="" />
+    <input type="hidden" name="GradeID" value="" />
+    <input type="hidden" name="GradeName" value="" />
+    <input type="hidden" name="Mobile" value="" />
+    <input type="hidden" name="Tel" value="" />                   
+                <input type="text" class="inp" name="CardNo" placeholder='@Localizer["Access CardNo"]' />
+</form>
+            </div>
+        </li> 
+    </ul>
+</div>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Select Person"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li class="full">
+            <div class="form-item-wrap" style="flex-direction: column;">
+                <table class="tbl02" aria-label="사원 리스트">
+                    <tr>
+                        <th>@Localizer["Name"]</th>
+                        <th>@Localizer["Department Name"]</th>
+                        <th>@Localizer["Position"]</th>
+                        @* <th>@Localizer["Birth Date"]</th> *@
+                        @* <th>@Localizer["Company Name"]</th> *@
+                        @* <th>@Localizer["CellPhone"]</th>   *@
+                    </tr>
+                </table>
+                <table class="tbl02" id="dvSearchPersonList" aria-label="사원 리스트">
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    <div class="lt-item">
+    </div>
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Register"]</button>
+    </div>
+</div>

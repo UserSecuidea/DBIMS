@@ -1,0 +1,198 @@
+@model MealManualRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Register Meal Menual"]; //"식수 수기 등록";
+}
+<script>
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddManual;
+        @* 식수수기등록: mode Location WorkContractFile 
+        ContactSabun ContactName ContactOrgID ContactOrgNameKor ContactOrgNameEng 
+        WorkName WorkMemo WorkStartDate WorkEndDate *@
+        if(myform.Sabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select contact person"]';
+            return;
+        }
+        if(myform.VisitantName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.VisitantName.focus();
+            return;
+        }
+        if(myform.VisitantCompany.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company name"]';
+            myform.VisitantCompany.focus();
+            return;
+        }
+        if(myform.VisitantGrade.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your position"]';
+            myform.VisitantGrade.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+
+    function goSearchPerson(){
+        //담당자(사원) 검색 
+        var myform = document.fmAddManual;
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        var locationObj = null;
+        var locationNameObj = null;
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = myform.GradeName;
+        var personTypeIdObj = null;
+        var personTypeIdNameObj = null;
+        var cardNoObj = null;
+
+        nameObj = myform.Name;
+        sabunObj =  myform.Sabun;
+        orgIdObj =  myform.OrgID;
+        orgKorObj =  myform.OrgNameKor;
+        orgEngObj =  myform.OrgNameEng;
+
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj);
+        
+    } 
+</script>
+
+<form name="fmAddManual" method="post">
+    <input type="hidden" name="mode" value="A" />
+    
+    <input type="hidden" name="Sabun" value="" /> @* 식사자  *@
+    <input type="hidden" name="OrgID" value="" />
+    <input type="hidden" name="GradeName" value="" />
+    
+
+    <input type="hidden" name="IsManual" value="1" /> @* 수기등록구분: 식수리더(0),수기등록(1) *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Contact Information"]<span></span></div>
+                <div class="form-item-wrap">
+                    @* 식사자: Sabun	OrgID	OrgNameKor	OrgNameEng *@
+                    <input type="text" class="inp" name="Name" readonly onclick="goSearchPerson();" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="사원 검색" /></button> 
+                </div>
+                <div class="form-item-wrap"> 
+                    <input type="text" class="inp" name="OrgNameKor" readonly /> 
+                    <input type="hidden" class="inp" name="OrgNameEng" readonly />             
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="사원 검색" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Registration Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="IsVisitor" asp-items='@(new SelectList(Model.CodeVisitorType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="IsVisitor" asp-items='@(new SelectList(Model.CodeVisitorType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Meal Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Meal Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="MealGB">
+                    @{
+                        var mealTypeName = "";
+                        foreach(var a in Model.CodeMealType) {
+                            mealTypeName = "";
+                            if(a.SubCodeID > 0){
+                                if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                    mealTypeName = a.CodeNameKor;
+                                }else{
+                                    mealTypeName = a.CodeNameEng;
+                                }
+                                <option value="@a.SubCodeID">@mealTypeName</option>
+                            }
+                        }
+                    }
+                    </select>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Eat Person Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="VisitantName" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]<span></span></div>
+                <div class="form-item-wrap"> 
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="VisitantCompany" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Position"]' name="VisitantGrade" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Etc"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Etc"]' name="Comment" />
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Save"]</button>
+    </div>
+</div>
+
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />

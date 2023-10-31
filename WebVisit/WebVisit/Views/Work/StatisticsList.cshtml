@@ -1,0 +1,319 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    @* ViewData["Title"] = "통계관리"; *@
+}
+<script>
+    /**
+    IR 기간별 발급현황
+    bb  billboard.js Naver Opensource Chart
+    [
+        ["x", "4월", "3월", "2월", "1월", "12월", "11월", "10월", "9월", "8월"],
+        ["data", 110, 180, 210, 80, 80, 30, 340, 120, 120],
+    ]   
+    */
+    var chart;
+    function drawByDate(){
+        if (dateValues == null){
+            return;
+        }
+        chart = bb.generate({
+            data: {
+                x: "x",
+                columns: dateValues,
+                type: "bar",
+                labels: {
+                    format: function(v, id) {
+                        return Math.abs(v);
+                    }
+                },
+                color: function(color, d) {
+                    console.log(d.value);
+                    return (d.value < 330 ) ?
+                        "#8DC63F" : "#F48320";
+                }
+            },
+            bar: {
+                padding: 10,
+            },
+            legend: {
+                show: false
+            },
+            background: {
+                color: "white"
+            },            
+            axis: {
+                rotated: true,
+                x: {
+                    type:"category"
+                }
+            },
+            bindto: "#chart"
+        });
+    }
+
+    /**
+    IR 유형별 발급현황
+    bb  billboard.js Naver Opensource Chart
+    [
+        ["x",
+            "작업 중 보호구 미착용 및 착용상태 불량(안전모, 안전화, 호흡용 보호구)",
+            "차량제한속도(20km/h), 안전벨트 미체결, 운전중 휴대전화사용",
+            "흡연장소 미준수(이동중, 작업중, 지정장소 외)",
+            "산, 화학물질 접촉 위험 시 내산복 미착용(신체 일부 노출 포함)",
+            "작업허가 승인 전 임의작업 및 허가(계획) 기준 미준수",
+            "자전거 운행 중 불안전한 행동 실시(한손 운전 등)",
+            "추락방지 미조치(안전대 미착용, 미체결 및 수직사다리 3타점 미실시 등)",
+            "방호장치(방호울, 안전난간, 비상정지장치) 임의해제/훼손, 비상전원키 미소지",
+            "기계기구의 동력전달부 정비, 보수점검 시 전원 미차단, 방호울 내 임의 출입"
+        ],
+        ["data", 110, 180, 350, 80, 80, 30, 340, 120, 120],
+    ]
+    */
+    function drawByType(){
+        if (typeValues == null){
+            return;
+        }
+        chart = bb.generate({
+            data: {
+                x: "x",
+                columns: typeValues,
+                type: "bar",
+                labels: {
+                    format: function(v, id) {
+                        return Math.abs(v);
+                    }
+                },
+                color: function(color, d) {
+                    console.log(d.value);
+                    return (d.value < 330 ) ?
+                        "#8DC63F" : "#F48320";
+                },
+            },
+            background: {
+                color: "white"
+            },            
+            bar: {
+                padding: 10
+            },
+            legend: {
+                show: false
+            },
+            axis: {
+                rotated: true,
+                x: {
+                    type:"category",
+                    tick:{
+                        multiline: false,
+                    }
+                }
+            },
+            bindto: "#chart"
+        });
+    }
+
+    window.onload = function(){
+        // 그리기 시작
+        @* drawByDate(); *@
+        @* drawByType(); *@
+    }
+
+    $("body").on("click", "#btnTab1", function () {
+        @* $(this).addClass('on'); *@
+        mode = "D";
+        $('#btnTab1').addClass('on');
+        $('#btnTab2').removeClass('on');
+        drawByDate();
+    });
+
+    $("body").on("click", "#btnTab2", function () {
+        @* $(this).addClass('on'); *@
+        mode = "T";
+        $('#btnTab1').removeClass('on');
+        $('#btnTab2').addClass('on');
+        drawByType();
+    });
+    var mode="D";//D T
+    var startDate = "";
+    var endDate = "";
+    var dateValues = null;
+    var typeValues = null;
+    var cd = 24 * 60 * 60 * 1000;
+    function search(){
+        var myform = document.FmSearch;
+          
+        @* /work/getirstatistics?startDate=2023-08-01&endDate=2024-10-30&mode=T *@
+        startDate = myform.searchStartViolationDate.value.trim();
+        endDate = myform.searchEndViolationDate.value.trim();
+        let s = new Date(startDate);
+        let e = new Date(endDate);
+        let t = new Date();
+        let d = e.getTime() - s.getTime();
+        console.log("startDate:"+startDate+", endDate:"+endDate, s);
+        if(startDate == null || startDate == ""){
+            document.getElementById("errormsg").innerHTML ='@Localizer["Please enter the search start date"]';
+            return;
+        }
+        if(endDate == null || endDate == ""){
+            document.getElementById("errormsg").innerHTML ='@Localizer["Please enter the search end date"]';
+            return;
+        }
+        if (isValidDate(s) == false){ 
+            document.getElementById("errormsg").innerHTML ='@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            return;
+        }
+        if (isValidDate(e) == false){ 
+            document.getElementById("errormsg").innerHTML ='@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            return;
+        }
+        if (d < 0){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Lookup end date is earlier than start date"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        var d2 = parseInt(ToYYMMDD(t)) - parseInt(ToYYMMDD(s));
+        @* console.log("s: "+parseInt(ToYYMMDD(s))+", t: "+parseInt(ToYYMMDD(t))); *@
+        if (d2 < 0){
+            @* console.log("date", s.getDate(), "/", t,"/",d2); *@
+            document.getElementById("errormsg").innerHTML = '@Localizer["Lookup start date is after now"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        var d2 = parseInt(ToYYMMDD(t)) - parseInt(ToYYMMDD(e));
+        if (d2 < 0){
+            @* console.log("date", s.getDate(), "/", t,"/",d2); *@
+            document.getElementById("errormsg").innerHTML = '@Localizer["Lookup end date is after now"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+
+        // 2022-04-06 ~ 2023-04-05
+        document.getElementById("searchDate").innerText = startDate+" ~ "+endDate;
+        $.ajax({
+            url: "/work/getirstatistics",
+            data: { mode, startDate, endDate },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[search]", json);
+            document.getElementById("btnSaveImage").style.display="block";
+            if (mode == "D"){
+                dateValues = json;
+                drawByDate();
+            } else {
+                typeValues = json;
+                drawByType();
+            }
+
+            // name, sabun, tel, mobile, email, orgID, orgNameKor, orgNameEng location, locationName, companyID, companyName, personTypeID, personTypeIDName  
+            @* for(var m of json){
+                console.log("[searchPerson]", m);               
+                rows+="<tr onclick=\"selectSearchPerson('"+m.name+"','"+m.sabun+"','"+m.tel+"','"+m.mobile+"','"+m.email+"','"+m.orgID+"','"+m.orgNameKor+"','"+m.orgNameEng+"','"+m.location+"','"+m.locationName+"','"+m.companyID+"','"+m.companyName+"','"+m.gradeID+"','"+m.gradeName+"','"+m.personTypeID+"','"+m.personTypeIDName+"','"+m.cardNo+"','"+m.carAllowCnt+"','"+m.carRegCnt+"','"+m.gender+"','"+m.genderName+"','"+m.birthDate+"','"+m.personStatusId+"','"+m.personStatusName+"','"+m.homeAddr+"','"+m.isVisitorEdu+"','"+m.isCleanEdu+"','"+m.isSafetyEdu+"','"+m.workTypeCodeID+"')\">";
+                rows+="<td>"+m.name+"</td><td>"+m.orgNameKor+"</td><td>"+m.gradeName+"</td></tr>";
+            }
+            var o = document.getElementById("dvSearchPersonList");
+            o.innerHTML = rows; *@
+        });
+        
+        @* columns: [
+            ["x", "4월", "3월", "2월", "1월", "12월", "11월", "10월", "9월", "8월"],
+            ["data", 110, 180, 210, 80, 80, 30, 340, 120, 120],
+        ], *@
+
+    }
+
+    // deprecated
+    function save2Image(){
+        var downloadUrl = chart.export({mimeType: "image/png"}, dataUrl => {
+            const link = document.createElement("a");
+
+            link.download = `${Date.now()}.png`;
+            link.href = dataUrl;
+            link.innerHTML = "Download chart as image";
+            link.click();
+        })
+    }
+
+</script>
+
+<div class="tabmenu-list-wrap t01">
+    <ul>
+        <li><a href="javascript:void(0)" id="btnTab1" class="on">@Localizer["Issue Status By Period"]</a></li>
+        <li><a href="javascript:void(0)" id="btnTab2">@Localizer["Issue Status By Type"]</a></li>
+    </ul>
+</div>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<FORM method="POST" name="FmSearch">
+                <li class="per02">
+                    <div class="label ">@Localizer["Search Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            @* value="@searchRoute.SearchStartViolationDate"  *@
+                            <input type="text" name="searchStartViolationDate" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />                            
+                            <span class="e01">~</span>
+                            @* value="@searchRoute.SearchEndViolationDate"  *@
+                            <input type="text" name="searchEndViolationDate" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</FORM>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search();">@Localizer["Search"]</button>
+        </div>
+    </div>
+    <div class="msg-wrap" style="margin: 0 0 0 0;padding: 0 0 0 0;">
+        <div class="label org" style="height:20px;margin: 10px 0px 0px 20px;padding: 0 0 0 0;">
+            <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+
+    <div class="list-func-wrap" id="btnSaveImage" style="display:none;">
+        <div class="list-info-wrap">&nbsp;</div>
+        <div class="side-btn-wrap">
+            <button type="button" class="btn-gray" onclick="save2Image();">@Localizer["Save Chart Image"]</button>
+        </div>
+    </div>
+
+    <div class="chart-item-wrap">
+        <div class="date" id="searchDate"></div>
+        <div id="chart" style="background-color:white;"></div>
+    </div>
+    <div class="chart-help-msg">
+        <img src="/images/ico/ico-mob-help.svg" alt="도움말" />
+        
+        <div class="cdesc">@Localizer["You cannot view the page in mobile environment. Please check it in the PC environment."]</div>
+    </div>
+</section>
+
+    @* function color01(c01, c02) {
+        var gradient = d3.select(document.createElementNS(
+            d3.namespaces.svg, "linearGradient")
+        )
+            .attr("patternUnits", "userSpaceOnUse")
+            .attr("x2", "0")
+            .attr("y2", "100%");
+
+        gradient.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", c01);
+
+        gradient.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", c02);
+
+        return [gradient.node()];
+    } *@

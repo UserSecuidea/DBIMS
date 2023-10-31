@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <title>@ViewData["Title"] - WebVisit</title>
+
+    <link rel="stylesheet" href="~/lib/Swiper/swiper-bundle.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/billboard.js/billboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/jqgrid/css/ui.jqgrid.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/jqgrid/css/ui.jqgrid-bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+   @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+   @* <link rel="stylesheet" href="~/WebVisit.styles.css" asp-append-version="true" /> *@
+ 
+    @* Usage RenderSection:
+     @section scripts {
+        <script src="~/lib/..."></script>
+        ...
+    } *@
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+    <script src="~/lib/jqgrid/js/i18n/grid.locale-kr.js"></script>
+    <script src="~/lib/jqgrid/js/i18n/grid.locale-en.js"></script>
+    <script src="~/lib/jqgrid/js/jquery.jqGrid.min.js"></script>
+    <script src="~/lib/Swiper/swiper-bundle.min.js"></script>
+    <script src="~/lib/billboard.js/billboard.js"></script>
+    <script src="~/lib/d3/d3.min.js"></script>    
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("scripts", required:false)
+
+    <script type="text/javascript">
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["Error"]?.Errors.Count > 0)
+        {
+            <text>
+            $(document).ready(function() {
+                alert('@ViewData.ModelState["Error"]?.Errors.First().ErrorMessage');
+            });
+            </text>
+        }
+        $( function() {
+            $.datepicker.setDefaults($.datepicker.regional['@CultureInfo.CurrentCulture']);
+            $( ".inpdate" ).datepicker({ regional:"en", dateFormat: 'yy-mm-dd' });
+        } );
+    </script>   
+</head>
+<body>
+<div class="wrapper"><!-- start : wrapper -->
+    @RenderBody()
+</div>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

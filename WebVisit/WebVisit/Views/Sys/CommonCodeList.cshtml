@@ -1,0 +1,214 @@
+@model CommonCodeListViewModel
+@{
+    @* ViewData["Title"] = Localizer["Common Code"]; *@
+    Layout = "_Iframe";
+    CommonCodeGridData current = Model.CurrentRoute; // CompanyGridData
+    GridData routes = Model.CurrentRoute.Clone(); // GridData
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+
+    };
+    
+    var selectedRowObj;
+    function selectRow(row, id){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+
+        var rowform = document['fm'+id];
+        console.log('[selectRow]',rowform.CodeNameKor.value);
+
+        var myform = document.fmSave;
+        myform.SaveAction.value='U';
+        myform.CommonCodeID.value=rowform.CommonCodeID.value;
+        myform.InsertSabun.value=rowform.InsertSabun.value;
+        myform.GroupNo.value=rowform.GroupNo.value;
+        myform.CodeNameKor.value=rowform.CodeNameKor.value;
+        myform.CodeNameEng.value=rowform.CodeNameEng.value;
+        myform.Memo.value=rowform.Memo.value;
+
+        var parent = window.parent.document;
+        var CodeNameKor = rowform.CodeNameKor.value; 
+        var CodeNameEng = rowform.CodeNameEng.value; 
+        var encCodeName = encodeURIComponent(CodeNameKor+" ("+CodeNameEng+")");
+        var detailUrl = "/sys/commoncodedetaillist/"+rowform.CommonCodeID.value+"/"+encCodeName+"?culture=@CultureInfo.CurrentCulture";
+        console.log("[selectRow] detailUrl:"+detailUrl)
+        parent.getElementById("detailList").src=detailUrl;
+    }
+
+    function addAction(){
+        var myform = document.fmSave;
+        myform.SaveAction.value='A';
+        myform.CommonCodeID.value='0';
+        myform.GroupNo.value='0';
+        myform.InsertSabun.value='I';
+        myform.CodeNameKor.value='';
+        myform.CodeNameEng.value='';
+        myform.Memo.value='';
+    }
+    function saveForm(){
+        var myform = document.fmSave;
+        if(myform.CodeNameKor.value.length < 1) {
+            alert('@Localizer["Please enter Korean Common Code Name"]');
+            return;
+        }
+        if(myform.CodeNameEng.value.length < 1) {
+            alert('@Localizer["Please enter English Common Code Name"]');
+            return;
+        }
+        myform.submit();
+    }
+    function deleteForm(){
+        var myform = document.fmSave;
+        if (myform.CommonCodeID.value ==undefined || myform.CommonCodeID.value=='0'){
+            alert('@Localizer["Please select Common Code to delete"]');
+            return;
+        }
+        myform.SaveAction.value='D';
+        myform.submit();
+    }
+</script>
+<section class="grid-item-wrap" style="overflow-y: hidden;">
+<form method="post" name="fmSave">
+    <input type="hidden" name="SaveAction" value="A" />
+    <input type="hidden" name="CommonCodeID" value="0" />
+    <input type="hidden" name="InsertSabun" value="I" />
+    <input type="hidden" name="GroupNo" value="0" />
+   
+    <section class="page-search-wrap">
+        <div class="tit05">@Localizer["Common Code"]</div>
+        <div class="mob-toggle-wrap">
+            <a href="javascript:void(0)">
+                <span>@Localizer["Add or Update"]</span>
+                <img src="/images/ico/ico-arr-up01.svg" alt="열기" />
+            </a>
+        </div>
+        <div class="search-group-wrap">
+            <div class="search-form-wrap">
+                <ul>
+                    <li>
+                        <div class="label">@Localizer["Korean Common Code"]</div>
+                        <div class="form-item-wrap">
+                            <input type="text" class="inp" name="CodeNameKor" />
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="label t01">@Localizer["English Common Code"]</div>
+                        <div class="form-item-wrap">
+                            <input type="text" class="inp" name="CodeNameEng" />
+                        </div>
+                    </li>
+                    <li class="per02">
+                        <div class="label t01">@Localizer["Description"]</div>
+                        <div class="form-item-wrap">
+                            <input type="text" class="inp full" name="Memo" />
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+    <div class="list-func-wrap">
+        <div class="list-info-wrap"></div>
+        <div class="side-btn-wrap">
+            <button type="button" class="btn-gray" onclick="addAction()">@Localizer["Add"]</button>
+            <button type="button" class="btn-org" onclick="deleteForm()">@Localizer["Delete"]</button>
+            <button type="button" class="btn-green" onclick="saveForm()">@Localizer["Save"]</button>
+        </div>
+    </div>
+</form>
+    <div class="tbl-item-wrap">
+        <table class="tbl01">
+            <tr>
+                <th>@Localizer["Common Code"]</th>
+                <th>@Localizer["Korean Common Code"]</th>
+                <th>@Localizer["English Common Code"]</th>
+                <th>@Localizer["Description"]</th>
+                <th>@Localizer["Update date"]</th>
+            </tr>
+            @{
+                foreach(CommonCode commonCode in Model.CommonCodes) {
+                    <form name="fm@(commonCode.CommonCodeID.ToString())">
+                        <input type="hidden" name="CommonCodeID" value="@commonCode.CommonCodeID.ToString()" />
+                        <input type="hidden" name="InsertSabun" value="@commonCode.InsertSabun" />
+                        <input type="hidden" name="CodeNameKor" value="@commonCode.CodeNameKor" />
+                        <input type="hidden" name="CodeNameEng" value="@commonCode.CodeNameEng" />
+                        <input type="hidden" name="Memo" value="@commonCode.Memo" />
+                        <input type="hidden" name="GroupNo" value="@commonCode.GroupNo" />
+                        
+                    <tr onclick="selectRow(this, @commonCode.CommonCodeID)">
+                        <td>@commonCode.CommonCodeID.ToString()</td>
+                        <td>@commonCode.CodeNameKor</td>
+                        <td>@commonCode.CodeNameEng</td>
+                        <td>@commonCode.Memo</td>
+                        <td>@(commonCode.UpdateDate??commonCode.InsertDate)</td>
+                    </tr>
+                    </form>
+                }
+            }
+        </table>
+    </div>
+
+    <div class="paging-item-wrap">
+        @* /sys/list/page/1/size/3/sort/groupno/asc/?OrderNo=0 *@
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt="첫 페이지로 이동" /></a>
+            }else{
+                <a asp-action="CommonCodeList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt="첫 페이지로 이동" /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="CommonCodeList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt="이전 페이지로 이동" /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt="이전 페이지로 이동" /></a>
+            }
+            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="CommonCodeList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt="다음 페이지로 이동" /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt="다음 페이지로 이동" /></a>
+            }
+
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt="마지막 페이지로 이동" /></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="CommonCodeList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt="마지막 페이지로 이동" /></a>
+            }
+        }
+    </div>
+
+</section>
+
+<style>
+    body { margin:0px;}
+    .grid-item-wrap {margin:16px auto 0px auto}
+</style>

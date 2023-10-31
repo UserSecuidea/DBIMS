@@ -1,0 +1,246 @@
+@model ApprovalListViewModel
+@{
+    @* ViewData["Title"] = "결재경로 관리"; *@
+    Layout = "_Iframe";
+    ApprovalGridData current = Model.CurrentRoute; // ApprovalGridData
+    GridData routes = Model.CurrentRoute.Clone(); // GridData
+    ApprovalGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+
+    };
+
+    var selectedRowObj;
+    function selectRow(row, id){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+
+        var rowform = document['fm'+id];
+        console.log('[selectRow]',rowform.ApprovalID.value);
+
+        @* 
+        var myform = document.fmSave;
+        myform.SaveAction.value='U';
+        myform.CommonCodeID.value=rowform.CommonCodeID.value;
+        myform.InsertSabun.value=rowform.InsertSabun.value;
+        myform.GroupNo.value=rowform.GroupNo.value;
+        myform.CodeNameKor.value=rowform.CodeNameKor.value;
+        myform.CodeNameEng.value=rowform.CodeNameEng.value;
+        myform.Memo.value=rowform.Memo.value; *@
+
+        var parent = window.parent.document;
+        var Location = rowform.Location.value; 
+        var LocationName = rowform.LocationName.value; 
+        var ApprovalType = rowform.ApprovalType.value; 
+        var ApprovalTypeName = rowform.ApprovalTypeName.value; 
+        var encCodeName = encodeURIComponent(" - "+LocationName+" ("+ApprovalTypeName+")");
+        var detailUrl = "/sys/approvaldetaillist/"+rowform.ApprovalID.value+"/"+encCodeName+"?culture=@CultureInfo.CurrentCulture"; //Location+"/"+ApprovalType+"/"+
+        console.log("[selectRow] detailUrl:"+detailUrl)
+        parent.getElementById("detailList").src=detailUrl;
+    }
+
+
+    function addAction(){
+    }
+    
+    function saveForm(){
+    }
+
+    function deleteForm(){
+    }
+
+    @* Location ApprovalType *@
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchLocation.options[myform.searchLocation.selectedIndex].value;
+        var field2 = myform.searchApprovalType.options[myform.searchApprovalType.selectedIndex].value;
+        var url = myform.action + field1 + "/" + field2 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+ @* @Context.Request.Path *@
+<section class="grid-item-wrap" style="height:calc(100vh);overflow-y: hidden;">
+    <section class="page-search-wrap">
+        <div class="mob-toggle-wrap">
+            <a href="javascript:void(0)">
+                <span>@Localizer["Filter"]</span>
+                <img src="/images/ico/ico-arr-up01.svg" alt="@Localizer["Select Filter"]" />
+            </a>
+        </div>
+        <div class="search-group-wrap">
+            <div class="search-form-wrap">
+                <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchlocation="" asp-route-searchapprovaltype="">
+                    <li>
+                        <div class="label">@Localizer["Place Of Business"]</div>
+                        <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label t01">@Localizer["Approval Type"]</div>
+                        <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchApprovalType" asp-items='@(new SelectList(Model.CodeApprovalType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchApprovalType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchApprovalType" asp-items='@(new SelectList(Model.CodeApprovalType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchApprovalType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                        </div>
+                    </li>
+</form>
+                </ul>
+            </div>
+            <div class="search-btn-wrap">
+                <button type="button" onclick="search()">@Localizer["Search"]</button>
+            </div>
+        </div>
+    </section>
+    <div class="list-func-wrap">
+        <div class="tit05">@Localizer["Approval Type"]</div>
+        <div class="list-info-wrap"></div>
+        <div class="side-btn-wrap"></div>
+    </div>
+    <div class="tbl-item-wrap" style="height:calc(100vh - 172px);">
+        <table class="tbl01" aria-label="결재 목록">
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Approval Type"]</th>
+                @* <th>@Localizer["Approval Line"]</th> *@
+                <th>@Localizer["Update DateTime"]</th>
+            </tr>
+            @{
+                var location = "";
+                var approvalTypeName = "";
+                foreach(Approval approval in Model.Approval) {
+                    location = "";
+                    approvalTypeName = "";
+
+                    if (approval.Location != null && Model.CodeLocation != null) {
+                        foreach(var m in Model.CodeLocation) {
+                            if (m.SubCodeDesc != null && m.SubCodeDesc.Equals(approval.Location)) {
+                                if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                    location = m.CodeNameKor;
+                                }else {
+                                    location = m.CodeNameEng;
+                                }
+                            }
+                        }
+                    }
+
+                    if (approval.ApprovalType >=0 && Model.CodeApprovalType != null) {
+                        foreach(var m in Model.CodeApprovalType) {
+                            if (m.SubCodeID != null && m.SubCodeID.Equals(approval.ApprovalType)) {
+                                if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                    approvalTypeName = m.CodeNameKor;
+                                }else {
+                                    approvalTypeName = m.CodeNameEng;
+                                }
+                            }
+                        }
+                    }
+                    <form name="fm@(approval.ApprovalID.ToString())">
+                        <input type="hidden" name="ApprovalID" value="@approval.ApprovalID.ToString()" />
+                        <input type="hidden" name="Location" value="@approval.Location" />
+                        <input type="hidden" name="ApprovalType" value="@approval.ApprovalType" />
+                        <input type="hidden" name="LocationName" value="@location" />
+                        <input type="hidden" name="ApprovalTypeName" value="@approvalTypeName" />                        
+                    <tr onclick="selectRow(this, @approval.ApprovalID)">
+                        <td>@location</td>
+                        <td>@approvalTypeName</td>
+                        @* <td></td> *@
+                        <td>@(approval.UpdateDate??approval.InsertDate)</td>
+                    </tr>
+                    </form>
+                }
+            }
+            @* <tr onclick="selectRow(this, 1);">
+                <td>부천</td>
+                <td>반출입신청</td>
+                <td>부서장</td>
+                <td>2023-05-11</td>
+            </tr> *@
+        </table>
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt="첫 페이지로 이동" /></a>
+            }else{
+                <a asp-action="ApprovalList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt="첫 페이지로 이동" /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="ApprovalList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt="이전 페이지로 이동" /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt="이전 페이지로 이동" /></a>
+            }
+            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="ApprovalList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt="다음 페이지로 이동" /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt="다음 페이지로 이동" /></a>
+            }
+
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt="마지막 페이지로 이동" /></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="ApprovalList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt="마지막 페이지로 이동" /></a>
+            }
+        }
+    </div>
+</section>
+
+<style>
+    body { margin:0px;}
+    .grid-item-wrap {margin:0px auto 0px auto}
+</style>

@@ -1,0 +1,505 @@
+@model CarCardIssueApplyRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Apply Car Access Card"]; //"차량출입증 신청";
+}
+<script>
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+    $("body").on("change", "#file2", function (ev) {
+      console.log("[body>change file2]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload2", function (ev) {
+      console.log("[body>click btn-upload2]");
+      $("#file2").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    function goList(){
+        window.location = '/card/carapplylist/?culture=@CultureInfo.CurrentCulture'
+    }
+
+    function goSearchPerson(sMode){
+        //sMode-1: 신청자(사원) 검색, 2: 담당자(사원) 검색 
+        var myform = document.fmAddCarCardIssueApply;
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        var locationObj = null;
+        var locationNameObj = null;
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = null;
+        var personTypeIdObj = null;
+        var personTypeIdNameObj = null;
+
+        var carAllowCntObj = null;
+        var carRegCntObj = null;
+
+        if(sMode == 2){//담당자 
+            nameObj = myform.ContactName;
+            sabunObj =  myform.ContactSabun;
+            orgIdObj =  myform.ContactOrgID;
+            orgKorObj =  myform.ContactOrgNameKor;
+            orgEngObj =  myform.ContactOrgNameEng;
+            popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj);
+        }else{
+            nameObj = myform.Name;
+            sabunObj =  myform.Sabun;
+            orgIdObj =  myform.OrgID;
+            orgKorObj =  myform.OrgNameKor;
+            orgEngObj =  myform.OrgNameEng;
+            telObj = myform.Tel;
+            mobileObj = myform.Mobile; 
+
+            locationObj = myform.Location;
+            locationNameObj = myform.LocationName;
+            companyIdObj = myform.CompanyID;
+            companyNameObj = myform.CompanyName;
+            gradeIdObj = myform.GradeID;
+            gradeNameObj = myform.GradeName;
+            personTypeIdObj = myform.PersonTypeID;
+            personTypeIdNameObj = myform.PersonTypeIDName;
+            carAllowCntObj = myform.CarAllowCnt;
+            carRegCntObj = myform.CarRegCnt;
+            popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, null, carAllowCntObj, carRegCntObj, null, null, null, null, null, null, getCarList);
+            searchType ="B";
+            @* isemployeeonly = true; *@
+        }
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddCarCardIssueApply;
+
+        if(myform.CarAllowCnt.value <= myform.CarRegCnt.value){
+            document.getElementById("errormsg").innerHTML = '@Localizer["You have exceeded the number of vehicles allowed"]';
+            return;
+        }
+        if(myform.Sabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please search the applicant"]';
+            myform.Sabun.focus();
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please search the person in charge"]';
+            myform.ContactSabun.focus();
+            return;
+        }
+        if(myform.CarNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter car number"]';
+            myform.CarNo.focus();
+            return;
+        }
+        if(myform.FormFile.value.trim().length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please attach your vehicle registration certificate"]';
+            return;
+        }
+        @* if(myform.FormFile2.value.trim().length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please attach your vehicle registration certificate"]';
+            return;
+        } *@
+        if(myform.ApplyReason.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for applying for a pass"]';
+            myform.ApplyReason.focus();
+            return;
+        }
+        
+        var con = confirm('@Localizer["Would you like to apply for a pass"]');        
+        if(con){
+            myform.submit();
+        }        
+    }
+    // get car info 
+    function getCarList(sabun){
+        console.log(sabun);
+        $.ajax({
+            url: "/card/getmycarlist",
+            data: { sabun },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[carList]", json);
+            var rows= "";
+            var updateDate = "";
+            for(var m of json){
+                console.log("[carList]", m);
+                if(m.updateDate){
+                    updateDate = m.updateDate.split('T');
+                }
+                rows+="<tr><td>"+updateDate[0]+"</td><td>"+m.carNo+"</td><td>"+m.applyReason+"</td></tr>";
+            }
+            var o = document.getElementById("dvCarList");
+            o.innerHTML = rows;
+        });
+    }
+</script>
+
+<form name="fmAddCarCardIssueApply" method="post" enctype="multipart/form-data">
+@{
+    var Location="";
+    var LocationName = "";
+    var CompanyID = -1;
+    var CompanyName = "";
+    var Name = "";
+    var Sabun = "";
+    var PersonTypeIDName = "";
+    var OrgNameKor = "";
+    var OrgNameEng="";
+    var GradeName = "";
+    var Tel ="";
+    var Mobile= "";
+    var searchable = true;
+    var OrgID="";
+    var PersonTypeID=3;
+    var CarAllowCnt = 0;
+    var CarRegCnt = 0;
+    @* var GradeID = ""; *@
+    if(ViewBag.IsMaster == false && ViewBag.IsPartner == false){
+        searchable = false;
+        CarAllowCnt = ViewBag.my.CarAllowCnt;
+        CarRegCnt = ViewBag.my.CarRegCnt;
+        
+        Location=ViewBag.my.Location;
+        foreach(var m in Model.CodeLocation){
+            if(m.SubCodeDesc?.Equals(ViewBag.my.Location)){
+                LocationName = m.CodeNameKor;
+                break;
+            }
+        }
+        CompanyID = ViewBag.my.CompanyID;
+        CompanyName = "DB HiTek";
+        Name = ViewBag.my.Name;
+        Sabun = ViewBag.my.Sabun;
+        //임직원(0)/상주직원(1)/비상주관리자(2)/비상주직원(3)
+        PersonTypeID = ViewBag.my.PersonTypeID;
+        if(ViewBag.my.PersonTypeID == 0){
+            PersonTypeIDName = "임직원";
+        }else if(ViewBag.my.PersonTypeID == 1){
+            PersonTypeIDName = "상주직원";
+        }else if(ViewBag.my.PersonTypeID == 2){
+            PersonTypeIDName = "비상주관리자";
+        }
+        OrgID = ViewBag.my.OrgNameKor;
+        OrgNameKor = ViewBag.my.OrgNameKor;
+        OrgNameEng = ViewBag.my.OrgNameEng;
+        GradeName = ViewBag.my.GradeName;
+        Tel = ViewBag.my.Tel;
+        Mobile = ViewBag.my.Mobile;
+    }
+}
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="Location" value="@Location" />
+    <input type="hidden" name="CompanyID" value="@CompanyID" />
+    <input type="hidden" name="OrgID" value="@OrgID" />
+    <input type="hidden" name="OrgNameEng" value="@OrgNameEng" />
+    <input type="hidden" name="PersonTypeID" value="@PersonTypeID" />
+    <input type="hidden" name="GradeID" value="" />
+
+    <input type="hidden" name="CarAllowCnt" value="@CarAllowCnt" /> @* 차량허용대수*@
+    <input type="hidden" name="CarRegCnt" value="@CarRegCnt" /> @* 차량등록대수 *@
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Applicant Information"]</div>
+        @{
+            if(searchable){
+        <div class="side-btn-wrap">
+            <button type="button" onclick="goSearchPerson(1);">@Localizer["Search"]</button>
+        </div>
+            }
+        }
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="LocationName" value="@LocationName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="CompanyName" value="@CompanyName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Name" value="@Name" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sabun"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Sabun" value="@Sabun" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Employee Classify"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="PersonTypeIDName" value="@PersonTypeIDName" readonly />
+                </div>
+            </li>
+
+            <li>
+                <div class="label s03">@Localizer["Privacy Policy Doc"]</div>
+                <div class="form-item-wrap">
+                    @* TermsPrivarcyFile *@
+                    <label asp-for="CarCardIssueApply.FormFile2" id="btn-upload2" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                    <input asp-for="CarCardIssueApply.FormFile2" name = "FormFile2" id="file2" accept=".pdf" style="display:none;" type="file">
+                    <span asp-validation-for="CarCardIssueApply.FormFile2"></span>                    
+                    <div class="value">@Localizer["No Files Selected"]</div>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value="@OrgNameKor" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="GradeName" value="@GradeName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Home Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Tel" value="@Tel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Mobile" value="@Mobile" readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+        @* 
+        2023.09.15 담당자 조회에서 선택으로 변경
+        <div class="side-btn-wrap">
+            <button type="button" onclick="goSearchPerson(2);">@Localizer["Search"]</button>
+        </div> *@
+    </div>
+    <script>
+        function applyContactPerson(){
+            var myform = document.fmAddCarCardIssueApply;
+            var v = myform.ContactList.options[myform.ContactList.selectedIndex].value;
+            var vs = v.split('^');
+            myform.ContactName.value = vs[0];
+            myform.ContactSabun.value = vs[1];
+            myform.ContactOrgNameKor.value = vs[2];
+        }
+    </script>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    @* <input type="text" class="inp" name="ContactName" value="" readonly /> *@
+    @{
+        var ContactName = "";
+        var ContactSabun = "";
+        var ContactOrgNameKor = "";
+    }
+    @if(ViewBag.IsMaster || ViewBag.IsPartner){
+                    <select name="ContactList" class="select" onchange="applyContactPerson()">
+                        <option value="">선택</option>
+                    @foreach(var m in Model.ContactPersonList){
+                        var v = m.Passname+"^"+m.Passsabun+"^"+m.PassdeptName;
+                        <option value="@v">@m.LocationName @m.Passname</option>
+                    }
+                    </select>
+    } else{
+                    <select name="ContactList" class="select" onchange="applyContactPerson()" disabled>
+                        <option value="">선택</option>
+                    @foreach(var m in Model.ContactPersonList){
+                        var v = m.Passname+"^"+m.Passsabun+"^"+m.PassdeptName;
+                        if(ViewBag.my.Location.Equals(m.LocationCode) ){
+                            ContactName = m.Passname;
+                            ContactSabun = m.Passsabun;
+                            ContactOrgNameKor = m.PassdeptName;
+                        <option value="@v" selected>@m.Passname</option>
+                        } else{
+                        <option value="@v">@m.Passname</option>
+                        }
+                    }
+                    </select>
+    }
+                    <input type="hidden" class="inp" name="ContactName" value="@ContactName" readonly />
+                    <input type="hidden" name="ContactSabun" value="@ContactSabun" />
+                    <input type="hidden" name="ContactOrgNameEng" value="" />
+                    <input type="hidden" name="ContactOrgID" value="" />                    
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactOrgNameKor" value="@ContactOrgNameKor" readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Apply Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Issue Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car No"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo" value="" />
+                    </div>                            
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CarTypeCodeID" asp-items='@(new SelectList(Model.CodeCarType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="CarTypeCodeID" asp-items='@(new SelectList(Model.CodeCarType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Vehicle Registration Card"]<span></span></div>
+                <div class="form-item-wrap">
+                    <label asp-for="CarCardIssueApply.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                    <input asp-for="CarCardIssueApply.FormFile" name = "FormFile" id="file1" accept=".pdf" style="display:none;" type="file">
+                    <span asp-validation-for="CarCardIssueApply.FormFile"></span>
+                    <div class="value">@Localizer["No Files Selected"]</div>
+                    @* <input type="file" class="hidden" name="CarLIcenseFile" accept=".pdf"  />
+                    <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>*@
+
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Vehicle Model"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Vehicle Model"]' name="CarModel" />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Access Card Application Reason"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Access Card Application Reason"]' name="ApplyReason" />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Owned Vehicle Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>        
+            <li class="full">
+                <div class="form-item-wrap" style="flex-direction: column;">
+                    <table>
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Car No"]</th>
+                            <th>@Localizer["Processing Reason"]</th>
+                        </tr>
+                    </table>
+                    <table id="dvCarList" aria-label="보유차량 리스트"></table>
+                    @* <table>
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Car No"]</th>
+                            <th>@Localizer["Processing Reason"]</th>
+                        </tr>
+                        <tr>
+                            <td>2023-04-30</td>
+                            <td>222가3333</td>
+                            <td>신규차량등록</td>
+                        </tr>
+                        <tr>
+                            <td>2023-04-30</td>
+                            <td>222가3333</td>
+                            <td>신규차량등록</td>
+                        </tr>
+                    </table> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+     @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+        <!--
+        <button type="button" class="btn-gray">출입카드 회수처리</button>
+        <button type="button" class="btn-gray">비밀번호 초기화</button>
+        -->
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Add Car"]</button>
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />

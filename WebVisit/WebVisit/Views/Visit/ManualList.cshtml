@@ -1,0 +1,519 @@
+@model VisitListViewModel
+@{
+    @* ViewData["Title"] = "방문객 수기 입력"; *@
+    @*VisitManualGridData current = Model.CurrentManualRoute;     //2023.09.25 신인아 *@  
+    @*GridData routes = Model.CurrentManualRoute.Clone();          //2023.09.25 신인아*@
+    @*VisitManualGridData searchRoute = Model.SearchManualRoute;   //2023.09.25 신인아*@
+    VisitGridData current = Model.CurrentRoute; // @*PersonGridData *@   @*2023.09.25 신인아*@
+    GridData routes = Model.CurrentRoute.Clone(); // @*GridData *@    @*2023.09.25 신인아*@
+    VisitGridData searchRoute = Model.SearchRoute;        @*2023.09.25 신인아*@
+
+}
+<script>
+    @* 2023.09.25 신인아 엔터키검색 추가 start*@
+    function doSubmit(e) {
+        if (e.keyCode == 13) {
+            search();
+        }
+    }
+    @* 2023.09.25 신인아 엔터키검색 추가 end*@
+
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/visit/manualreg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&visitApplyID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    // edit - 경비원이 방문자에 대하여 출입증 번호 부여 
+    function changeVisitStatus(visitApplyPersonID){
+        var myform = document.fmListManual;
+        if(visitApplyPersonID){
+            var visitStatus = eval("myform.VisitStatus_"+visitApplyPersonID+".value");
+            var cardNo = eval("myform.CardNo_"+visitApplyPersonID+".value");
+            if(visitStatus.trim().length < 1 ){
+                alert('@Localizer["Please select visit status"]');
+                return;
+            }
+            if(cardNo.trim().length < 1 ){
+                alert('@Localizer["Please enter your pass card number"]');
+                return;
+            }
+            if (!isNumber(cardNo)){
+                alert('@Localizer["Please enter only numbers for the pass number"]');
+                return;
+            }
+            if(cardNo.trim().length != 4 ){
+                alert('@Localizer["Please enter the pass number in 4 digits"]');
+                return;
+            }
+            if(visitStatus == 0 && cardNo.trim().length > 0){
+                alert('@Localizer["You cannot enter your pass number while waiting for a visit"]');
+                return;
+            }
+            
+            var con = confirm('@Localizer["Would you like to save"]');
+            if(con){
+                myform.mode.value="EVisitStatus";
+                myform.VisitApplyPersonID.value = visitApplyPersonID;
+                myform.VisitStatus.value = visitStatus;
+                myform.CardNo.value = cardNo;
+                myform.submit(); 
+            }
+        }
+    }
+    function search() {
+        var myform = document.fmSearch;
+        @* var field1 = myform.searchVisitApplyType.options[myform.searchVisitApplyType.selectedIndex].value; *@
+        var field2 = myform.searchVisitApplyStatus.options[myform.searchVisitApplyStatus.selectedIndex].value;
+        var field3 = myform.searchVisitStatus.options[myform.searchVisitStatus.selectedIndex].value;
+        var keyword1 = myform.searchName.value.trim().replace("/","");
+        @* var keyword2 = myform.searchBirthDate.value.trim().replace("/",""); *@
+        @* var keyword3 = myform.searchCompanyName.value.trim().replace("/",""); *@
+        var keyword4 = myform.searchInsertName.value.trim().replace("/", ""); @*2023.10.05 신인아*@
+        var keyword5 = myform.searchStartInsertDate.value.trim().replace("/","");
+        var keyword6 = myform.searchEndInsertDate.value.trim().replace("/","");
+        var keyword7 = myform.searchCardNo.value.trim().replace("/","");
+        @* var keyword8 = myform.searchCarNo.value.trim().replace("/",""); *@
+        var url = myform.action + field2 + "/" + field3; 
+        console.log("[search] url 1>", url, myform.searchVisitApplyStatus.selectedIndex, myform.searchVisitApplyStatus.options[1].value);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        @* if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        } *@
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        if (keyword5 != null && keyword5.length > 0) {
+            url += "/"+keyword5;
+        }else {
+            url +="/+"
+        }
+        if (keyword6 != null && keyword6.length > 0) {
+            url += "/"+keyword6;
+        }else {
+            url +="/+"
+        }
+        if (keyword7 != null && keyword7.length > 0) {
+            url += "/"+keyword7;
+        }else {
+            url +="/+"
+        }
+        @* if (keyword8 != null && keyword8.length > 0) {
+            url += "/"+keyword8;
+        }else {
+            url +="/+"
+        } *@
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }    
+</script>
+
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+                <form method="get" name="fmSearch" asp-route-pagenumber="1"
+                      asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection"
+                      asp-route-searchvisitapplystatus="" asp-route-searchvisitstatus="" asp-route-searchname=""
+                      asp-route-searchcontactname="" asp-route-searchinsertname="" asp-route-searchstartinsertdate="" asp-route-searchendinsertdate="" asp-route-searchcardno="">
+                    @*2023.10.05 신인아 asp-route-searchinsertname 추가/담당자명->근무자 *@
+                <li>
+                    <div class="label">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchName" value="@searchRoute.SearchName" onkeypress="doSubmit(event);" />   @*2023.09.25 신인아 엔터검색기능추가*@
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Access CardNo"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Access CardNo"]' name="searchCardNo" value="@searchRoute.SearchCardNo" onkeypress="doSubmit(event);" />    @*2023.09.25 신인아 엔터검색기능추가*@
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Staff"]</div> @*2023.10.05 신인아 담당자명->근무자*@
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Staff"]'  name="searchInsertName" value="@searchRoute.SearchInsertName" onkeypress="doSubmit(event);" />    @*2023.09.25 신인아 엔터검색기능추가//2023.10.05 신인아 담당자명->근무자*@
+                    </div>
+                </li>
+                @*2023.10.05 신인아 start 승인구분 내용없어서 삭제, 없애면 에러나서 전체로 셋팅해놓음*@
+                <li style="display:none;">
+                    <div class="label t01">@Localizer["Approval Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select full" name="searchVisitApplyStatus" asp-items='@(new SelectList(Model.CodeVisitApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchVisitApplyStatus))'>
+                                            <option value='-1'>@Localizer["Entire"]</option></select>
+                            }else{
+                                        <select class="select full" name="searchVisitApplyStatus" asp-items='@(new SelectList(Model.CodeVisitApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchVisitApplyStatus))'>
+                                            <option value='-1'>@Localizer["Entire"]</option></select>
+                            }
+                        }
+                    </div>
+                </li> @*2023.10.05 신인아 start 승인구분 내용없어서 삭제 end*@
+                <li>
+                    <div class="label t01">@Localizer["Status Classify"]</div>@*2023.10.05 신인아 t01 넣기, 세로 칸막이*@
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select full" name="searchVisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchVisitStatus))'>
+                                            <option value='-1'>@Localizer["Entire"]</option></select>
+                            }else{
+                                        <select class="select full" name="searchVisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchVisitStatus))'>
+                                            <option value='-1'>@Localizer["Entire"]</option></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Visit Period"]</div>@*2023.10.05 신인아 t01 빼기, 첫째 칼럼이라 세로칸막이 삭제*@
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartInsertDate" placeholder="YYYY-MM-DD" value="@searchRoute.SearchStartInsertDate" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" onkeypress="doSubmit(event);" />   @*2023.09.25 신인아 엔터검색기능추가*@
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndInsertDate"  placeholder="YYYY-MM-DD" value="@searchRoute.SearchEndInsertDate" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" onkeypress="doSubmit(event);" />   @*2023.09.25 신인아 엔터검색기능추가*@
+                        </div>
+                    </div>
+                </li>
+</form>                
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" id="searchBtn"  onclick="search()">@Localizer["Search"]</button>  @*2023.09.25 신인아 엔터검색기능추가*@
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>            
+        </div>
+        <div class="side-btn-wrap">
+            <form name="fmDlExcel" method="post" asp-action="ExcelManualDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <input type="hidden" name="mode" value="M" />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+            @* <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button> *@
+            <a asp-action="ManualReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Apply Visit"]</button>
+            </a>
+            @* <button type="button" class="btn-green" onClick="goReg();">@Localizer["Apply Visit"]</button> *@
+            <a asp-action="ManualDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">
+<form method="post" name="fmListManual">
+    <input type="hidden" name="mode" value="EVisitStatus" />
+    <input type="hidden" name="VisitApplyPersonID" value='' />
+    <input type="hidden" name="VisitStatus" value='' />
+    <input type="hidden" name="CardNo" value='' />
+        <table class="tbl01" aria-label="목록">
+                @*2023.10.05 신인아 start 반응형 칼럼비율 삽입*@
+                <colgroup>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                    <col width="14%"></col>
+                    <col width="14%"></col>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                    <col width="9%"></col>
+                </colgroup>
+                @*2023.10.05 신인아 end*@
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Visit Date"]</th>
+                <th>@Localizer["Come In Time"]</th>
+                <th>@Localizer["Go Out Time"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Visit Purpose"]</th>
+                <th>@Localizer["Staff"]</th>
+                <th>@Localizer["Visit Status"]</th>
+                <th>@Localizer["Access CardNo"]</th>
+                <th></th>
+            </tr>
+@{
+    @* 
+        VisitApply(b): VisitApplyID	Location	VisitStartDate	VisitEndDate	PlaceCodeID	VisitPurposeCodeID	
+        ContactSabun	ContactName	ContactOrgID	ContactOrgNameKor	ContactOrgNameEng	VisitorType 	VisitApplyType	WorkApplyID	SafetyEduID	VisitApplyStatus	
+        Purpose	RegVisitorType	VisitPersonID	
+        InsertSabun	InsertName	InsertOrgID	InsertOrgNameKor	InsertOrgNameEng	UpdateDate	InsertDate	IsDelete
+
+        VisitApplyPerson(a): VisitApplyPersonID	VisitApplyID	VisitDate	VisitorType 	VisitPersonID	BirthDate	Gender	Mobile	CompanyName	
+        Sabun	Name	OrgID	OrgNameKor	OrgNameEng	OrderNo	IsVisitorEdu	VisitorEduDate	IsCleanEdu	CleanEduDate	CleanEduScore	IsSafetyEdu	SafetyEduDate CarNo	
+        IsTermsPrivarcy	VisitStatus	CardID	CardNo	IsVIP	VipTypeCodeID	EntryDate	ExitDate	CleanEntryDate	CleanExitDate	InsertVisitorType	InsertVisitPersonID	
+        InsertSabun	InsertName	InsertOrgID	InsertOrgNameKor	InsertOrgNameEng	UpdateDate	InsertDate	IsDelete
+    *@
+ 
+    var location = "";
+    int visitManualPurposeCodeID=-1;
+    var visitManualPurposeCodeName = "";
+    int VisitApplyID=-1;
+    var InsertName="";
+    int VisitApplyStatus=-1;
+    foreach(var m in ViewBag.visitApplyPersonList ?? new List<string>()){ 
+        VisitApplyID = m.b.VisitApplyID;
+        VisitApplyID = m.b.VisitApplyID;
+        InsertName = m.b.InsertName;
+        location = m.b.Location;
+        VisitApplyStatus = m.b.VisitApplyStatus;
+        visitManualPurposeCodeID = m.b.VisitManualPurposeCodeID;
+        @* if (m.b.Count > 0){
+            VisitApplyID = m.b[0].VisitApplyID;
+            InsertName = m.b[0].InsertName;
+            location = m.b[0].Location;
+            VisitApplyStatus = m.b[0].VisitApplyStatus;
+            visitManualPurposeCodeID = m.b[0].VisitManualPurposeCodeID;
+        } *@
+        if (location != null && Model.CodeLocation != null) {
+            foreach(var a in Model.CodeLocation) {
+                if (a.SubCodeDesc != null && a.SubCodeDesc.Equals(location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = a.CodeNameKor;
+                    }else {
+                        location = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (visitManualPurposeCodeID >= 0 && Model.CodeVisitManualPurpose != null) {
+            foreach(var a in Model.CodeVisitManualPurpose) {
+                if (a.SubCodeID != null && a.SubCodeID.Equals(visitManualPurposeCodeID)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        visitManualPurposeCodeName = a.CodeNameKor;
+                    }else {
+                        visitManualPurposeCodeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        var EntryDate = "";
+        if(m.a.EntryDate != null){
+            EntryDate = m.a.EntryDate.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+        var ExitDate = "";
+        if(m.a.ExitDate != null){
+            ExitDate = m.a.ExitDate.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+            <tr onclick="selectRow(this, @VisitApplyID);" ondblclick="goDetail(@VisitApplyID)">
+                <td>@location</td>
+                <td>@m.a.VisitDate</td>
+                <td>@EntryDate</td>
+                <td>@ExitDate</td>
+                <td>@m.a.CompanyName</td>
+                <td>@m.a.Name</td>
+                <td>@visitManualPurposeCodeName</td>
+                <td>@InsertName</td>
+                <td>
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            if(VisitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus_@m.a.VisitApplyPersonID" class="select full">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.a.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameEng</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.a.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.a.VisitStatus == 1 || m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }else{
+                            if(VisitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus_@m.a.VisitApplyPersonID" class="select full">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.a.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameKor</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.a.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.a.VisitStatus == 1 || m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }
+                                        }
+                                        @* <option value="@m3.SubCodeID">@m3.CodeNameKor</option> *@
+                                    }
+                                </select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }
+                    }
+@* 
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            if(VisitApplyStatus == 1){ // && m.a.VisitStatus == 0
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.a.VisitStatus))'></select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }else{
+                            if(VisitApplyStatus == 1){ //&& m.a.VisitStatus == 0
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.a.VisitStatus))'></select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }
+                    } *@
+                </td>
+                <td><input type="text" class="inp" name="CardNo_@m.a.VisitApplyPersonID" value='@m.a.CardNo' @((VisitApplyStatus == 1 && m.a.VisitStatus == 0) ? "" : "readonly") maxlength="4" /></td>
+                <td>
+                     @* style='display:@(VisitApplyStatus == 1 ? "flex" : "none")'  && m.a.VisitStatus == 0) *@
+                    <button type="button" class="btn-gray" onclick="changeVisitStatus(@m.a.VisitApplyPersonID)" @(VisitApplyStatus == 1 ? "" : "disabled")>@Localizer["Save"]</button>
+                </td>
+            </tr>
+
+    }
+}            
+            @* <tr onclick="selectRow(this, 2);">
+                <td>부천</td>
+                <td>2023-05-01</td>
+                <td>11:30</td>
+                <td>12:30</td>
+                <td>한진</td>
+                <td>홍길동</td>
+                <td>택배 </td>
+                <td>김홍도</td>
+                <td>
+                    <select class="select" name="VisitStatus">
+                        <option>전체</option>
+                            <option>방문신청</option>
+                            <option>방문완료</option>
+                    </select>
+                </td>
+                <td><input type="text" class="inp" name="CardNo" /></td>
+                <td>
+                    <button type="button" class="btn-gray">@Localizer["Save"]</button>
+                </td>
+            </tr> *@
+        </table>
+</form>
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

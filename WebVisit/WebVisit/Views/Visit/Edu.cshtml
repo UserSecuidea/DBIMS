@@ -1,0 +1,492 @@
+@{
+    ViewData["Title"] = "DB HiTek";
+    Layout = "_Iframe";
+}
+
+<script>
+    var cd = 24 * 60 * 60 * 1000;
+    function checkVisitor(){
+        var myform = document.fmAddVisit;
+        var name="";
+        var birth="";
+        var formVisitApplyPersonID = null;
+        var formCleanEdue = null;
+        var formVisitorEdu = null; 
+        var formCheckVisitorFlag = null; 
+        var formIsEduComplete = null;
+        var formIsCleanEduComplete = null;
+        var formPlaceCodeID = null;
+        
+        document.getElementById("visitorErrorMsg").innerHTML="";
+        
+        if(myform.Name.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the visitor name"]';
+            myform.Name.focus();
+            return;
+        }
+        if(myform.BirthDate.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        name = myform.Name.value.trim();
+        let b = new Date(myform.BirthDate.value.trim());
+        if (isValidDate(b) == false){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) Ex) 2023-01-01';
+            myform.BirthDate.value = '';
+            myform.BirthDate.focus();
+            return;
+        }
+        birth = myform.BirthDate.value.trim();
+        formVisitorEdu = myform.ckVisitorEdu;
+        formCleanEdue = myform.ckCleanEdu;
+        formCheckVisitorFlag = myform.CheckVisitorFlag;
+        formIsEduComplete = myform.IsEduComplete;
+        formIsCleanEduComplete = myform.IsCleanEduComplete;        
+        formVisitApplyPersonID = myform.VisitApplyPersonID;
+        formPlaceCodeID = myform.PlaceCodeID;
+        $.ajax({
+            url: "/visit/getvisitapplypersoninfo", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+            data: { name, birth },  // HTTP 요청과 함께 서버로 보낼 데이터
+            method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+            dataType: "JSON" // 서버에서 보내줄 데이터의 타입
+        }).done(function(json) {
+            @* console.log("[checkVisitor]", json); *@
+            if (json != null){
+                console.log("[checkVisitor]", json);
+                let t = new Date();
+                //확인버튼 클릭 여부 
+                formCheckVisitorFlag.value = "Y";
+                @* formVisitorEdu.value = "Y"; *@
+                formVisitApplyPersonID.value = "";
+                formIsEduComplete.value = "N";
+                formIsCleanEduComplete.value = "N";
+                formVisitorEdu.checked = false;
+                formCleanEdue.checked = false;
+
+                if (json.visitApplyPersonID != null)
+                    formVisitApplyPersonID.value = json.visitApplyPersonID;
+                
+                if (json.visitorEduDate != null && json.visitorEduDate != ""){
+                    let e = new Date(json.visitorEduDate);
+                    let d = Math.floor((t.getTime() - e.getTime())/cd);
+                    if (d < 365) {
+                        formVisitorEdu.checked = true;
+                        formIsEduComplete.value = "Y";
+                    }
+                    @* console.log("d:"+d) *@
+                }
+                if (json.cleanEduDate != null && json.cleanEduDate != ""){
+                    let e = new Date(json.cleanEduDate);
+                    let d = Math.floor((t.getTime() - e.getTime())/cd);
+                    if (d < 365) {
+                        formCleanEdue.checked = true;
+                        formIsCleanEduComplete.value = "Y";
+                    }else{
+                        formIsCleanEduComplete.value = "N";
+                    }
+                }
+                console.log("json.placeCodeID:"+json.placeCodeID);
+                if(json.placeCodeID != undefined){
+                    if(json.placeCodeID != 6){
+                        document.getElementById("liCleanEdu").style.visibility = "hidden";
+                    }else{
+                        document.getElementById("liCleanEdu").style.visibility = "visible";
+                    }
+                    formPlaceCodeID.value = json.placeCodeID;                    
+                }
+                if (json.location != null && json.location != ""){
+                    visitLocation = json.location;
+                }
+            }
+        });
+    }
+
+    function popVisitorEdu(obj){
+        common.popOpen(document.getElementById('visitorEdu'));
+        currentPlayerObj =  {...playerObj};
+        @* currentPlayerObj.idx = findIndex(obj); *@
+        console.log("[popVisitorEdu] playerVisitor:"+playerVisitor);
+        currentPlayerObj.vType = 0;
+        currentPlayerObj.player = playerVisitor;
+        currentPlayerObj.duration = visitorDuration;
+        @* console.log("[popVisitorEdu]"+findIndex(obj)); *@
+        var myform = document.fmAddVisit;
+        @* var ck = findFormElementByIndex(myform, "VisitorType[]", "ckVisitorEdu[]", currentPlayerObj.idx);
+        ck.checked = true;
+        console.log("[popVisitorEdu]",ck); *@
+    }
+
+    function popCleanEdu(obj){
+        common.popOpen(document.getElementById('cleanEdu'));
+        currentPlayerObj =  {...playerObj};
+        @* currentPlayerObj.idx = findIndex(obj); *@
+        currentPlayerObj.vType = 1;
+        currentPlayerObj.player = playerClean;
+        currentPlayerObj.duration = cleanDuration;
+        @* console.log("[popCleanEdu]"+findIndex(obj)); *@
+        console.log("[popCleanEdu] visitLocation:"+visitLocation);
+        if(visitLocation == "2000"){
+            currentPlayerObj.player.setAttribute('src', '/videos/Fab1_CR_video_v0.mp4');
+        }else{
+            currentPlayerObj.player.setAttribute('src', '/videos/FAB2_CleanRoom.mp4');
+        }
+        @* currentPlayerObj.player.setAttribute('src', '/videos/sea.mp4'); *@
+    }
+
+    function closeEdu(){
+        console.log("[closeEdu]");
+        if (currentPlayerObj != undefined) {
+            currentPlayerObj.player.pause();
+            currentPlayerObj.player.currentTime = 0;
+        }
+    }
+
+@* v_player_visitor v_player_clean *@
+    var currentPlayerObj;
+    var playerObj = {idx: -1, vType:0, player:null, duration:0, playTime:0};
+    var visitorDuration = 0;
+    var cleanDuration = 0;
+    var playerVisitor = null;
+    var playerClean = null;
+    var playStartTime = 0;
+@* findIndex(myform, strFirstElementName, obj) *@
+@* findFormElementByIndex(myform, strFirstElementName, strFindElementName, idx) *@
+    window.onload = function () {
+        //교육 영상
+        playerVisitor = document.getElementById("v_player_visitor");
+        console.log("[window.onload] playerVisitor:",playerVisitor);
+        playerVisitor.onended = function() {
+            console.log("playerVisitor end "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration+"/"+Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ));
+            if (Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ) < 3000){
+                console.log("success "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration);
+                var myform = document.fmAddVisit;
+                var ck = findFormElementByIndex(myform, "VisitorType", "ckVisitorEdu", currentPlayerObj.idx);
+                ck.checked = true;
+                @* var ck = findFormElementByIndex(myform, "VisitorType[]", "ckCleanEdu[]", currentPlayerObj.idx); *@
+                common.popClose(popupObj);
+            }
+        };
+        playerVisitor.onplay = function() {
+            playStartTime = new Date().getTime();
+            console.log("playerVisitor onplay "+playStartTime);
+        };
+        playerVisitor.onpause = function() {
+            currentPlayerObj.playTime += new Date().getTime() - playStartTime;
+            console.log("playerVisitor onpause "+currentPlayerObj.playTime);
+        };
+
+        playerVisitor.addEventListener('loadedmetadata', function() {
+            console.log("playerVisitor duraton:"+ playerVisitor.duration);
+            visitorDuration = playerVisitor.duration * 1000;
+        });
+        if (playerVisitor.readyState >= 2) {
+            console.log("playerVisitor duraton:"+ playerVisitor.duration);
+            visitorDuration = playerVisitor.duration * 1000;
+        }
+
+        playerClean = document.getElementById("v_player_clean");
+        playerClean.onended = function() {
+            console.log("playerClean end "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration+"/"+Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ));
+            if (Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ) < 3000){
+                console.log("success "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration);
+                @* var myform = document.fmAddVisit;
+                var ck = findFormElementByIndex(myform, "VisitorType", "ckCleanEdu", currentPlayerObj.idx);
+                ck.checked = true; *@
+                common.popClose(popupObj);
+
+                document.getElementById("commonConfirmPopup").classList.add("ing");
+                document.getElementById("commonConfirmPopup").classList.add("on");
+
+            }
+        };
+        playerClean.onplay = function() {
+            console.log("playerClean onplay");
+        };
+        playerClean.onpause = function() {
+            console.log("playerClean onpause");
+        };
+        playerClean.addEventListener('loadedmetadata', function() {
+            console.log("playerClean duraton:"+ playerClean.duration);
+            cleanPlayerObj = playerClean.duration * 1000;
+        });
+        if (playerClean.readyState >= 2) {
+            console.log("playerClean duraton:"+ playerClean.duration);
+            cleanPlayerObj = playerClean.duration * 1000;
+        }
+    }
+    function playPauseEdu(obj){
+        currentPlayerObj.player = playerVisitor;
+        @* console.log("[playPauseEdu] currentPlayerObj:", currentPlayerObj);
+        console.log("[playPauseEdu] currentPlayerObj.player:", currentPlayerObj.player); *@
+        var ck = $(obj).hasClass("on");
+        if(ck){
+            $(obj).removeClass("on");
+            currentPlayerObj.player.pause();
+        }else{
+            $(obj).addClass("on");
+            currentPlayerObj.player.play();
+        }
+    }
+    var visitLocation ="2000";
+    function playPauseClean(obj){
+        currentPlayerObj.player = playerClean;
+
+        var ck = $(obj).hasClass("on");
+        if(ck){
+            $(obj).removeClass("on");
+            currentPlayerObj.player.pause();
+        }else{
+            $(obj).addClass("on");
+            currentPlayerObj.player.play();
+        }
+    }
+
+    function saveVisitForm(){
+        var myform = document.fmAddVisit;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        if(myform.CheckVisitorFlag.value == 'N'){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please confirm the visit application information by clicking the Confirm button"]';
+            return;
+        }
+        if(myform.VisitApplyPersonID.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["There is no visit request information"]';
+            return;
+        }
+        if(myform.IsEduComplete.value == "Y" || ( myform.PlaceCodeID.value == 6 && myform.IsCleanEduComplete.value == "Y")){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["You have already watched Visiting Teaching"]';
+            return;
+        }
+        if (myform.ckAgree.checked == false){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please agree to the Terms of Use"]';
+            return;
+        }
+        if(myform.Name.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the visitor name"]';
+            myform.Name.focus();
+            return;
+        }
+        if(myform.BirthDate.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        if(myform.ckVisitorEdu.checked == false){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please watch the visitor introductory training"]';
+            return;
+        }
+        if(myform.PlaceCodeID.value == 6 && myform.ckCleanEdu.checked == false){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please watch the clean room training"]';
+            return;
+        }
+
+        myform.ckVisitorEdu.disabled = false;
+        myform.ckVisitorEdu.removeAttribute("disabled");
+        myform.ckCleanEdu.disabled = false;
+        myform.ckCleanEdu.removeAttribute("disabled");
+        console.log("[saveVisitForm]"+myform.ckVisitorEdu.value+", "+myform.ckVisitorEdu.checked);
+        myform.submit();
+    }
+
+    var isPassCleanRoomTest = false;
+    function cleanRoomTestResult(isPass){
+        console.log("[cleanRoomTestResult]");
+        if(isPass == true){
+            isPassCleanRoomTest = true;
+            if (currentPlayerObj != undefined && currentPlayerObj.idx != undefined){
+                var myform = document.fmAddVisit;
+                @* var ck = findFormElementByIndex(myform, "VisitorType[]", "ckCleanEdu[]", currentPlayerObj.idx); *@
+                var ck = myform.ckCleanEdu;
+                ck.checked = true;
+            }
+        }
+    }
+
+    function startCleanRoomTest(){
+        isPassCleanRoomTest = false;
+        var myform = document.fmAddVisit;
+        var location = visitLocation;//myform.Location.options[myform.Location.selectedIndex].value;
+        @* 부천 : \\10.141.5.200\WebApp\VISITOR\GCMSRF\GCMS.war\upload\cleanRoomVideo\fab1\ Fab1_CR_video_v0.mp4
+        상우 : \\10.141.5.200\WebApp\VISITOR\GCMSRF\GCMS.war\upload\cleanRoomVideo\fab2\ FAB2_CleanRoom.mp4 *@
+        if(location == "2000" || location == "3000"){
+            window.open('','_blank', 'titlebar=yes,toolbar=yes,location=yes, directories=yes, status=yes,location=yes,menubar=yes,scrollbars=yes,resizable=no,top=0,left=0,width=960,height=750').location.href = "/home/CleanRoomTest?location="+location; // &name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#
+        }
+        @* if(myform.Location.options[myform.Location.selectedIndex].value == "2000") {
+            location = 
+        } else if (myform.Location.options[myform.Location.selectedIndex].value == "3000") {
+
+        } *@
+
+        @* window.open('','_blank', 'titlebar=no,toolbar=no,location=no, directories=no, status=no,location=no,menubar=no,scrollbars=no,resizable=no,top=0,left=0,width=960,height=750').location.href = "/home/CleanRoomTest?location=2000&name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#"; *@
+        closeConfirm();
+        @* cleanRoomTestWin = window.open("/home/CleanRoomTest?location=2000&name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#", "cleanRoomTestWin", "toolbar=0,location=0, directories=0, status=0,location=no,menubar=0,scrollbars=no,resizable=no,top=0,left=0,width=960,height=600"); *@
+    }
+
+    function closeAlert(){
+        document.getElementById("commonAlertPopup").classList.remove("on");
+        document.getElementById("commonAlertPopup").classList.remove("ing");
+        @* $(obj).removeClass("on"); *@
+    }
+    function closeConfirm(){
+        document.getElementById("commonConfirmPopup").classList.remove("on");
+        document.getElementById("commonConfirmPopup").classList.remove("ing");
+        @* $(obj).removeClass("on"); *@
+    }
+</script>
+@if (TempData.Keys.Contains("UI.AlertMsg")){
+    var alertMsg = @TempData["UI.AlertMsg"]?.ToString();
+    if (!string.IsNullOrEmpty(alertMsg)) {
+        <div class="dialog ing on" id="commonAlertPopup">
+            <div class="pop-item-wrap test-type">
+                <div class="pop-cont-wrap">
+                    <div class="msg-ico"><img src="images/ico/ico-chk02.svg" alt="" /></div>
+                    <div class="msg-tit">@alertMsg</div>
+                </div>
+                <div class="pop-btn-wrap">
+                    <button type="button" class="btn-req" onclick="closeAlert()">@Localizer["Confirm"]</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<div class="dialog" id="commonConfirmPopup" style="z-index: 1000;">
+    <div class="pop-item-wrap test-type">
+        <div class="pop-cont-wrap">
+            <div class="msg-ico"><img src="images/ico/ico-chk02.svg" alt="" /></div>
+            <div class="msg-tit">클린룸 시청 완료</div>
+            <div class="msg-desc">동영상 시청이 완료되었습니다. 시험방으로 바로 이동하시겠습니까?<br />바로 이동하지 않고 종료할 경우 영상을 처음부터 시청하셔야 합니다.</div>
+        </div>
+        <div class="pop-btn-wrap">
+            <button type="button" class="btn-cancel" onclick="closeConfirm();">취소</button>
+            <button type="button" class="btn-req" onclick="startCleanRoomTest();">확인</button>
+        </div>
+    </div>
+</div>
+<section class="grid-item-wrap" id="section">  @*2023.09.14 신인아*@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Agree Privacy Policy"]</div>
+    </div>
+
+<environment include="Development">
+    <script>
+        function insertTest1(name, birth){
+            var myform = document.fmAddVisit;
+            myform.Name.value = name;
+            myform.BirthDate.value=birth;
+            myform.ckVisitorEdu.checked = true;
+            myform.ckCleanEdu.checked = true;
+        }
+    </script>
+    <a href="#" onclick="insertTest1('한진희','1980-01-03');">상우 클린룸 한진희</a> | 
+    <a href="#" onclick="insertTest1('송현철','1980-01-04');">부천 클린룸 송현철</a> | 
+    <a href="#" onclick="insertTest1('박철원','1980-01-02');">박철원</a>
+</environment>
+<form name="fmAddVisit" asp-controller="Visit" asp-action="Edu" method="post" id="form"> @*2023.09.16 신인아*@ 
+    <input type="hidden" name="CheckVisitorFlag" value='N' />
+    <input type="hidden" name="IsEduComplete" value='N' />
+    <input type="hidden" name="IsCleanEduComplete" value='N' />
+    <input type="hidden" name="VisitApplyPersonID" value='' />
+    <input type="hidden" name="PlaceCodeID" value="" />
+    
+    <div class="reg-form-wrap type02">
+    <partial name="~/Views/_Popup/PopVisitPrivacy.cshtml" />
+        <div class="agree-chk-wrap">
+            <label>
+                <input type="checkbox" name="ckAgree" value="1" />
+                <span>@Localizer["I have fully recognized the above information in advance and agree to the collection and use of personal information and unique identification information."]</span>
+            </label>
+        </div>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Visitor Information"]</div>
+    </div>
+    <div id="add-form-wrap">      
+        <div class="reg-form-wrap">
+            @* <div class="reg-header-wrap">
+                <div class="num">01</div>
+            </div> *@
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Visitor Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Visitor Name"]' name="Name" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Birth Date"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" style="padding:0 10px;" placeholder="YYYY-MM-DD" pattern = "yyyy-MM-dd" name="BirthDate" onkeyup="generateDateString(this)" /> @*2023.09.14 신인아*@
+                        <button type="button" class="btn-gray" onclick="checkVisitor();">@Localizer["Confirm"]</button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Introductory Visitor Training"]</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckVisitorEdu" value="Y" disabled /> &nbsp;&nbsp;
+                        <button type="button" class="btn-green" onclick="popVisitorEdu();">@Localizer["Start Education"]</button>
+                        @* <div class="help-msg">
+                            <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                            <span>@Localizer["Required Watching Education"]</span>
+                        </div> *@
+                    </div>
+                </li>
+                <li style="visibility:visible;" id="liCleanEdu">
+                    <div class="label s03">@Localizer["CleanRoom Education"]</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckCleanEdu" value="Y" disabled /> &nbsp;&nbsp;
+                        <button type="button" class="btn-green" onclick="popCleanEdu();">@Localizer["Start Education"]</button>
+                        @* <div class="help-msg">
+                            <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                            <span>@Localizer["Required Watching Education"]</span>
+                        </div> *@
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>    
+    <div class="req-btn-wrap" id="inner">
+        <div class="msg-wrap">
+            <div class="label org" id="innerlabel">
+                @* @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+                &nbsp;&nbsp;&nbsp;&nbsp;<span id="visitorErrorMsg" class="label org red">@ViewBag.ErrorMsg</span>@*2023.09.16 신인아 - 빈칸늘림*@
+            </div>
+        </div>
+    </div>
+    <div class="req-btn-wrap" id="inner">
+        <div class="lt-item" id="inner">
+            <button type="button" class="btn-green" onClick="saveVisitForm()" >@Localizer["Consent to collection of personal information and confirmation of completion of on site education"]</button> @*2023.09.16 신인아*@
+        </div>
+    </div>    
+</section>
+<div id="visitorEdu" class="dialog">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">@Localizer["Watch Introductory Visitor Training"]
+            <a href="javascript:void(0)" onclick="closeEdu();"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+
+        <div class="pop-item-wrap video-type" style="height:calc(40vh)">
+            <video id="v_player_visitor" poster="" playsinline="">
+                <source src="/videos/rain.mp4" type="video/mp4">
+                <track label="Korean" kind="subtitles" srclang="ko" src="" default />
+            </video>
+            <button class="enter-play-btn" type="button" onclick="playPauseEdu(this)"><img src="/images/ico/ico-play.svg" alt='@Localizer["Play"]' /></button>
+        </div>
+    </div>
+</div>
+@*  onclick="common.popClose(this);" *@
+<div id="cleanEdu" class="dialog">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">@Localizer["Watch CleanRoom Education"]
+            <a href="javascript:void(0)" onclick="closeEdu();"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+        <div class="pop-item-wrap video-type" style="height:calc(40vh)">
+            <video id="v_player_clean" poster="" playsinline="">
+                <source src="/videos/Fab1_CR_video_v0.mp4" type="video/mp4">
+                <track label="Korean" kind="subtitles" srclang="ko" src="" default />
+            </video>
+            <button class="enter-play-btn" type="button" onclick="playPauseClean(this)"><img src="/images/ico/ico-play.svg" alt='@Localizer["Play"]' /></button>
+        </div>
+    </div>
+</div>

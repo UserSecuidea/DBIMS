@@ -1,0 +1,374 @@
+@model WorkApplyRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Register Work"]; //"공사 등록";
+}
+<script>
+    window.onload = function (){
+        @* console.log("PREV_URL:"+PREV_URL); *@
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+        @* console.log("PREV_URL:"+PREV_URL); *@
+    }
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+2));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+2));
+            });
+        });
+
+        $("body").on("change", "#file0", function (ev) {
+            console.log("[body>change file0]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload0", function (ev) {
+            console.log("[body>click btn-upload0]");
+            $("#file0").trigger("click");
+        });
+        $("body").on("change", "#file1", function (ev) {
+            console.log("[body>change file1]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload1", function (ev) {
+            console.log("[body>click btn-upload1]");
+            $("#file1").trigger("click");
+        });
+        $("body").on("change", "#file2", function (ev) {
+            console.log("[body>change file2]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload2", function (ev) {
+            console.log("[body>click btn-upload2]");
+            $("#file2").trigger("click");
+        });
+        $("body").on("change", "#file3", function (ev) {
+            console.log("[body>change file3]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload3", function (ev) {
+            console.log("[body>click btn-upload3]");
+            $("#file3").trigger("click");
+        });
+        $("body").on("change", "#file4", function (ev) {
+            console.log("[body>change file4]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload4", function (ev) {
+            console.log("[body>click btn-upload4]");
+            $("#file4").trigger("click");
+        });
+        $("body").on("change", "#file5", function (ev) {
+            console.log("[body>change file5]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload5", function (ev) {
+            console.log("[body>click btn-upload5]");
+            $("#file5").trigger("click");
+        });
+        $("body").on("change", "#file6", function (ev) {
+            console.log("[body>change file6]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload6", function (ev) {
+            console.log("[body>click btn-upload6]");
+            $("#file6").trigger("click");
+        });
+        $("body").on("change", "#file7", function (ev) {
+            console.log("[body>change file7]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload7", function (ev) {
+            console.log("[body>click btn-upload7]");
+            $("#file7").trigger("click");
+        });
+        $("body").on("change", "#file8", function (ev) {
+            console.log("[body>change file8]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload8", function (ev) {
+            console.log("[body>click btn-upload8]");
+            $("#file8").trigger("click");
+        });
+        $("body").on("change", "#file9", function (ev) {
+            console.log("[body>change file9]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload9", function (ev) {
+            console.log("[body>click btn-upload9]");
+            $("#file9").trigger("click");
+        });
+        $("body").on("change", "#file10", function (ev) {
+            console.log("[body>change file10]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload10", function (ev) {
+            console.log("[body>click btn-upload10]");
+            $("#file10").trigger("click");
+        });
+        $("body").on("change", "#file11", function (ev) {
+            console.log("[body>change file11]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload11", function (ev) {
+            console.log("[body>click btn-upload11]");
+            $("#file11").trigger("click");
+        });
+        $("body").on("change", "#file12", function (ev) {
+            console.log("[body>change file12]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload12", function (ev) {
+            console.log("[body>click btn-upload12]");
+            $("#file12").trigger("click");
+        });
+        $("body").on("change", "#file13", function (ev) {
+            console.log("[body>change file13]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload13", function (ev) {
+            console.log("[body>click btn-upload13]");
+            $("#file13").trigger("click");
+        });
+    });
+    function downloadDocs(){
+        document.getElementById("ifTemp").src = "/docs/work.zip";
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddWorkApply;
+        @* 공사등록: mode Location WorkContractFile 
+        ContactSabun ContactName ContactOrgID ContactOrgNameKor ContactOrgNameEng 
+        WorkName WorkMemo WorkStartDate WorkEndDate *@
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select contact person"]';
+            myform.ContactName.focus();
+            return;
+        }
+        if(myform.WorkName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the construction name"]';
+            myform.WorkName.focus();
+            return;
+        }
+        let t = new Date();
+        if(myform.WorkStartDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a construction period"]';
+            myform.WorkStartDate.focus();
+            return;
+        }
+        let s = new Date(myform.WorkStartDate.value.trim());
+        if(isValidDate(s) == false) {
+            document.getElementById("errormsg").innerHTML = '올바르지 않은 날짜 형식입니다'; // Invalid date format
+            myform.WorkStartDate.focus();
+            return;
+        }
+        t.setHours(s.getHours());
+        t.setMinutes(s.getMinutes());
+        t.setSeconds(s.getSeconds());
+        t = t.getTime();
+        s = s.getTime();
+        let d = t - s;
+        @* console.log("d1: "+d); *@
+        if (d > 1000) {
+            document.getElementById("errormsg").innerHTML = '공사 시작일이 현재날짜 보다 이전입니다'; // The construction start date is earlier than the current date
+            myform.WorkStartDate.focus();
+            return;
+        }
+        if(myform.WorkEndDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a construction period"]';
+            myform.WorkEndDate.focus();
+            return;
+        }
+        let e = new Date(myform.WorkEndDate.value.trim());
+        if(isValidDate(e) == false) {
+            document.getElementById("errormsg").innerHTML = '올바르지 않은 날짜 형식입니다'; // Invalid date format
+            myform.WorkEndDate.focus();
+            return;
+        }
+        e = e.getTime();
+        d = t - e;
+        @* console.log("d2: "+d); *@
+        if (d > 1000) {
+            document.getElementById("errormsg").innerHTML = '공사 종료일이 현재날짜 보다 이전입니다'; // The construction end date is earlier than the current date
+            myform.WorkEndDate.focus();
+            return;
+        }
+        d=e-s;
+        @* console.log("d3: "+d); *@
+        if (d<0) {
+            document.getElementById("errormsg").innerHTML = '공사 종료일이 공사 시작일 보다 이전입니다'; // The construction end date is earlier than the start date
+            myform.WorkEndDate.focus();
+            return;
+        }
+
+        var con = confirm('@Localizer["Would you like to register a project"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+
+    function goSearchPerson(){
+        //담당자(사원) 검색 
+        var myform = document.fmAddWorkApply;
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        var locationObj = null;
+        var locationNameObj = null;
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = null;
+        var personTypeIdObj = null;
+        var personTypeIdNameObj = null;
+        var cardNoObj = null;
+
+        nameObj = myform.ContactName;
+        sabunObj =  myform.ContactSabun;
+        orgIdObj =  myform.ContactOrgID;
+        orgKorObj =  myform.ContactOrgNameKor;
+        orgEngObj =  myform.ContactOrgNameEng;
+
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj);
+        
+    } 
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Registration Information"]</div>
+</div>
+
+<form name="fmAddWorkApply" method="post"  enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="A" />
+
+    <input type="hidden" name="ContactSabun" value="" /> <!-- 회원사번(담당자): 사번, 이름, 부서번호, 부서명 입력  -->
+    <input type="hidden" name="ContactOrgID" value="" />
+    <input type="hidden" name="ContactOrgNameEng" value="" />
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Contract"]</div>
+                <div class="form-item-wrap">
+                    <label asp-for="WorkApply.WorkContractFormFile" id="btn-upload0" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                    <input asp-for="WorkApply.WorkContractFormFile" name = "WorkContractFormFile" id="file0" accept=".pdf" style="display:none;" type="file">
+                    <span asp-validation-for="WorkApply.WorkContractFormFile"></span>
+                    @* <input type="file" class="hidden" accept=".pdf" name="WorkContractFile" />
+                    <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>*@
+                    <div class="value">@Localizer["No Files Selected"]</div>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Contact Name"]' name="ContactName" readonly onclick="goSearchPerson();" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="담당자 검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Contact Department"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Contact Department"]' name="ContactOrgNameKor" readonly onclick="goSearchPerson();" />
+                    @* <button type="button" class="btn-search" onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Work Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Name"]' name="WorkName" />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Work Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Description"]' name="WorkMemo" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Period"]</div>
+                <div class="form-item-wrap">
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="WorkStartDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        <span class="e01">~</span>
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="WorkEndDate" onkeyup="generateDateString(this)" maxlength="10" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Attachment Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full">
+                <div class="form-item-wrap">
+                    <table aria-label="첨부파일 목록">
+                        <tr>
+                            <th style="width:80px;">NO</th>
+                            <th style="width:300px;">@Localizer["Category"]</th>
+                            <th>@Localizer["Attach File"]</th>
+                        </tr>
+@{
+    foreach(var m in ViewBag.WorkAttachFileDefinitions){
+                        <tr>
+                            <td>@m.Index</td>
+                            <td>@m.Title</td>
+                            <td class="form-item-wrap" style="display: flex;align-items: center;align-content: center;">
+                                <label id="btn-upload@(m.Index)" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                                <input name = "FormFile@(m.Index)" id="file@(m.Index)" accept=".pdf" style="display:none;" type="file">
+                                @* <span asp-validation-for="WorkApply.WorkContractFormFile"></span> *@
+                                <div class="value" style="display: flex;text-align:start; margin: 0 auto;width:150px;">@Localizer["No Files Selected"]</div>
+                                @* <input type="file" class="hidden" accept=".pdf" name="@m.FileElementName" />
+                                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>
+                                <div class="value"></div> *@
+                            </td>
+                        </tr>
+    }
+}
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @*2023.09.21 신인아 버튼 정리 start*@
+    <div class="lt-item">
+        <button type="button" class="btn-gray" onclick="downloadDocs();">@Localizer["Download Form"]</button>
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Register"]</button>
+    </div>
+    @*2023.09.21 신인아 버튼 정리 end*@
+</div>
+
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>

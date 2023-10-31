@@ -1,0 +1,967 @@
+@using WebVisit.Models.ViewModels;   @*2023.09.11 dsyoo*@ 
+@model CarryItemDetailViewModel
+
+@{
+    ViewData["Title"] = @Localizer["Detail CarryItem"]; //"휴대물품 상세";
+}
+<script>
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    var IsSecurityManager = @SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID,Model.CarryItemApply.Location,ViewBag.my.Location).ToString().ToLower();
+    var IsContact = @SelectItems.IsContact(Model.CarryItemApply.CarryItemApplyStatus, Model.CarryItemApply.CarryItemStatus,
+                    ViewBag.my.SapDeptCode, Model.CarryItemApply.ContactOrgID,
+                    "QuarantineConfirmationGate",
+        ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location).ToString().ToLower();
+    // edit - 담당자가 휴대물품신청에 대하여 승인상태 변경 (휴대물품신청 승인/반려 처리)
+    function saveEditForm(){
+        var myform = document.fmEditCarryItem;
+        var ExportCnt = 0;
+        // alert(myform.length);
+        // for(var i =0 ;i < myform.length; i++) {
+        //     var el = myform[i];
+        //     //ExportCnt += findFormElementByIndex(myform[i], "CarryItemInfoID[]", "ExportCnt[]", i);
+        //     ExportCnt = findFormElementByIndex(myform[i], "CarryItemInfoID[]", "ExportCnt[]", idx);
+        //     alert(ExportCnt);
+           
+        // }
+        var Sel = $("select[name='CarryItemStatus']").val();
+        if (Sel == 3 || Sel == 4 || Sel == 5 || Sel == 6) {
+            var total = 0;
+            // 모든 "ExportCnt[]" 이름을 가진 input 엘리먼트의 값을 더합니다.
+            $('input[name="ExportCnt[]"]').each(function () {
+                var value = parseFloat($(this).val());
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            });
+            if (total <= 0) {
+                alert("@Localizer["Set the value over 0."]");
+                return;
+            }
+        }
+        @*클린룸 노트북신청 case*@
+        if (Sel >= 1 && Sel <= 6) {
+            var $PlaceCodeID = $('[name="PlaceCodeID"]'); 
+            if ($PlaceCodeID.val() === "6") {
+                @* 6 : 클린룸 *@
+                if (CheckVaccineConfirm(Sel) != true) {
+                    alert("@Localizer["Please check the laptop (PC) quarantine."]");
+                    return;
+                }
+            }
+
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.CarryItemApplyStatus.disabled = false;
+            myform.CarryItemApplyStatus.removeAttribute("disabled");
+            myform.CarryItemStatus.disabled = false;
+            myform.CarryItemStatus.removeAttribute("disabled");
+
+            @*2023.09.25 dsyoo 화면 로드시의 승인, 상태값을 기억하여 변경사항이 없으면 처리하지 않는다*@
+            @*-------------------------------------------------------------------*@
+            var OrgCarryItemApplyStatus = "@Model.CarryItemApply.CarryItemApplyStatus";
+            var OrgCarryItemStatus = "@Model.CarryItemApply.CarryItemStatus";
+            var CurCarryItemApplyStatus = myform.CarryItemApplyStatus.value;
+            var CurCarryItemStatus = myform.CarryItemStatus.value;
+            if (OrgCarryItemApplyStatus == CurCarryItemApplyStatus && OrgCarryItemStatus == CurCarryItemStatus){
+                alert('@Localizer["Please check approval or carryitem status."]');
+                return;
+
+                $('input[name="IsVaccineUpdated[]"]').removeAttr('disabled');
+                $('input[name="IsVirusScanned[]"]').removeAttr('disabled');
+                $('input[name="QuarantineConfirmationGate[]"]').removeAttr('disabled');
+                $('input[name="QuarantineConfirmationContact[]"]').removeAttr('disabled');
+
+
+            }
+
+
+                           
+
+            @*-------------------------------------------------------------------*@
+            myform.submit();
+        }
+    }
+    function CheckVaccineConfirm(CarryItemStatusID) {
+        @*클린룸(6)*@
+        @*반입완료 처리시 클린룸방문하는 노트북이면 반드시 경비실또는 담당자 방역확인이 되어야한다.
+        반입 완료(선입고 6): 확인대기(2) / 반출요(3) / 반출불필요(유상 4) / 반출불필요(무상 5) / 선입고(6)
+        확인대기:
+        반출요: 반출대기(7) / 반출완료(8)
+        반출불필요(유상 4): 반출불필요(유상 4) - 비활성화
+        반출불필요(무상 5): 반출불필요(무상 5) - 비활성화
+
+        휴대물품 구분 코드를 모두 확인하고 노트북인 경우 방역관련체크를 한다.*@
+
+        var carryItemCodeElements = $('select[name="CarryItemCodeID[]"]');
+        for (var i = 0; i < carryItemCodeElements.length; i++) {
+            var selectedValue = $(carryItemCodeElements[i]).val()
+            if (selectedValue === "0") {
+                $regFormWrap = $(carryItemCodeElements[i]).closest('div.reg-form-wrap');
+                var bIsVaccineUpdated = $regFormWrap.find('input[name="IsVaccineUpdated[]"]').is(':checked');
+                if (bIsVaccineUpdated == false) {
+                    $regFormWrap.find('input[name="hIsVaccineUpdated[]"]').val("N");
+                }
+                else {
+                    $regFormWrap.find('input[name="hIsVaccineUpdated[]"]').val("Y");
+                }
+
+                var bIsVirusScanned = $regFormWrap.find('input[name="IsVirusScanned[]"]').is(':checked');
+                if (bIsVirusScanned == false) {
+                    $regFormWrap.find('input[name="hIsVirusScanned[]"]').val("N");
+                }
+                else {
+                    $regFormWrap.find('input[name="hIsVirusScanned[]"]').val("Y");
+                }
+
+                var bQuarantineConfirmationGate = $regFormWrap.find('input[name="QuarantineConfirmationGate[]"]').is(':checked');
+                if (bQuarantineConfirmationGate == false) {
+                    $regFormWrap.find('input[name="hQuarantineConfirmationGate[]"]').val("N");
+                }
+                else {
+                    $regFormWrap.find('input[name="hQuarantineConfirmationGate[]"]').val("Y");
+                }
+
+                var bQuarantineConfirmationContact = $regFormWrap.find('input[name="QuarantineConfirmationContact[]"]').is(':checked');
+                if (bQuarantineConfirmationContact == false) {
+                    $regFormWrap.find('input[name="hQuarantineConfirmationContact[]"]').val("N");
+                }
+                else { 
+                    $regFormWrap.find('input[name="hQuarantineConfirmationContact[]"]').val("Y");
+                }
+
+
+                if (CarryItemStatusID == 1) {
+                    if (!bQuarantineConfirmationGate) {
+                        return false;
+                    }
+                }
+                else if (CarryItemStatusID >= 3 && CarryItemStatusID <= 6) {
+                    if (!bQuarantineConfirmationContact) {
+                        return false;
+                    }
+                }
+            }
+
+        }
+        return true;
+    }
+    function goCancel(){
+        window.location = PREV_URL;//'/carryItem/list/?culture=@CultureInfo.CurrentCulture'
+    }
+    function checkImportCnt (obj) {
+        var myform = document.fmEditCarryItem;
+        var idx = findIndex(myform, "CarryItemInfoID[]", obj);
+        // Quantity[] ExportCnt[] ImportCnt[]
+        var Quantity = findFormElementByIndex(myform, "CarryItemInfoID[]", "Quantity[]", idx);
+        var ExportCnt = findFormElementByIndex(myform, "CarryItemInfoID[]", "ExportCnt[]", idx);
+        console.log("[checkImportCnt] idx:"+idx+" / Quantity: "+Quantity.value+" / ExportCnt: "+ ExportCnt.value);
+    }
+    function checkExportCnt (obj) {
+        var myform = document.fmEditCarryItem;
+        var idx = findIndex(myform, "CarryItemInfoID[]", obj);
+        var Quantity = findFormElementByIndex(myform, "CarryItemInfoID[]", "Quantity[]", idx);
+        var RemainCnt = findFormElementByIndex(myform, "CarryItemInfoID[]", "RemainCnt[]", idx);
+        var hdnRemainCnt = findFormElementByIndex(myform, "CarryItemInfoID[]", "hdnRemainCnt[]", idx).value; @*2023.09.11 dsyoo*@
+        if (isNumber(obj.value)){
+            var rc = RemainCnt.value - obj.value; @*2023.09.11 dsyoo  남은수량에서 반출할수량을 빼서 0보다 작으면 안된다*@
+            console.log("[checkExportCnt] idx:"+idx+" / rc: "+rc);
+            if (rc < 0){
+                document.getElementById("errormsg").innerHTML = '@Localizer["The quantity taken out cannot exceed the quantity taken in"]';
+                obj.value = 0;
+                obj.focus();
+                return;
+            }
+            @*
+                2023.09.11 dsyoo 남은수량 업데이트는 반출 처리할때한다.
+            RemainCnt.value = Quantity.value - obj.value
+            *@;
+        }
+    }
+    /*
+    function checkExportCnt(obj) {
+        var myform = document.fmEditCarryItem;
+        var idx = findIndex(myform, "CarryItemInfoID[]", obj);
+        var Quantity = findFormElementByIndex(myform, "CarryItemInfoID[]", "Quantity[]", idx);
+        var RemainCnt = findFormElementByIndex(myform, "CarryItemInfoID[]", "RemainCnt[]", idx);
+        if (isNumber(obj.value)) {
+            var rc = Quantity.value - obj.value;
+            console.log("[checkExportCnt] idx:" + idx + " / rc: " + rc);
+            if (rc < 0) {
+                document.getElementById("errormsg").innerHTML = '@Localizer["The quantity taken out cannot exceed the quantity taken in"]';
+                obj.value = 0;
+                obj.focus();
+                return;
+            }
+            RemainCnt.value = Quantity.value - obj.value;
+        }
+    }
+    */
+    /*
+    function findIndex(myform, strFirstElementName, obj) {
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el.name == strFirstElementName){
+                j++;
+            }
+            if (el == obj) {
+                console.log("[findIndex] idx: "+ j);
+                break;
+            }
+        }
+        return j;
+    }
+    function findFormElementByIndex(myform, strFirstElementName, strFindElementName, idx) {
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el.name == strFirstElementName){
+                j++;
+            }
+            if (j == idx) {
+                if (el.name == strFindElementName) {
+                    return el;
+                }
+            } else if(j > idx){
+                return null;
+            }
+        }
+        return null;
+    }
+    */
+
+
+        @*2023.10.17 dsyoo CarryItemCodeID를 선택하여 아이템을 표시하거나 숨긴다.*@
+        $(document).ready(function() {
+            // Function to show/hide elements based on the 'show' parameter
+            function toggleElementDisplay(element, show) {
+                if (show === 1) {
+                    element.css('display', '');
+                } else {
+                    element.css('display', 'none');
+                }
+            }
+
+            // Function to handle changes to CarryItemCodeID select elements
+            function handleCarryItemCodeIDChange(selectElement) {
+                var $form = $(selectElement).closest('.reg-form-wrap');
+                var carryItemCodeID = $(selectElement).val();
+
+                toggleElementDisplay($form.find('[name="liIsVaccineUpdated"]'), carryItemCodeID === "0" ? 1 : 0);
+                toggleElementDisplay($form.find('[name="liIsVirusScanned"]'), carryItemCodeID === "0" ? 1 : 0);
+                // toggleElementDisplay($form.find('[name="liQuarantineConfirmationGate"]'), carryItemCodeID === "3" ? 1 : 0);
+                // toggleElementDisplay($form.find('[name="liQuarantineConfirmationContact"]'), carryItemCodeID === "3" ? 1 : 0);
+
+                console.log('In form with ID:', $form.attr('id'), 'CarryItemCodeID changed to:', carryItemCodeID);
+            }
+
+            // Handle changes to CarryItemCodeID select elements using event delegation
+            $(document).on('change', 'select[name="CarryItemCodeID"]', function() {
+                handleCarryItemCodeIDChange(this);
+            });
+
+            // Trigger initial handling of CarryItemCodeID for all select elements
+            $('select[name="CarryItemCodeID"]').each(function() {
+                handleCarryItemCodeIDChange(this);
+            });
+            @*2023.10.16 dsyoo 노트북보안조치---------------------------------*@
+            toggleNotebookElements();
+            function toggleNotebookElements() {
+                var $PlaceCodeID = $('[name="PlaceCodeID"]'); @*휴대물품 신청창*@
+                if ($PlaceCodeID.val() === "6") { @*클린룸(6)*@
+                    var carryItemCodeElements = $('select[name="CarryItemCodeID[]"]');
+                    carryItemCodeElements.each(function () {
+                        var selectedValue = $(this).val();
+                        $regFormWrap = $(this).closest('div.reg-form-wrap');
+                        liIsVaccineUpdated = $regFormWrap.find('li[name="liIsVaccineUpdated[]"]');
+                        liIsVirusScanned = $regFormWrap.find('li[name="liIsVirusScanned[]"]');
+                        liQuarantineConfirmationGate = $regFormWrap.find('li[name="liQuarantineConfirmationGate[]"]');
+                        liQuarantineConfirmationContact = $regFormWrap.find('li[name="liQuarantineConfirmationContact[]"]');
+                        if (selectedValue === "0") {
+                            @*PC/Notebook(0)*@
+                            liIsVaccineUpdated.show();
+                            liIsVirusScanned.show();
+                            liQuarantineConfirmationGate.show();
+                            liQuarantineConfirmationContact.show();
+                        }
+                        else{
+                            liIsVaccineUpdated.hide();
+                            liIsVirusScanned.hide();
+                            liQuarantineConfirmationGate.hide();
+                            liQuarantineConfirmationContact.hide();
+
+                        }
+
+                    });
+                }
+
+                /*
+                var CarryItemCodeIDs = $('[name="CarryItemCodeID[]"] option:selected').val(); @*휴대물품코드리스트*@
+                var $liIsVaccineUpdateds = $('[name="liIsVaccineUpdated[]"]'); @*휴대물품코드리스트*@
+                var $liIsVirusScanneds = $('[name="liIsVirusScanned[]"]'); @*휴대물품코드리스트*@
+                var $liQuarantineConfirmationGates = $('[name="liQuarantineConfirmationGate[]"]'); @*휴대물품코드리스트*@
+                var $liQuarantineConfirmationContacts = $('[name="liQuarantineConfirmationContact[]"]'); @*휴대물품코드리스트*@
+
+                    for (var i = 0; i < CarryItemCodeIDs.length; i++) {
+                    if ($PlaceCodeID.val() === "6" && CarryItemCodeIDs[i] === "0") {
+                        $liIsVaccineUpdateds[i].css("display","");
+                        $liIsVirusScanneds[i].css("display", "");
+                    } else {
+                        $liIsVaccineUpdateds[i].css("display", "none");
+                        $liIsVirusScanneds[i].css("display", "none");
+                    }
+                }
+                */
+            }
+            @*----------------------------------------------------------------*@
+
+        });
+
+</script>
+@{
+    //2023.09.20 dsyoo 재활용 변수 미리선언
+    var ReadOnly = "";
+}
+<form name="fmEditCarryItem" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="CarryItemApplyID" value='@Model.CarryItemApply.CarryItemApplyID' />
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Import Information"]</div>
+    </div>
+
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Import Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]' name="ImportDate" value='@Model.CarryItemApply.ImportDate' disabled />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Export Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" placeholder='@Localizer["Export Date"]' class="inpdate" name="ExportDate" value='@Model.CarryItemApply.ExportDate' disabled />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                                                                                        <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.CarryItemApply.Location))' disabled></select>
+                        }else{
+                                                                                                        <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.CarryItemApply.Location))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Purpose"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                                                                                        <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarryItemApply.ImportPurposeCodeID))' disabled></select>
+                        }else{
+                                                                                                        <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarryItemApply.ImportPurposeCodeID))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Place"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                                                                                        <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarryItemApply.PlaceCodeID))' disabled></select>
+                        }else{
+                                                                                                        <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarryItemApply.PlaceCodeID))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+            
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ContactPersonInfo" class="inp" placeholder='@Localizer["Contact Name"]' value="@Model.CarryItemApply.ContactName (@Model.CarryItemApply.ContactOrgNameKor)" readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Contact Tel"]</div>
+                <div class="form-item-wrap">
+                <input type="text" name="ContactMobile" class="inp" placeholder='@Localizer["Contact Tel"]' value="@Model.CarryItemApply.ContactMobile" readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Import Person Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Import Person Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ImportPersonInfo" class="inp" placeholder='@Localizer["Import Person Name"]' value="@Model.CarryItemApply.Name (@(Model.CarryItemApply.CompanyName!=null ? Model.CarryItemApply.CompanyName:Model.CarryItemApply.OrgNameKor))" readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Person Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Mobile" class="inp" placeholder='@Localizer["Import Person Tel"]' value="@Model.CarryItemApply.Mobile" readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                    @* <button type="button" onclick="goChangeContactPerson()" class="btn-gray">@Localizer["Modify"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+        @{
+            if(ViewBag.IsApprovalInfo){
+                                                        <li>
+                                                            <div class="label s02">@Localizer["Approver Name"]</div>
+                                                            <div class="form-item-wrap">
+                                                                <input type="text" class="inp" placeholder='@Localizer["Approver Name"]' name="ApprovalName" value='@Model.CarryItemApply.ApprovalName (@Model.CarryItemApply.ApprovalOrgNameKor)' readonly/>
+                                                                @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="label s02">@Localizer["Approver Tel"]</div>
+                                                            <div class="form-item-wrap">
+                                                                @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                                                                <input type="text" class="inp" name="ApprovalTel" value="@Model.CarryItemApply.ApprovalTel" readonly />
+                                                            </div>
+                                                        </li>
+            }
+        }            
+            <li>
+                <div class="label s02">@Localizer["Approval Status"]</div>
+                <div class="form-item-wrap">
+                    @* @Model.CarryItemApply.ImportPurposeCodeID | @Model.CarryItemApply.CarryItemApplyStatus  *@
+                    @{
+                        // var disabled = "disabled";
+                        // if (ViewBag.IsModApproval && (Model.CarryItemApply.CarryItemApplyStatus == 0 || (Model.CarryItemApply.ImportPurposeCodeID == 4 && Model.CarryItemApply.CarryItemApplyStatus == 1)))
+                        // {
+                        //     disabled = "";
+                        // }
+                        // <select class="select" name="CarryItemApplyStatus" @disabled>
+                        //     @{
+                        // var carryItemApplyStatusName = "";
+                        // foreach(var a in Model.CodeCarryItemApplyStatus) {
+                        //     carryItemApplyStatusName = "";
+                        //     //승인상태(CarryItemApplyStatus): 승인대기(0) / 승인완료(1) / 반려(2) / 결재중(3) / 결재완료(4)
+                        //     if(Model.CarryItemApply.ImportPurposeCodeID == 4 && (Model.CarryItemApply.CarryItemApplyStatus == 1 || Model.CarryItemApply.CarryItemApplyStatus ==  3 || Model.CarryItemApply.CarryItemApplyStatus == 4)){ // 승인완료(승인상태)인 선입고(반입목적) 일때 결재중/결재완료(승인상태) 선택가능
+                        //         if(a.SubCodeID > 2){ // 결재중(3) / 결재완료(4)
+                        //             if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        //                 carryItemApplyStatusName = a.CodeNameKor;
+                        //             }else{
+                        //                 carryItemApplyStatusName = a.CodeNameEng;
+                        //             }
+                        //             if(Model.CarryItemApply.CarryItemApplyStatus == a.SubCodeID){
+                        //                                 <option value="@a.SubCodeID" selected>@carryItemApplyStatusName</option>
+                        //             }else{
+                        //                                 <option value="@a.SubCodeID">@carryItemApplyStatusName</option>
+                        //             }
+                        //         }
+                        //     }else{ // 반입목적이 선입고 이외, 승인대기 선입고 일 경우 
+                        //         if(a.SubCodeID < 3){ // 승인대기(0) / 승인완료(1) / 반려(2)
+                        //             if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        //                 carryItemApplyStatusName = a.CodeNameKor;
+                        //             }else{
+                        //                 carryItemApplyStatusName = a.CodeNameEng;
+                        //             }
+                        //             if(Model.CarryItemApply.CarryItemApplyStatus == a.SubCodeID){
+                        //                                 <option value="@a.SubCodeID" selected>@carryItemApplyStatusName</option>
+                        //             }else{
+                        //                                 <option value="@a.SubCodeID">@carryItemApplyStatusName</option>
+                        //             }
+                        //         } 
+                        //     }
+                        // }
+                        //     }
+                        // </select>
+                        //         @* if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        //     <select class="select" name="CarryItemApplyStatus" asp-items='@(new SelectList(Model.CodeCarryItemApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarryItemApply.CarryItemApplyStatus))'></select>
+                        // }else{
+                        //     <select class="select" name="CarryItemApplyStatus" asp-items='@(new SelectList(Model.CodeCarryItemApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarryItemApply.CarryItemApplyStatus))'></select>
+                        // } *@
+                        //2023.09.20 dsyoo 승인상태 업데이트(전자결재건포함)
+                        var OptsCIAS = SelectItems.CarryItemApplyOptions(CultureInfo.CurrentCulture.ToString(),
+                            Model.CodeCarryItemApplyStatus,
+                            Model.CarryItemApply.ImportPurposeCodeID,
+                            Model.CarryItemApply.CarryItemApplyStatus,
+                            ViewBag.IsElApproveItem
+                        );
+                        ReadOnly = "";
+                        if (OptsCIAS.Count == 1) //선택할 아이템이 하나이면 disabled
+                        {
+                            ReadOnly = "disabled";
+                        }
+                        else if (SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location) == false 
+                                  && ViewBag.my.Sabun != Model.CarryItemApply.ContactSabun) //담당자인지 체크
+                        {
+                            ReadOnly = "disabled";  //승인처리는 마스터와 담당자만
+                        }
+                                                                                            <select class="select" name="CarryItemApplyStatus" @ReadOnly>
+                                                                                                @{
+
+                                foreach (var option in OptsCIAS)
+                                {
+                                                                                                                                                                            <option value="@option.Id">@option.Text</option>
+                                }
+                                                                                                }
+                                                                                            </select>
+
+                    }
+                </div>
+            </li>
+
+            <li>
+                <div class="label s02">@Localizer["Status Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if (ViewBag.IsModStatus){
+                            //2023.09.11 dsyoo
+                            var OptsCIS = SelectItems.CarryItemOptions(CultureInfo.CurrentCulture.ToString(),
+                            Model.CodeCarryItemStatus,
+                            Model.CarryItemApply.ImportPurposeCodeID,
+                            Model.CarryItemApply.CarryItemApplyStatus,
+                            Model.CarryItemApply.CarryItemStatus,
+                            ViewBag.my.Sabun,
+                            Model.CarryItemApply.ContactSabun
+                            );
+                            ReadOnly = "";
+                            if (OptsCIS.Count == 1)
+                            {
+                                ReadOnly="disabled";
+                            }
+                            else if (ViewBag.IsMaster == false && (Model.CarryItemApply.CarryItemStatus == 1 || Model.CarryItemApply.CarryItemStatus==2) && ViewBag.my.SapDeptCode != Model.CarryItemApply.ContactOrgID) //반입완료(1),확인대기(2)
+//                                else if (ViewBag.IsMaster == false && (Model.CarryItemApply.CarryItemStatus == 1 || Model.CarryItemApply.CarryItemStatus == 2) && ViewBag.my.Sabun != Model.CarryItemApply.ContactSabun) //반입완료(1),확인대기(2)
+                            {
+                                ReadOnly = "disabled";  //2023.10.23 dsyoo 확인처리는 마스터와 담당자만 => 마스터와 담당자조직원만
+                            }
+                            else if (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID,Model.CarryItemApply.Location,ViewBag.my.Location)==false && (Model.CarryItemApply.CarryItemStatus == 0 || Model.CarryItemApply.CarryItemStatus == 3 || Model.CarryItemApply.CarryItemStatus == 7)) //반출요(3),반출대기(7)
+                            {
+                                ReadOnly = "disabled";  //반입/반출완료처리는 마스터(1),일반관리자(2)와 시큐리티(8)만
+                            }
+                                                            <select class="select" name="CarryItemStatus" @ReadOnly>
+                                                            @{
+
+                                foreach (var option in OptsCIS)
+                                {
+                                                                                                    <option value="@option.Id">@option.Text</option>
+                                }
+                                                            }
+                                                            </select>
+                        }else{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                                                <select class="select" name="CarryItemStatus" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @Model.CarryItemApply.CarryItemStatus))' disabled></select>
+                            }else{
+                                                                <select class="select" name="CarryItemStatus" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @Model.CarryItemApply.CarryItemStatus))' disabled></select>
+                            }
+                        }
+
+                    }                     
+                </div>
+            </li>
+@*             
+            <li>
+                <div class="label s02">@Localizer["Import Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        disabled = "disabled";
+                        if(ViewBag.IsModStatus){
+                            if(Model.CarryItemApply.ImportPurposeCodeID == 4 && Model.CarryItemApply.CarryItemApplyStatus == 4){ // 선입고일때: 결제 완료 상태일때만 반입구분 선택 가능 하도록 
+                                disabled = "";
+                            }else if(Model.CarryItemApply.ImportPurposeCodeID != 4 && Model.CarryItemApply.CarryItemApplyStatus == 1){ // 선입고외 항목: 승인완료일때 반입구분 선택 가능하도록
+                                disabled = "";
+                            }
+                        }
+                        <select class="select" name="CarryItemImportType" @disabled>
+                            @{
+                                var carryItemImportTypeName = "";
+                                foreach(var a in Model.CodeCarryItemImportType) {
+                                    carryItemImportTypeName = "";
+                                    if(Model.CarryItemApply.ImportPurposeCodeID == 4){ // 선입고 
+                                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                            carryItemImportTypeName = a.CodeNameKor;
+                                        }else{
+                                            carryItemImportTypeName = a.CodeNameEng;
+                                        }
+                                        if(Model.CarryItemApply.CarryItemImportType == a.SubCodeID){
+                                            <option value="@a.SubCodeID" selected>@carryItemImportTypeName</option>
+                                        }else{
+                                            <option value="@a.SubCodeID">@carryItemImportTypeName</option>
+                                        }
+                                    }else{ // 선입고 이외 
+                                        if(a.SubCodeID < 6){
+                                            if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                                carryItemImportTypeName = a.CodeNameKor;
+                                            }else{
+                                                carryItemImportTypeName = a.CodeNameEng;
+                                            }
+                                            if(Model.CarryItemApply.CarryItemImportType == a.SubCodeID){
+                                                <option value="@a.SubCodeID" selected>@carryItemImportTypeName</option>
+                                            }else{
+                                                <option value="@a.SubCodeID">@carryItemImportTypeName</option>
+                                            }
+                                        } 
+                                    }
+                                }
+                            }
+                        </select>
+                    }
+                </div>
+            </li> *@
+
+            <li class="full">
+                <div class="label s02">@Localizer["Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Memo" class="inp" placeholder='@Localizer["Description"]' maxlength="100" />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Progress Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full">
+                <div class="form-item-wrap" style="flex-direction: column;">
+                    <table aria-label="비고 진행현황">
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Status"]</th>
+                            <th>@Localizer["Description"]</th>
+                            <th>@Localizer["Worker"]</th>
+                        </tr>
+                    </table>
+                    <table aria-label="비고 진행현황">
+
+                    @{
+                        var updater = "";
+                        var statusName=""; //2023.09.21 dsyoo
+                        foreach(CarryItemApplyHistory m in Model.CarryItemApplyHistoryList){
+                            if(string.IsNullOrEmpty(m.UpdateName)){
+                                updater = "";
+                            }else{
+                                if(string.IsNullOrEmpty(m.UpdateOrgNameKor)){
+                                    updater=m.UpdateName ;
+                                }else{
+                                    updater=m.UpdateName + "(" + m.UpdateOrgNameKor + ")";
+                                }
+                            }
+                            //2023.09.21 dsyoo 승인(1)상태가 아니면 승인현황을 표시, 승인상태이면 상태현황을 표시한다.
+                            if (m.CarryItemApplyStatus!=1) 
+                            {
+                                statusName = SelectItems.GetNameByValue(m.CarryItemApplyStatus, Model.CodeCarryItemApplyStatus, CultureInfo.CurrentCulture.ToString());
+                            }
+                            else
+                            {
+                                statusName = SelectItems.GetNameByValue(m.CarryItemStatus, Model.CodeCarryItemStatus, CultureInfo.CurrentCulture.ToString());
+                            }
+
+                                                                                                <tr>
+                                                                                                    <td>@m.InsertUpdateDate</td>
+                                                                                                    <td>@statusName</td>
+                                                                                                    <td>@m.Memo</td>
+                                                                                                    <td>@updater</td>
+                                                                                                </tr>
+                        }
+                    }
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["CarryItem Information"]</div>
+    </div>
+
+    @{
+        var num=0;
+        //2023.09.11 dsyoo 보안실및 담당이 아닌 사람은 반출수량을 변경할수 없다.
+        //반입완료하여 확인 대기의 상태에서만 변경이 가능하다
+        var ExportReadOnly = "";
+        if ((Model.CarryItemApply.CarryItemStatus != 1 && Model.CarryItemApply.CarryItemStatus != 2) 
+        ||(ViewBag.IsMaster == false && ViewBag.my.SapDeptCode != Model.CarryItemApply.ContactOrgID))
+//    || (ViewBag.IsMaster == false && ViewBag.my.Sabun != Model.CarryItemApply.ContactSabun))
+        {
+            //2023.10.23 dsyoo 담당자 => 담당자조직으로 확인처리가능한 인원 확대
+            ExportReadOnly = "readonly";
+        }
+        foreach(CarryItemInfo m in Model.CarryItemInfos){  
+            num++;
+            //2023.09.11 dsyoo
+            //ExportCnt는 반출할 수량으로 반출하고 나면 남아있는 수량을 변경하고 값을 0으로 만든다.
+            //-----------------------------------------------------------------------------------------
+            if (Model.CarryItemApply.CarryItemStatus != 3 && Model.CarryItemApply.CarryItemStatus != 7) //반출요(3), 반출대기(7)
+            {
+                m.ExportCnt = 0;       
+            }
+            else if (m.RemainCnt <= 0)
+            {
+                m.ExportCnt = 0;
+            }
+            //-----------------------------------------------------------------------------------------
+                                                            <div id="add-form-wrap">
+                                                            <input type="hidden" name="CarryItemInfoID[]" value="@m.CarryItemInfoID" />
+                                                            <div class="reg-form-wrap">
+                                                                <div class="reg-header-wrap">
+                                                                    <div class="num">@num</div>
+                                                                </div>
+                                                                <ul>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Classify"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                            @{
+    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                                                                                                                                                <select class="select" name="CarryItemCodeID[]" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), m.CarryItemCodeID))' disabled></select>
+    }else{
+                                                                                                                                                                <select class="select" name="CarryItemCodeID[]" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), m.CarryItemCodeID))' disabled></select>                        
+    }
+                                                                            }
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Product Name"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="text" name="ItemName[]" class="inp" placeholder='@Localizer["Product Name"]' value='@m.ItemName' disabled />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Serial Number"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="text" name="ItemSN[]" class="inp" placeholder='@Localizer["Serial Number"]' value='@m.ItemSN' disabled />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li class="empty">&nbsp;</li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Import Quantity"]</div>
+                                                                        @* @Localizer["Quantity"] *@
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="number" name="Quantity[]" class="inp" placeholder='@Localizer["Quantity"]' value='@m.Quantity' disabled />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Unit"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="text" name="Unit[]" class="inp" placeholder='@Localizer["Unit"]' value='@m.Unit' disabled />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Export Quantity"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                                <input type="number" name="ExportCnt[]" class="inp" placeholder='@Localizer["Export Quantity"]' min="1" max="100000" value='@m.ExportCnt' onkeyup="checkExportCnt(this)" oninput="checkExportCnt(this)" @ExportReadOnly /> @*2023.09.11 dsyoo 스핀컨트롤 이벤트받기*@
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="label s02">@Localizer["Remain Quantity"]</div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="number" name="RemainCnt[]" class="inp" placeholder='@Localizer["Remain Quantity"]' min="1" max="100000" value='@m.RemainCnt' readonly />
+                                                                            <input type="number" name="hdnRemainCnt[]" value='@m.RemainCnt' style="display:none"/> @*2023.09.11 dsyoo*@
+                                                                        </div>
+                                                                    </li>
+                                                                    @*2023.10.17 dsyoo 노트북의 경우 보안조치를 취해야한다.*@
+                                                                    <li style="display:none;" name="liIsVaccineUpdated[]">
+                                                                        <div class="label s02">@Localizer["Is Vaccine Updated"]<span></span></div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="checkbox" name="IsVaccineUpdated[]" @(m.IsVaccineUpdated == "Y" ? "checked" : "") disabled />
+                                                                            <input type="text" name="hIsVaccineUpdated[]" value="@m.IsVaccineUpdated" hidden/>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li style="display:none;" name="liIsVirusScanned[]">
+                                                                        <div class="label s02">@Localizer["Is Virus Scanned"]<span></span></div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="checkbox" name="IsVirusScanned[]" @(m.IsVirusScanned == "Y" ? "checked" : "")  disabled />
+                                                                            <input type="text" name="hIsVirusScanned[]" value="@m.IsVirusScanned" hidden/>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li style="display:none;" name="liQuarantineConfirmationGate[]">
+                                                                        <div class="label s02">@Localizer["Quarantine confirmation(Gate)"]<span></span></div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="checkbox" name="QuarantineConfirmationGate[]" @(m.QuarantineConfirmationGate == "Y" ? "checked" : "")  
+                                                                            @SelectItems.DisableNotebookSecurityObj(Model.CarryItemApply.CarryItemApplyStatus, Model.CarryItemApply.CarryItemStatus,
+                                                                                ViewBag.my.SapDeptCode,Model.CarryItemApply.ContactOrgID,"QuarantineConfirmationGate",ViewBag.my.LevelCodeID,Model.CarryItemApply.Location, ViewBag.my.Location)
+                                                                            />
+                                                                            <input type="text" name="hQuarantineConfirmationGate[]" value="@m.QuarantineConfirmationGate" hidden  />
+                                                                        </div>
+                                                                    </li>
+                                                                    <li style="display:none;" name="liQuarantineConfirmationContact[]">
+                                                                        <div class="label s02">@Localizer["Quarantine confirmation(Contact)"]<span></span></div>
+                                                                        <div class="form-item-wrap">
+                                                                            <input type="checkbox" name="QuarantineConfirmationContact[]" @(m.QuarantineConfirmationContact == "Y" ? "checked" : "") 
+                                                                            @SelectItems.DisableNotebookSecurityObj(Model.CarryItemApply.CarryItemApplyStatus, Model.CarryItemApply.CarryItemStatus,
+                                                                                ViewBag.my.SapDeptCode,Model.CarryItemApply.ContactOrgID,"QuarantineConfirmationContact",ViewBag.my.LevelCodeID,Model.CarryItemApply.Location, ViewBag.my.Location)
+                                                                            />
+                                                                            <input type="text" name="hQuarantineConfirmationContact[]" value="@m.QuarantineConfirmationContact" hidden />
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+    }
+}
+</form>
+<div id="add-form-wrap" style="display:none;">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">02</div>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Classify"]</div>
+                <div class="form-item-wrap">
+                    <select name="CarryItemCodeID" class="select">
+                        <option value="0">노트북</option>
+                        <option value="1">기타</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Product Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemName" class="inp" placeholder='@Localizer["Product Name"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Serial Number"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemSN" class="inp" placeholder='@Localizer["Serial Number"]' />
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Quantity"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" name="Quantity" class="inp" placeholder='@Localizer["Quantity"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Unit"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Unit" class="inp" placeholder='@Localizer["Unit"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Quantity"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" name="ExportCnt" class="inp" placeholder='@Localizer["Export Quantity"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Quantity"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" name="ImportCnt" class="inp" placeholder='@Localizer["Import Quantity"]' />
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" style="font-size:15px;color:#636D85;">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.22 신인아 버튼정리 start
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        @{
+            if(ViewBag.IsReApproval){
+                                                                            <button type="button" class="btn-gray" onClick="reApproval();">재상신하기</button>
+            }
+        }
+        <button type="button" class="btn-gray" onClick="goCancel();">@Localizer["Cancel"]</button>
+        @{
+            //2023.09.18 dsyoo 지입증 출력은 1: 반입완료, 2: 확인대기, 3: 반출요, 7:반출대기 상태에서만 가능
+            //2023.09.22 dsyoo 지입증 출력은 마스터, 보안실 1: 반입완료, 2: 확인대기, 3: 반출요, 7:반출대기 상태에서만 가능 IsLocalManager => IsSecurityManager
+            if (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location) == true &&
+            (Model.CarryItemApply.CarryItemStatus == 1 ||
+            Model.CarryItemApply.CarryItemStatus == 2 ||
+            Model.CarryItemApply.CarryItemStatus == 3 ||
+            Model.CarryItemApply.CarryItemStatus == 7
+            ))
+            {
+                                                                                    <button type="button" class="btn-gray" onClick="printPersonalAsses();">지입증 출력</button>
+            }
+        }
+@{
+    // ImportPurposeCodeID: 4 선입고
+    // CarryItemApplyStatus 0: 신청, 1: 승인, 2: 반려
+    // CarryItemStatus 0: 반입대기, 1: 반입완료, 2: 확인대기, 3: 반출요, 4: 반출불필요(유상), 5: 반출불필요(무상), 6: 선입고, 7:반출대기, 8: 반출완료  
+    
+    if(ViewBag.IsModStatus){
+        if(Model.CarryItemApply.CarryItemApplyStatus==0) //휴대물품 반입신청(0)상태이고 관리자/담당자이면 저장버튼 표시
+        {
+            if (SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location)==true || Model.CarryItemApply.ContactSabun.Equals(ViewBag.my.Sabun))
+            {
+                                                                                            <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+                
+            }
+        }
+        else if (Model.CarryItemApply.CarryItemApplyStatus == 1) //휴대물품 반입승인(1)상태이면 반입 상태에 따라 저장버튼 표시
+        {
+            if (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location) == true) //관리자는 표시
+            {
+                if (SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.CarryItemApply.Location, ViewBag.my.Location) == true ||
+                (Model.CarryItemApply.CarryItemStatus == 0 ||
+                Model.CarryItemApply.CarryItemStatus == 7 ||
+                Model.CarryItemApply.CarryItemStatus == 3))
+                {
+                                                                                                <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+                }
+            }
+            else if(Model.CarryItemApply.ContactOrgID.Equals(ViewBag.my.SapDeptCode) && (Model.CarryItemApply.CarryItemStatus == 1 || Model.CarryItemApply.CarryItemStatus == 2))
+            {
+                //2023.09.13 dsyoo 일반 사원의 경우 확인 대기에서만 활성화 한다.
+                //2023.10.23 같은 조직인경우 활성화한다.
+                <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+            }
+            // else if(Model.CarryItemApply.ContactSabun.Equals(ViewBag.my.Sabun) && (Model.CarryItemApply.CarryItemStatus == 1 || Model.CarryItemApply.CarryItemStatus == 2))
+            // {
+            //     //2023.09.13 dsyoo 일반 사원의 경우 확인 대기에서만 활성화 한다.
+            //                                                                         <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+
+            // }
+        }
+    }
+}       
+    </div>
+</div>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+<script>
+    function reApproval(){
+        document.getElementById("ifTemp").setAttribute('src', '/approval/carryitem/?carryitemapplyid=@ViewBag.CarryItemApplyID');
+    }
+    function printPersonalAsses(){
+        document.getElementById("ifTemp").src = "/carryitem/personalasses?carryItemApplyID=@ViewBag.CarryItemApplyID";
+    }
+</script>
+
+
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>

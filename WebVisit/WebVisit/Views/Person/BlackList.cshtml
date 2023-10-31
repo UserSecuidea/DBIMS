@@ -1,0 +1,294 @@
+@model BlackListListViewModel
+@{
+    @* ViewData["Title"] = "블랙리스트 관리"; *@
+    BlackListGridData current = Model.CurrentRoute; // PersonGridData *@
+    GridData routes = Model.CurrentRoute.Clone(); // GridData *@
+    BlackListGridData searchRoute = Model.SearchRoute;
+}
+<script>
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/person/blackreg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&blackListID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchBlackListStatus.options[myform.searchBlackListStatus.selectedIndex].value;
+        var field2 = myform.searchBlackListType.options[myform.searchBlackListType.selectedIndex].value;
+        var keyword1 = myform.searchName.value.trim().replace("/","");
+        var keyword2 = myform.searchCompanyName.value.trim().replace("/","");
+        var keyword3 = myform.searchStartInsertDate.value.trim().replace("/","");
+        var keyword4 = myform.searchEndInsertDate.value.trim().replace("/","");
+        var url = myform.action + field1 + "/" + field2; 
+        @* console.log("[search] field", field1); *@
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+    function dl(id, idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.BlackListID.value=id;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchblackliststatus="" asp-route-searchblacklisttype="" asp-route-searchname="" asp-route-searchcompanyname="" asp-route-searchstartinsertdate="" asp-route-searchendinsertdate="" >
+                <li>
+                    <div class="label">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchName" value="@searchRoute.SearchName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Company Name"]' name="searchCompanyName" value="@searchRoute.SearchCompanyName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Status Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchBlackListStatus" asp-items='@(new SelectList(Model.CodeBlackListStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchBlackListStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchBlackListStatus" asp-items='@(new SelectList(Model.CodeBlackListStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchBlackListStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Registration Reason"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchBlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchBlackListType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchBlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchBlackListType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Registration Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchStartInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchEndInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>            
+        </div>
+        <div class="side-btn-wrap">
+            <form name="fmDlExcel" method="post" asp-action="BlackListExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+            @* <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button> *@
+            <a asp-action="BlackReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["New registration"]</button>
+            </a>
+            @* <button type="button" class="btn-green" onClick="goReg();">@Localizer["New registration"]</button> *@
+            <a asp-action="BlackDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="BlackDetail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="블랙리스트 목록">
+            <tr>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Birth Date"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Registration Date"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["Registration Reason"]</th>
+                <th>@Localizer["Report Circumstances"]</th>
+            </tr>
+@{
+    var blackListStatusName = "";
+    var blackListTypeName = "";
+    string insertDate="";
+    foreach(BlackList m in Model.BlackListLists){ 
+        blackListStatusName="";
+        insertDate="";
+        if (m.BlackListStatus > -1 && Model.CodeBlackListStatus != null) {
+            foreach(var a in Model.CodeBlackListStatus) {
+                if (a.SubCodeID == m.BlackListStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        blackListStatusName = a.CodeNameKor;
+                    }else {
+                        blackListStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (m.BlackListType > -1 && Model.CodeBlackListType != null) {
+            foreach(var a in Model.CodeBlackListType) {
+                if (a.SubCodeID == m.BlackListType) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        blackListTypeName = a.CodeNameKor;
+                    }else {
+                        blackListTypeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        @* if(m.InsertDate != null){ *@
+        insertDate=string.Format("{0:yyyy-MM-dd}", m.InsertDate);
+        @* } *@
+
+            <tr onclick="selectRow(this, @m.BlackListID);" ondblclick="goDetail(@m.BlackListID)">
+                @* <td ><input type="checkbox" /></td>
+                <td><a href="javascript:void(0)" class="link-co">상세보기</a></td> *@
+                <td>@m.Name</td>
+                <td>@m.BirthDate</td>
+                <td>@m.CompanyName</td>
+                <td>@insertDate</td>
+                <td>@blackListStatusName</td>
+                <td>@blackListTypeName</td>
+                <td>
+                    @{
+                        if(m.StatementFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(@m.BlackListID,0)">@Localizer["Report Circumstances"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                    @* <a href="javascript:void(0)" class="link-co">경위서.pdf</a> *@
+                </td>
+            </tr>
+}
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="BlackList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="BlackList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="BlackList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="BlackList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<form name="fmDL" method="post" asp-action="DownloadBlackList" target="ifTemp">
+    <input type="hidden" name="BlackListID" value="" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>

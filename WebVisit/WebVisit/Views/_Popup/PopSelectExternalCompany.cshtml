@@ -1,0 +1,170 @@
+<script>
+    var searchCompanySabunObj;
+    var searchCompanyContactNameObj;
+    var searchCompanyNameObjObj;
+    var searchBizRegNoObj;
+    var searchCompanyTelObj;
+
+    function popSelectExternalCompany(companySabunObj, companyContactNameObj, companyNameObj, bizRegNoObj, companyTelObj){
+        console.log("[selectSearchCompany]", companySabunObj, companyContactNameObj, companyNameObj, bizRegNoObj, companyTelObj);
+
+        searchCompanySabunObj = companySabunObj;
+        searchCompanyContactNameObj = companyContactNameObj;
+        searchCompanyNameObjObj = companyNameObj;
+        searchBizRegNoObj = bizRegNoObj;
+        searchCompanyTelObj = companyTelObj;
+        common.popOpen(document.getElementById('popSelectExternalCompany'));
+    }
+
+    function selectSearchCompany(companySabun, companyContactName, companyName, bizRegNo, companyTel){
+        console.log("[selectSearchCompany]", searchPersonNameObj, name);
+
+        if(searchCompanySabunObj != null) {
+            searchCompanySabunObj.value=companySabun;
+        }
+        if(searchCompanyContactNameObj != null) {
+            searchCompanyContactNameObj.value=companyContactName;
+        }
+        if(searchCompanyNameObjObj != null) {
+            searchCompanyNameObjObj.value=companyName;
+        }
+        if(searchBizRegNoObj != null) {
+            searchBizRegNoObj.value=bizRegNo;
+        }
+        if(searchCompanyTelObj != null) {
+            searchCompanyTelObj.value=companyTel;
+        }
+        var o = document.getElementById("dvSearchCompanyList");
+        o.innerHTML = "";
+        var myform = document.fmSearchPerson;
+        myform.Name.value = "";
+        myform.Department.value = "";
+        common.popClose(document.getElementById('popSelectExternalCompany'));
+
+    }
+        
+
+    function searchCompany(){
+        var myform = document.fmSearchCompany;
+        var companyName = myform.CompanyName.value.trim();
+        var companyContactName = myform.CompanyContactName.value.trim();
+        var isForeigner = myform.IsForeigner.value;
+        if (companyName.length < 1) {
+            document.getElementById("popCompanyErrormsg").innerHTML = '@Localizer["Please enter your company name"]';
+            myform.CompanyName.focus();
+            return;
+        }
+        $.ajax({
+            url: "/company/getexternalcompany",
+            data: { isForeigner, companyName, companyContactName },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[searchCompany]", json);
+            var rows= "";
+            // name, type, tel, companyName, position, mobile, email, bizRegNo, companyTel
+            for(var m of json){
+                console.log("[searchCompany]", m);               
+                rows+="<tr onclick=\"selectSearchCompany('"+m.sabun+"','"+m.name+"','"+m.companyName+"','"+m.bizRegNo+"','"+m.companyTel+"')\">";
+                rows+="<td>"+m.name+"</td><td>"+m.type+"</td><td>"+m.companyName+"</td><td>"+m.position+"</td><td>"+m.mobile+"</td><td>"+m.email+"</td></tr>";
+            }
+            var o = document.getElementById("dvSearchCompanyList");
+            o.innerHTML = rows;
+        });
+    }
+</script>
+
+<div id="popSelectExternalCompany" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search External Company Aceptor"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <section class="page-search-wrap mt0">
+                <div class="mob-toggle-wrap">
+                    <a href="javascript:void(0)">
+                        <span>@Localizer["Filter"]</span>
+                        <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+                    </a>
+                </div>
+                <div class="search-group-wrap">
+                    <div class="search-form-wrap">
+                        <ul>
+<form name="fmSearchCompany">
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Domestic"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="radio" name="IsForeigner" value="0" checked/>
+                                </div>
+                                <div class="label auto">@Localizer["Foreigner"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="radio" name="IsForeigner" value="1" />
+                                </div>
+                            </li>                            
+                            <li class="empty02">&nbsp;</li>
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Company Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="CompanyName" maxlength="50" class="inp" />
+                                </div>
+                            </li>
+
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="CompanyContactName" maxlength="30" class="inp" />
+                                </div>
+                            </li>
+</form>
+                        </ul>
+                    </div>
+                    <div class="search-btn-wrap">
+                        <button type="button" onclick="searchCompany();">@Localizer["Search"]</button>
+                    </div>
+                </div>
+                <div class="label org">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="popCompanyErrormsg" style="font-size:13px;color:#F15A22;">&nbsp;</span>
+                </div>
+            </section>
+            <section class="grid-item-wrap">
+
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" aria-label="외부업체 리스트">
+                        <tr>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["Classify"]</th>
+                            <th>@Localizer["Company Name"]</th>
+                            <th>@Localizer["Position"]</th>
+                            <th>@Localizer["CellPhone"]</th>
+                            <th>@Localizer["Email"]</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchCompanyList" aria-label="외부업체 리스트">
+                        @* <tr onclick="selectRow(this, 1);">
+                            <td>홍길동</td>
+                            <td>업체</td>
+                            <td>토판</td>
+                            <td>차장</td>
+                            <td>010-2159-96996</td>
+                            <td>hone@test.com</td>
+                        </tr> *@
+                        
+                    </table>
+                </div>
+                @* <div class="paging-item-wrap">
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-first.svg" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-prev.svg" /></a>
+                    <div class="value">
+                        <input type="text" class="inp" value="1" />
+                        <span>/ 1</span>
+                    </div>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-next.svg" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-last.svg" /></a>
+                </div> *@
+            </section>
+        </div>
+    </div>
+</div>

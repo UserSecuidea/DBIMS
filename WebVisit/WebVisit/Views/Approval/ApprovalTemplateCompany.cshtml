@@ -1,0 +1,133 @@
+@model CompanyDetailViewModel
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>DB 하이텍 - 결재</title>
+        <style>
+        .pop-TableTitleL
+        {
+            padding: 12px 20px; 
+            text-align: left; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;
+        }
+        .pop-TableCon_l_Long
+        {
+            padding:5px 15px; 
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;
+        }
+        .bigtitle_pop
+        {
+            font-weight:bold;
+            font-size:20px;
+            color:#555;
+            padding:20px 0;
+        }
+        .smalltitle_pop
+        {
+            height: 40px; 
+            line-height: 40px; 
+            background: #89919c; 
+            margin: 0px 0px; 
+            border-bottom: 1px solid #5b5c6c; 
+            font-size: 16px; 
+            color: #fff; 
+            font-family: '돋움'; 
+            text-indent: 20px;"
+        }
+        .tabletitle_pop
+        {
+            padding: 12px 20px; 
+            text-align: center; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;"
+        }
+        .tabledata_pop
+        {
+            padding:5px 15px; 
+            text-align:center;
+            padding:10px;
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;"		
+        }
+        </style>
+    </head>
+    <body>
+        @* data: @Model.ExportImportID *@
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td style="padding-top:10px;font-size: 13px; color: red; ">
+                            %주의사항<br>
+                            -반출 신청 시 팀장 결재를 필히 득해야 합니다.<br>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 제목 -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td class="bigtitle_pop">비상주협력사신청</td><td>&nbsp;</td><td></td>
+                        </tr>
+                    </table>
+                    <!-- header 정보 입력 -->
+                    <div id="D_INOUT">
+                    
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <!-- 협력사 정보 -->
+                            <tr><td height="7" class="smalltitle_pop"><b>협력사 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >구분</td>
+                                            <td class="pop-TableCon_l_Long" ><span> 비상주협력사 </span></td>
+                                            <td class="pop-TableTitleL">회사명</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.CompanyName</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">대표자명</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.CeoName</span></td>
+                                            <td class="pop-TableTitleL">사업자등록번호</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.BizRegNo</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">사업장주소</td>
+                                            <td class="pop-TableCon_l_Long" colspan='3'><span>@Model.Company.Address</span></td>
+                                        </tr>
+                                        <tr>                                            
+                                            <td class="pop-TableTitleL">담당자명</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.ContactPersonName</span></td>
+                                            <td class="pop-TableTitleL">이메일</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.Email</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">회사전화</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.Tel</span></td>
+                                            <td class="pop-TableTitleL">담당자연락처</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.Company.ContactPersonTel</span></td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                        </table> 
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

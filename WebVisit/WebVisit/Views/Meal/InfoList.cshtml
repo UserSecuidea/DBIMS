@@ -1,0 +1,486 @@
+@model MealInfoListViewModel
+@{
+    @* ViewData["Title"] = "식수 정보 관리"; *@
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    $("body").on("click", "#btnTab1", function () {
+        @* $(this).addClass('on'); *@
+        $('#btnTab1').addClass('on');
+        $('#btnTab2').removeClass('on');
+        $('#filterArea1').css('display', 'flex');
+        $('#filterArea2').css('display', 'flex');
+        $('#filterArea3').css('display', 'flex');
+        $('#filterArea3-1').css('display', 'flex');
+        $('#filterArea4').css('display', 'none');
+        $('#filterArea4-1').css('display', 'none');
+        $('#filterArea4-2').css('display', 'none');
+    });
+
+    $("body").on("click", "#btnTab2", function () {
+        @* $(this).addClass('on'); *@
+        $('#btnTab1').removeClass('on');
+        $('#btnTab2').addClass('on');
+        $('#filterArea1').css('display', 'none');
+        $('#filterArea2').css('display', 'none');
+        $('#filterArea3').css('display', 'none');
+        $('#filterArea3-1').css('display', 'none');
+        $('#filterArea4').css('display', 'flex');
+        $('#filterArea4-1').css('display', 'flex');
+        $('#filterArea4-2').css('display', 'flex');
+    });
+
+    @* minTime: '10',
+    maxTime: '6:00pm',
+    defaultTime: '11', *@
+
+    var tabIndex = @ViewBag.tabIdx;
+    window.onload = function(){
+        if(tabIndex == 1){
+            document.getElementById("btnTab2").click();
+        }else{
+            @* document.getElementById("btnTab1").click(); *@
+        }
+    }
+
+    function checkNumberFour(fmName, colName){
+        var regNumber = /^[0-9]{4}$/;
+        const myCol = eval("document."+fmName+"."+colName+";");
+        if(!regNumber.test(myCol.value)) {
+            @* alert(myCol.value); *@
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter numbers only"]';
+            myCol.value='';
+            myCol.focus();
+            return;
+        }
+         @* onkeyup='checkNumberFour("fmEditMealTerm", "EndDate1");' oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"  *@
+    }
+
+    function saveEditMealTerm(){
+        const myform = document.fmEditMealTerm;
+        if(myform.StartDate0.value.trim().length < 1 ){            
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the summer period"]';
+            myform.StartDate0.focus();
+            return;
+        }
+        if(myform.EndDate0.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the summer period"]';
+            myform.EndDate0.focus();
+            return;
+        }
+        if(myform.StartDate1.value.trim().length < 1 ){            
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter winter period"]';
+            myform.StartDate1.focus();
+            return;
+        }
+        if(myform.EndDate1.value.trim().length < 1 ){            
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter winter period"]';
+            myform.EndDate1.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    function saveEditMealSchedule(fmName){
+        const myform = eval("document."+fmName+";");
+        
+        if(myform.StartTime1.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter breakfast time"]';
+            myform.StartTime1.focus();
+            return;
+        }
+        if(myform.EndTime1.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter breakfast time"]';
+            myform.EndTime1.focus();
+            return;
+        }
+        if(myform.StartTime2.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter lunch time"]';
+            myform.StartTime2.focus();
+            return;
+        }
+        if(myform.EndTime2.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter lunch time"]';
+            myform.EndTime2.focus();
+            return;
+        }
+        if(myform.StartTime3.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter dinner time"]';
+            myform.StartTime3.focus();
+            return;
+        }
+        if(myform.EndTime3.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter dinner time"]';
+            myform.EndTime3.focus();
+            return;
+        }
+        if(myform.StartTime4.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the midnight snack time"]';
+            myform.StartTime4.focus();
+            return;
+        }
+        if(myform.EndTime4.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the midnight snack time"]';
+            myform.EndTime4.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    function saveAddMealPrice(){
+        const myform = document.fmAddMealPrice;
+        if(myform.Price.value.trim().length < 1 ){            
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please enter the unit price"]';
+            myform.Price.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+function generateDateValue(obj) {
+    console.log("[generateDateValue]"+obj.value);
+    if (obj.value == null || obj.value.trim().length < 1) {
+        return;
+    }
+    var d = new Date(obj.value.trim());
+    const month = d.getMonth() + 1;
+    const date = d.getDate();    
+    console.log("[generateDateValue]"+leftPad(month)+leftPad(date));
+    obj.value = leftPad(month)+leftPad(date);
+}
+function generateTimeValue(obj){
+    console.log("[generateTimeValue]"+obj.value);
+}
+
+
+function leftPad(value) {
+    if (value >= 10) {
+        return value;
+    }
+    return `0${value}`;
+}
+</script>
+
+<div class="tabmenu-list-wrap t01">
+    <ul>
+        <!-- 식수기간/기간관리, 식수단가 관리 -->
+        <li><a href="javascript:void(0)" id="btnTab1" class="on">@Localizer["Meal Period Time Management"]</a></li>
+        <li><a href="javascript:void(0)" id="btnTab2">@Localizer["Meal Price Management"]</a></li>
+    </ul>
+</div>
+<section class="page-search-wrap">
+    @* <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" />
+        </a>
+    </div> *@
+
+@{
+    var startDate0 = "";
+    var endDate0 = "";
+    var startDate1 = "";
+    var endDate1 = "";
+    foreach(MealTerm m in Model.MealTerm){
+        if(m.Term == 0){
+            startDate0 = m.StartDate;
+            endDate0 = m.EndDate;
+
+        }else{
+            startDate1 = m.StartDate;
+            endDate1 = m.EndDate;
+        }
+    }
+}
+<form name="fmEditMealTerm" method="post" style="display:inline;">
+    <input type="hidden" name="mode" value="MealTerm" /> 
+    
+    <div class="search-group-wrap" id="filterArea1" style="display:flex;">
+        <div style="padding-left:20px;padding-bottom:100px;"><B>@Localizer["Meal Term"]</B></div>
+        <div class="search-form-wrap">          
+            <ul>
+                <li class="per02">
+                    <div class="label">@Localizer["Summer Season Term"]</div>
+                    <div class="form-item-wrap">
+                        @* <input type="number" class="inp" placeholder="MMDD" name="StartDate0" value='@startDate0' /> *@
+                        <input type="text" name="StartDate0" value='@startDate0' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" onchange="generateDateValue(this)" maxlength="10" style="max-width: calc( 152px - 34px );" />
+                        <span class="e01">~</span>
+                        @* <input type="number" class="inp" placeholder="MMDD" name="EndDate0" value='@endDate0' /> *@
+                        <input type="text" name="EndDate0" value='@endDate0' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" onchange="generateDateValue(this)" maxlength="10" style="max-width: calc( 152px - 34px );" />
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Winter Season Term"]</div>
+                    <div class="form-item-wrap">
+                        @* <input type="number" class="inp" placeholder="MMDD" name="StartDate1" value='@startDate1' /> *@
+                        <input type="text" name="StartDate1" value='@startDate1' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" onchange="generateDateValue(this)" maxlength="10" style="max-width: calc( 152px - 34px );" />
+                        <span class="e01">~</span>
+                        @* <input type="number" class="inp" placeholder="MMDD" name="EndDate1" value='@endDate1' /> *@
+                        <input type="text" name="EndDate1" value='@endDate1' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" onchange="generateDateValue(this)" maxlength="10" style="max-width: calc( 152px - 34px );" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" class="btn-green" onclick="saveEditMealTerm()">@Localizer["Modify"]</button>
+        </div>
+    </div>
+</form>
+@{
+    var StartTime01 = "";
+    var EndTime01 = "";
+    var StartTime02 = "";
+    var EndTime02 = "";
+    var StartTime03 = "";
+    var EndTime03 = "";
+    var StartTime04 = "";
+    var EndTime04 = "";
+    var StartTime11 = "";
+    var EndTime11 = "";
+    var StartTime12 = "";
+    var EndTime12 = "";
+    var StartTime13 = "";
+    var EndTime13 = "";
+    var StartTime14 = "";
+    var EndTime14 = "";
+    foreach(MealSchedule m in Model.MealSchedule){
+        if(m.Term == 0){
+            if(m.MealGB == 1){
+                StartTime01 = m.StartTime;
+                EndTime01 = m.EndTime;
+            }else if(m.MealGB == 2){
+                StartTime02 = m.StartTime;
+                EndTime02 = m.EndTime;
+            }else if(m.MealGB == 3){
+                StartTime03 = m.StartTime;
+                EndTime03 = m.EndTime;
+            }else if(m.MealGB == 4){
+                StartTime04 = m.StartTime;
+                EndTime04 = m.EndTime;
+            }
+        }else{
+            if(m.MealGB == 1){
+                StartTime11 = m.StartTime;
+                EndTime11 = m.EndTime;
+            }else if(m.MealGB == 2){
+                StartTime12 = m.StartTime;
+                EndTime12 = m.EndTime;
+            }else if(m.MealGB == 3){
+                StartTime13 = m.StartTime;
+                EndTime13 = m.EndTime;
+            }else if(m.MealGB == 4){
+                StartTime14 = m.StartTime;
+                EndTime14 = m.EndTime;
+            }
+        }
+    }
+}
+<form name="fmEditMealSchedule0" method="post" style="display:inline;">
+    <input type="hidden" name="mode" value="MealSchedule" /> 
+    <input type="hidden" name="Term" value="0" /> 
+    <div class="search-group-wrap" id="filterArea2" style="display:flex;">
+        <div style="padding-left:20px;padding-bottom:100px;"><B>@Localizer["Summer Season Meal Schedule"]</B></div>
+        <div class="search-form-wrap">
+            <ul>
+                <li class="per02">
+                    <div class="label">@Localizer["Breakfast"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" class="inp" placeholder="HHMM" name="StartTime1" value='@StartTime01' />
+                            <span class="e01">~</span>
+                            <input type="text" class="inp" placeholder="HHMM" name="EndTime1" value='@EndTime01' />
+                        </div>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Lunch"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime2" value='@StartTime02' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime2" value='@EndTime02' />
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Dinner"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime3" value='@StartTime03' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime3" value='@EndTime03' />
+                        </div>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["LatenightMeal"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime4" value='@StartTime04' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime4" value='@EndTime04' />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" class="btn-green" onclick="saveEditMealSchedule('fmEditMealSchedule0');">@Localizer["Modify"]</button>
+        </div>
+    </div>
+</form>
+
+<form name="fmEditMealSchedule1" method="post" style="display:inline;">
+    <input type="hidden" name="mode" value="MealSchedule" /> 
+    <input type="hidden" name="Term" value="1" /> 
+    <div class="search-group-wrap" id="filterArea3" style="display:flex;">
+        <div style="padding-left:20px;padding-top:20px;padding-bottom:100px;"><B>@Localizer["Winter Season Meal Schedule"]</B></div>
+        <div class="search-form-wrap">
+            <ul>
+                <li class="per02">
+                    <div class="label">@Localizer["Breakfast"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" class="inp" placeholder="HHMM" name="StartTime1" value='@StartTime11' />
+                            <span class="e01">~</span>
+                            <input type="text" class="inp" placeholder="HHMM" name="EndTime1" value='@EndTime11' />
+                        </div>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Lunch"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime2" value='@StartTime12' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime2" value='@EndTime12' />
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Dinner"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime3" value='@StartTime13' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime3" value='@EndTime13' />
+                        </div>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["LatenightMeal"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="HHMM" name="StartTime4" value='@StartTime14' />
+                        <span class="e01">~</span>
+                        <input type="text" class="inp" placeholder="HHMM" name="EndTime4" value='@EndTime14' />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" class="btn-green" onclick="saveEditMealSchedule('fmEditMealSchedule1');">@Localizer["Modify"]</button>
+        </div>
+    </div>
+
+    <div class="msg-wrap" id="filterArea3-1" style="display:flex;">
+        <div class="label org">
+            @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+            <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+</form>
+<form name="fmAddMealPrice" method="post">
+    <input type="hidden" name="mode" value="MealPrice" />
+    <div class="search-group-wrap" id="filterArea4" style="display:none;">
+        <div class="search-form-wrap">
+            <ul>
+                <li>
+                    <div class="label">@Localizer["Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select full" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Unit Price"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Unit Price"]' name="Price" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="saveAddMealPrice();">@Localizer["Save"]</button>
+        </div>
+    </div>
+    <div class="msg-wrap" id="filterArea4-2" style="display:flex;margin: 0 0 0 0;padding: 0 0 0 0;">
+        <div class="label org" style="height:20px;margin: 10px 0px 0px 20px;padding: 0 0 0 0;">
+            @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+            <span id="errormsg2" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+</form>
+</section>
+
+<section class="grid-item-wrap" id="filterArea4-1" style="display:none;">
+    <div class="tbl-item-wrap" >
+        <table class="tbl01" aria-label="식수 단가 목록">
+            <tr>
+                <th>@Localizer["Application Date"]</th>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Unit Price"] (@Localizer["Won"])</th>
+            </tr>
+
+@{ 
+    string location="";
+    string insertDate="";
+    foreach(MealPrice m in Model.MealPrice){ 
+        location = "";
+        insertDate="";
+        if (m.Location != null && Model.CodeLocation != null) {
+            foreach(var a in Model.CodeLocation) {
+                if (a.SubCodeDesc != null && a.SubCodeDesc.Equals(m.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = a.CodeNameKor;
+                    }else {
+                        location = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        @* if(m.InsertDate != null){ *@
+            insertDate=string.Format("{0:yyyy-MM-dd}", m.InsertDate);
+        @* } *@
+            <tr>
+                <td>@insertDate</td>
+                <td>@location</td>
+                <td>@m.Price</td>
+            </tr>
+    }
+}
+            @* <tr>
+                <td>2022-05-01</td>
+                <td>부천</td>
+                <td>3200</td>
+            </tr> *@
+        </table>
+    </div>
+</section>

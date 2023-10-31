@@ -1,0 +1,122 @@
+@model ExportImportDetailViewModel
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_FirstLayout";
+}
+<script>
+    var legacyXML = "";
+    legacyXML = "<XML_DATA>"
+        + "<CHECK_INOUT_NO>1234</CHECK_INOUT_NO>"
+        + "<CARRY_OUT_CLASS>2000</CARRY_OUT_CLASS>"
+        + "<CHECK_INOUT_PURPOSE>1</CHECK_INOUT_PURPOSE>"
+        + "<oneApproval>N</oneApproval>"
+        + "</XML_DATA>";
+    window.onload = function () {
+        @* document.sendForm.legacyout.value = legacyXML; *@
+        document.sendForm.action = 'https://login.dbhitekdev.com/login_sso.aspx';
+        document.sendForm.bodies.value = document.getElementById("bodiesDiv").value.trim();
+        document.sendForm.submit();
+    };
+    function onSubmit() {
+        document.sendForm.bodies.value = document.getElementById("bodiesDiv").value.trim();
+        document.sendForm.submit();
+        @* if(confirm("신청하시겠습니까")){
+            document.sendForm.submit();
+        } *@
+    }
+</script>
+@{
+    if(ViewBag.ApprovalRequest == null){
+        <script>window.close();</script>
+    }
+}
+<form name="sendForm" id="sendForm" method="post" accept-charset="euc-kr" target="_blank">
+    <table style="width:100%" aria-label="PORTE">
+        <tr style="height:50px;background-color:orange;color:white;">
+            <th style="text-align:right;" colspan="4">데이터 전송 테스트입니다<button type="button" id="submitButton" onclick="onSubmit();" style="width:50px;height:30px;">전송</button></th>
+        <tr>
+            <td>userid</td>
+            @* eunji86 *@
+            <td><input type="text" class="custom-input" name="userid" value="@ViewBag.ApprovalRequest.UserId" /></td>
+            <td>password</td>
+            @* 8l7Rc9KNTTJMd07DYycb8hPZVjC7U9AI9o66Op7fibg *@
+            <td><input type="text" class="custom-input" name="password" value="@ViewBag.ApprovalRequest.Password" /></td>
+        </tr>
+        <tr>
+            <td>systemid</td>
+            @* DM_IMS *@
+            <td><input type="text" class="custom-input" name="systemid" value="@ViewBag.ApprovalRequest.SystemId" /></td>
+            <td>businessid</td>
+            @* ims_aios *@
+            <td><input type="text" class="custom-input" name="businessid" value="@ViewBag.ApprovalRequest.BusinessId" /></td>
+        </tr>
+        <tr>
+            <td>bodytype</td>
+            <td><input type="text" class="custom-input" name="bodytype" value="html" /></td>
+            <td>title</td>
+            <td><input type="text" class="custom-input" name="title" value="@ViewBag.ApprovalRequest.Title" /> <!-- 상신시 넘어온 타이틀 --></td>
+        </tr>
+        <tr>
+            <td>legacy_apprlines</td>
+            <td>
+                <!-- 성명^부서코드^메일주소^결재역할^주관부서 상신부서 구분;
+                ex)홍길동^AAA000^hong@dongbu.com^2^1;홍길이^AAA100^hong@dongbu.com^2^1
+                1,인결재	0,결재	2,참조	4,전결	6,결재안함(위임)	8,통보	10,순차합의	12,병렬합의	13,심사	15
+                상신부서 2, 주관부서 1
+                김동욱^51000504^donguk.kim1@dbhitekdev.com^2^1
+                    98dee76cd19ba651dc5879d5ee75ed919bad54d8156137f49d189a7a259017d8762bac3789cb17b924b749a1d1225f1c3b44192799eee067 -->
+                @*  835b89b596c41e22807aef37db69a737774c6669cf444401dadf23d2967665b6762bac3789cb17b924b749a1d1225f1c3b44192799eee067 *@
+                <input type="text" class="custom-input" name="legacy_apprlines" value="@ViewBag.ApprovalRequest.LegacyApprLines" /> <!-- 결재 경로 지정 -->
+                @ViewBag.ApprovalRequest.DevLegacyApprLines
+            </td>
+            <td>legacyout</td>
+            <td><input type="text" class="custom-input" name="legacyout" value="@ViewBag.ApprovalRequest.Legacyout" /> <!-- 결재 이후 리턴 받을 값 --></td>
+        </tr>
+        <tr>
+            <td>bsavedocument</td>
+            <td><input type="text" class="custom-input" name="bsavedocument" value="N" /> <!-- 결재시 문서관리에 저장할 여부를 물음 --></td>
+            <td>bmodifylines</td>
+            <td><input type="text" class="custom-input" name="bmodifylines" value="N" /> <!-- 문서정보 변경가능 여부 --></td>
+        </tr>
+        <tr>
+            <td>bfinalline</td>
+            <td><input type="text" class="custom-input" name="bfinalline" value="" /></td>
+            <td>bfixapprover</td>
+            <td><input type="text" class="custom-input" name="bfixapprover" value="N" /> <!-- 문서정보 변경가능 여부 --></td>
+        </tr>
+        <tr>
+            <td>bodies</td>
+            <td colspan="3"><input type="text" class="custom-input" name="bodies" value="" /></td>
+        </tr>
+    </table>
+</form>
+<textarea style="overflow-y: auto; height: 100px; width:100%;max-width:1200px;" id="bodiesDiv">
+<partial name="~/Views/Approval/ApprovalTemplateExportImport.cshtml" model="@Model" />
+</textarea>
+<partial name="~/Views/Approval/ApprovalTemplateExportImport.cshtml" model="@Model" />
+<style>
+    .custom-input {
+        width: 100%;
+        height: 30px;
+        max-height: 400px;
+        max-width: 100%;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: auto;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+
+    th {
+        background-color: gray;
+        text-align: left;
+        width: 200px;
+    }
+</style>

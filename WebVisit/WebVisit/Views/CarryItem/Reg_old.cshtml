@@ -1,0 +1,272 @@
+@model CarryItemRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Apply CarryItem"]; //"휴대물품신청";
+}
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+
+<script>
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddCarryItem;
+        //휴대물품신청: mode ImportDate  ExportDate Sabun ContactSabun 
+        if(myform.ImportDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the scheduled delivery date"]';
+            myform.ImportDate.focus();
+            return;
+        }
+        if(myform.ExportDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the scheduled return date"]';
+            myform.ExportDate.focus();
+            return;
+        }
+        if(myform.Sabun.value.trim().length < 1  && myform.VisitPersonID.value.trim().length < 1){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a import person"]';
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select contact person"]';
+            return;
+        }
+        //휴대물품 arr : ItemName
+        if(myform.ItemName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter product name"]';
+            myform.ItemName.focus();
+            return;
+        }
+        myform.submit();
+    }
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Import Information"]</div>
+</div>
+<form name="fmAddCarryItem" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="ImportWayType" value="0" /> <!-- 반입자구분: 대행등록(0,임직원신청)/본인(1,방문신청)-->    
+    <input type="hidden" name="CarryVisitorType" value="0" /><!-- 방문자구분 (반입자) 회원(0)/방문자(1) -->
+    <input type="hidden" name="VisitPersonID" value="1" /> <!-- 방문객회원ID (반입자): 방문자구분 이 방문자(1) 일 경우 방문객회원ID 입력  --> 
+    <input type="hidden" name="Sabun" value="" /> <!-- 회원사번(반입자): 방문자구분 회원(0) 일 경우 사번, 이름, 부서번호, 부서명 입력  -->
+    <input type="hidden" name="Name" value="이윤희" />
+    <input type="hidden" name="CompanyName" value="코노즈" />
+    <input type="hidden" name="OrgID" value="" />    
+    <input type="hidden" name="OrgNameKor" value="개발" />
+    <input type="hidden" name="OrgNameEng" value="" />
+    <input type="hidden" name="ContactSabun" value="1" /> <!-- 회원사번(담당자): 사번, 이름, 부서번호, 부서명 입력  -->
+    <input type="hidden" name="ContactName" value="홍길동" />
+    <input type="hidden" name="ContactOrgID" value="1" />    
+    <input type="hidden" name="ContactOrgNameKor" value="인사" />
+    <input type="hidden" name="ContactOrgNameEng" value="" />
+    
+    @* <input type="hidden" name="InsertVisitorType" value="0" /><!-- 방문자구분(등록자) 회원(0)/방문자(1) --> *@
+    @* <input type="hidden" name="InsertVisitPersonID" value="" /><!-- 방문자구분(등록자) 이 방문자(1) 일 경우 방문객회원ID 입력, 회원일경우 InsertSabun ~ InsertOrgNameEng 입력 --> *@
+    
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Import Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]' name="ImportDate" />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Export Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" placeholder='@Localizer["Export Date"]' class="inpdate" name="ExportDate" />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Purpose"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Place"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+            
+
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <!-- ContactPersonInfo 에는 담당자 검색 후에 이름(회사명) 으로 표시 , 실제 데이터는 form hidden ContactSabun, ContactName 입력 -->  
+                    <input type="text" name="ContactPersonInfo" class="inp" placeholder='@Localizer["Contact Name"]' readonly onclick="popSelectPerson();" />
+                    <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Contact Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ContactMobile" class="inp" placeholder='@Localizer["Contact Tel"]' readonly onclick="popSelectPerson();" />
+                    <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button>
+                @* <button type="button" onclick="goChangeContactPerson()" class="btn-gray">@Localizer["Modify"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Import Person Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Import Person Name"]</div>
+                <div class="form-item-wrap">
+                    <!-- ImportPersonInfo 에는 반입자 검색 후에 이름(회사명) 으로 표시 , 실제 데이터는 form hidden Sabun, Name, OrgNameKor, OrgNameEng, CompanyName 입력 -->  
+                    <!-- 반입자 대상: 출입증이 있는 비상주사원, 방문/공사/안전교육 신청(승인필수)된 방문자-->
+                    <input type="text" name="ImportPersonInfo" class="inp" placeholder='@Localizer["Import Person Name"]' readonly onclick="popSelectPerson();" />
+                    <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Person Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Mobile" class="inp" placeholder='@Localizer["Import Person Tel"]' readonly onclick="popSelectPerson();" />
+                    <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button>
+                @* <button type="button" onclick="goChangeContactPerson()" class="btn-gray">@Localizer["Modify"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["CarryItem Information"]</div>
+    </div>
+    <div id="add-form-wrap">
+        <div class="reg-form-wrap">
+            <div class="reg-header-wrap">
+                <div class="num">1</div>
+            </div>
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Product Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" name="ItemName" class="inp" placeholder='@Localizer["Product Name"]' />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Serial Number"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" name="ItemSN" class="inp" placeholder='@Localizer["Serial Number"]' />
+                    </div>
+                </li>
+                <li class="empty">&nbsp;</li>
+                <li>
+                    <div class="label s03">@Localizer["Quantity"]</div>
+                    <div class="form-item-wrap">
+                        <input type="number" name="Quantity" class="inp" placeholder='@Localizer["Quantity"]' />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Unit"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" name="Unit" class="inp" placeholder='@Localizer["Unit"]' />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>
+<div id="add-form-wrap" style="display:none;">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">02</div>
+            <img src="/images/ico/ico-remove01.svg" alt="삭제" />
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Classify"]</div>
+                <div class="form-item-wrap">
+                    <select name="CarryItemCodeID" class="select">
+                        <option value="0">노트북</option>
+                        <option value="1">기타</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Product Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemName" class="inp" placeholder='@Localizer["Product Name"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Serial Number"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemSN" class="inp" placeholder='@Localizer["Serial Number"]' />
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Quantity"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" name="Quantity" class="inp" placeholder='@Localizer["Quantity"]' />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Unit"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Unit" class="inp" placeholder='@Localizer["Unit"]' />
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" style="font-size:15px;color:#636D85;">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    <div class="lt-item">
+    </div>
+    <div class="lt-item">
+        <button type="button" class="btn-gray" id="btn-add">@Localizer["Add"]</button>
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Application"]</button>
+    </div>
+</div>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

@@ -1,0 +1,331 @@
+@model SafetyViolationDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Safety Violation"]; //"안전위반사항 정보";
+}
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+<script>
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    function goList(){
+        window.location = '/work/safetyviolationlist/?culture=@CultureInfo.CurrentCulture'
+    }
+
+    // edit - I/R 진행현황 변경 및 재발방지대책 등록 
+    function saveEditForm(){
+        var myform = document.fmEditSafetyViolation;
+        @* I/R 발행: mode  *@
+        
+
+        var con = confirm('@Localizer["Do you want to save the safety violation"]');        
+        if(con){
+            myform.submit();
+        }
+    } 
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Violation Issuer Information"]</div>
+</div>
+
+<form name="fmEditSafetyViolation" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="safetyViolationID" value='@Model.SafetyViolation.SafetyViolationID' />
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Violation Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="ViolationDate" value='@Model.SafetyViolation.ViolationDate.ToString("yyyy-MM-dd")' disabled />
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Issuer Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Issuer Name"]' name="InsertName" value='@Model.SafetyViolation.InsertName' readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Issuer Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Issuer Department Name"]' name="InsertOrgNameKor" value='@Model.SafetyViolation.InsertOrgNameKor' readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" /></button> *@
+                    @* <button type="button" class="btn-gray">@Localizer["Search"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Work Order Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">W/O No.</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder="W/O No." name="WorkOrderNo" value='@Model.SafetyViolation.WorkOrderNo' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="form-item-wrap">
+                    <label class="chk-type">
+                        <input type="checkbox" name="IsWorkOrder" @(Model.SafetyViolation.IsWorkOrder == "Y" ? "checked" : "") disabled />
+                        <span>@Localizer["No Work Order Information"]</span>
+                    </label>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Contact Name"]' name="ContactName" value='@Model.SafetyViolation.ContactName' readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Charge"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Department Charge"]' name="ContactOrgNameKor" value='@Model.SafetyViolation.ContactOrgNameKor' readonly />
+                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                    @* <button type="button" class="btn-gray">@Localizer["Search"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Violation Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.SafetyViolation.Location))' disabled></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.SafetyViolation.Location))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Violation Place"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Violation Place"]' name="ViolationLocation" value='@Model.SafetyViolation.ViolationLocation' readonly />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Violation Reason"]</div>
+                <div class="form-item-wrap">
+                    <select class="select" name="SafetyViolationReasonID" asp-items='@(new SelectList(Model.SafetyViolationReasons, nameof(SafetyViolationReason.SafetyViolationReasonID), nameof(SafetyViolationReason.SafetyViolationReasonContents), Model.SafetyViolation.SafetyViolationReasonID))' disabled></select>
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Detailed Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Detailed Reason"]' name="DetailReason" value='@Model.SafetyViolation.DetailReason' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Measures Prevent Recurrence"]</div>
+                <div class="form-item-wrap">
+                    <label asp-for="SafetyViolation.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                    <input asp-for="SafetyViolation.FormFile" name = "FormFile" id="file1" accept=".pdf" style="display:none;" type="file">
+                    <span asp-validation-for="SafetyViolation.FormFile"></span>
+                    @* <input type="file" class="hidden" accept=".pdf" name="StatementFile"  /> , .jpeg, .jpg, .png, .gif
+                    <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button> *@
+                    <div class="value">@Localizer["No Files Selected"]</div>
+                    <a href="javascript:void(0)" onclick="dl(0)" class="link-co">
+                        @{
+                            if(Model.SafetyViolation.StatementFileData != null){
+                                FileDTO? ff = Utils._Dump<FileDTO>(Model.SafetyViolation.StatementFileData);
+                                <text>@ff?.FileName</text>
+                            }
+                        }
+                        </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Safety Violator Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+@{
+    foreach(var m in Model.SafetyViolationPersons){
+        <div class="reg-header-wrap">
+            <div class="num">01</div>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Violator Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Violator Name"]' name="Name" value="@m.Name"readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Violator Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="CompanyName" value="@m.CompanyName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="BirthDate" value="@m.BirthDate" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value="@m.Mobile" readonly />
+                </div>
+            </li>
+        </ul>
+    }
+}
+
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["Progress Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["IR Progress Information"]</div>
+                <div class="form-item-wrap">
+                    <select class="select full" name="SafetyViolationStatus2" disabled>
+                        @{
+                            @* 
+                            안전수칙위반상태(SafetyViolationStatus) : 0 신규발행, 1 방지대책등록, 2 방지대책승인, 3 방지대책재등록요청                        
+                            IR등록후: 신규등록/방지대책등록 <- 
+                            *@
+                            var safetyViolationStatusName2 = "";
+                            foreach(var a in Model.CodeSafetyViolationStatus) {
+                                safetyViolationStatusName2 = "";
+                                if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                    safetyViolationStatusName2 = a.CodeNameKor;
+                                }else{
+                                    safetyViolationStatusName2 = a.CodeNameEng;
+                                }
+                                if(Model.SafetyViolation.SafetyViolationStatus == a.SubCodeID){
+                                    <option value="@a.SubCodeID" selected>@safetyViolationStatusName2</option>
+                                }else{
+                                    <option value="@a.SubCodeID">@safetyViolationStatusName2</option>
+                                }
+                            }
+                        }
+                    </select>
+                    @* @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="SafetyViolationStatus2" asp-items='@(new SelectList(Model.CodeSafetyViolationStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.SafetyViolation.SafetyViolationStatus))' disabled></select>
+                        }else{
+                            <select class="select" name="SafetyViolationStatus2" asp-items='@(new SelectList(Model.CodeSafetyViolationStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.SafetyViolation.SafetyViolationStatus))' disabled></select>
+                        }
+                    } *@
+                </div>
+            </li>
+@{
+    if(ViewBag.IsEditable){
+            <li>
+                <div class="label s03">@Localizer["IR Progress Status"]</div>
+                <div class="form-item-wrap">
+                    <select class="select full" name="SafetyViolationStatus">
+                        <option value='-1'>@Localizer["Select"]</option>
+                        @{
+                            @* 
+                            안전수칙위반상태(SafetyViolationStatus) : 0 신규발행, 1 방지대책등록, 2 방지대책승인, 3 방지대책재등록요청 
+                            방지대책등록후: 방지대책등록/대책승인/재등록요청 <- 
+                            *@
+                            var safetyViolationStatusName = "";
+                            foreach(var a in Model.CodeSafetyViolationStatus) {
+                                safetyViolationStatusName = "";
+                                if(a.SubCodeID > 0){
+                                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                        safetyViolationStatusName = a.CodeNameKor;
+                                    }else{
+                                        safetyViolationStatusName = a.CodeNameEng;
+                                    }
+                                    if(Model.SafetyViolation.SafetyViolationStatus == a.SubCodeID){
+                                        <option value="@a.SubCodeID" selected>@safetyViolationStatusName</option>
+                                    }else{
+                                        <option value="@a.SubCodeID">@safetyViolationStatusName</option>
+                                    }
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </li>
+    }
+}
+        </ul>
+    </div>
+</form>
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+@{
+    if(ViewBag.IsEditable){
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+    }
+}
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+
+@* for Prev Link *@
+<a asp-action="SafetyViolationList" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="DownloadSafetyViolation" target="ifTemp">
+    <input type="hidden" name="SafetyViolationID" value="@Model.SafetyViolation.SafetyViolationID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

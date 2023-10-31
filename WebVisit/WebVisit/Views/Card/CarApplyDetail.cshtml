@@ -1,0 +1,402 @@
+@model CarCardIssueApplyDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Car Access Card"]; //"차량출입증 상세정보";
+}
+<script>
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+    function goList(){
+        window.location = '/card/carapplylist/?culture=@CultureInfo.CurrentCulture'
+    }
+    
+    // edit - 담당자가 승인상태 / 처리사유 수정
+    function changeCardApplyStatus(){
+        const myform = document.fmEditCarCardIssueApply;
+        myform.mode.value="ECardApplyStatus";
+        @* CardApplyStatus Memo *@
+        if(myform.Memo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for processing"]';
+            myform.Memo.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to edit your status"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // edit - 출입증신청사유 변경
+    function saveEditForm(){
+        const myform = document.fmEditCarCardIssueApply;
+        if(myform.ApplyReason.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for applying for a pass"]';
+            myform.ApplyReason.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // get car info 
+    function getCarList(){
+       const myform = document.fmEditCarCardIssueApply;
+        
+        var sabun = myform.Sabun.value;
+        
+         if(sabun.trim().length > 0 ){
+            $.ajax({
+                url: "/card/getmycarlist",
+                data: { sabun },
+                method: "GET",
+                dataType: "JSON" 
+            }).done(function(json) {
+                console.log("[carList]", json);
+                var rows= "";
+                var updateDate = "";
+                for(var m of json){
+                    console.log("[carList]", m);
+                    if(m.updateDate){
+                        updateDate = m.updateDate.split('T');
+                    }
+                    rows+="<tr><td>"+updateDate[0]+"</td><td>"+m.carNo+"</td><td>"+m.applyReason+"</td></tr>";
+                }
+                var o = document.getElementById("dvCarList");
+                o.innerHTML = rows;
+            });
+        }
+    }
+    window.onload = function(){getCarList()};
+
+    @* 0: 차량 등록증, 1: 개인정보 활용동의서 *@
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+</script>
+
+<form name="fmEditCarCardIssueApply" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="CarCardIssueApplyID" value='@Model.CarCardIssueApply.CarCardIssueApplyID' />
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Applicant Information"]</div>
+        <div class="side-btn-wrap">
+            @* <button type="button">조회</button> *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["By Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.CarCardIssueApply.Location))' disabled></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.CarCardIssueApply.Location))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="CompanyName" value='@Model.CarCardIssueApply.CompanyName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Name" value='@Model.CarCardIssueApply.Name' readonly />   
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sabun"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Sabun" value='@Model.CarCardIssueApply.Sabun' readonly />   
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Employee Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="PersonType" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarCardIssueApply.PersonTypeID))' disabled></select>
+                        }else{
+                            <select class="select" name="PersonType" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarCardIssueApply.PersonTypeID))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+
+            <li>
+                <div class="label s03">@Localizer["Privacy Policy Doc"]</div>
+                <div class="form-item-wrap">
+                    @* TermsPrivarcyFile *@
+                    @* <div class="value"><a href="javascript:void(0)">홍길동동의.PDF</a></div> *@
+                    @{
+                        if(Model.CarCardIssueApply.TermsPrivarcyFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(1)">@Localizer["Privacy Policy Doc"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value='@Model.CarCardIssueApply.OrgNameKor' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value='@Model.CarCardIssueApply.GradeName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Home Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Tel" value='@Model.CarCardIssueApply.Tel' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Mobile" value='@Model.CarCardIssueApply.Mobile' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+        <div class="side-btn-wrap">
+            @* <button type="button">조회</button> *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactName" value='@Model.CarCardIssueApply.ContactName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Contact Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactOrgNameKor" value='@Model.CarCardIssueApply.ContactOrgNameKor' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Apply Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Issue Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarCardIssueApply.CardIssueType))' disabled></select>
+                        }else{
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarCardIssueApply.CardIssueType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car No"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @* placeholder='@Localizer["Car No"]'  *@
+                        <input type="text" class="inp" name="CarNo" value='@Model.CarCardIssueApply.CarNo' readonly />
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CarTypeCodeID" asp-items='@(new SelectList(Model.CodeCarType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarCardIssueApply.CarTypeCodeID))' disabled></select>
+                        }else{
+                            <select class="select" name="CarTypeCodeID" asp-items='@(new SelectList(Model.CodeCarType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarCardIssueApply.CarTypeCodeID))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Vehicle Registration Card"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                    @{
+                        if(Model.CarCardIssueApply.CarLIcenseFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(0)">@Localizer["Vehicle Registration Card"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                        @* <a href="javascript:void(0)">차량등록증.PDF</a> *@
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Vehicle Model"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Vehicle Model"]' name="CarModel" value='@Model.CarCardIssueApply.CarModel' readonly  />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Access Card Application Reason"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Access Card Application Reason"]' name="ApplyReason" value='@Model.CarCardIssueApply.ApplyReason' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Owned Vehicle Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full">
+                <div class="form-item-wrap" style="flex-direction: column;">
+                    <table aria-label="보유차량 리스트">
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Car No"]</th>
+                            <th>@Localizer["Processing Reason"]</th>
+                        </tr>
+                    </table>
+                    <table id="dvCarList" aria-label="보유차량 리스트">
+
+                    </table>                    
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @* 승인정보 *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approval Status"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardApplyStatus" asp-items='@(new SelectList(Model.CodeCardApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CarCardIssueApply.CardApplyStatus))' disabled="@(!ViewBag.IsEditable)"></select>
+                        }else{
+                            <select class="select" name="CardApplyStatus" asp-items='@(new SelectList(Model.CodeCardApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CarCardIssueApply.CardApplyStatus))' disabled="@(!ViewBag.IsEditable)"></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Processing Reason"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Processing Reason"]' name="Memo" readonly="@(!ViewBag.IsEditable)" />
+                    </div>                            
+                </div>
+            </li>
+            <li class="full">
+                <div class="form-item-wrap" style="flex-direction: column;">
+                    <table aria-label="승인현황">
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Registered person"]</th>
+                            <th>@Localizer["Approval Status"]</th>
+                            <th>@Localizer["Processing Reason"]</th>
+                        </tr>
+                    </table>
+                    <table aria-label="승인현황">
+    @{
+        var num9=0;
+        var cardApplyStatusName = "";
+        var insertUpdateDate=""; 
+        foreach(CarCardIssueApplyHistory m in Model.CarCardIssueApplyHistory){
+            num9++; 
+            cardApplyStatusName = "";
+            if (m.CardApplyStatus > -1 && Model.CodeCardApplyStatus != null) {
+                foreach(var a in Model.CodeCardApplyStatus) {
+                    if (a.SubCodeID == m.CardApplyStatus) {
+                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                            cardApplyStatusName = a.CodeNameKor;
+                        }else {
+                            cardApplyStatusName = a.CodeNameEng;
+                        }
+                    }
+                }
+            }
+            insertUpdateDate=string.Format("{0:yyyy-MM-dd}", m.InsertUpdateDate);
+                        <tr>
+                            <td>@insertUpdateDate</td>
+                            <td>@m.UpdateName</td>
+                            <td>@cardApplyStatusName</td>
+                            <td>@m.Memo</td>
+                        </tr>
+        }
+    }
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>    
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+@{
+    if(ViewBag.IsEditable){
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+        <button type="button" class="btn-green" onclick="changeCardApplyStatus();">@Localizer["State Change"]</button>
+        <button type="button" class="btn-org">@Localizer["Delete"]</button>
+    }
+}
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="Download" target="ifTemp">
+    <input type="hidden" name="CarCardIssueApplyID" value="@Model.CarCardIssueApply.CarCardIssueApplyID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

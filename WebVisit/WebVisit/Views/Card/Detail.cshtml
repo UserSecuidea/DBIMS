@@ -1,0 +1,317 @@
+@using WebVisit.Models.DomainModels.Passport;
+@model CardIssueApplyDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Access Card"]; //"출입증 정보상세";
+}
+
+<script>
+
+    function goSearchPerson(sMode){
+        //sMode-1: 사원 검색
+            @* Location CompanyName PersonTypeID  GradeName *@
+        // personObj, telObj, sabunObj, orgIdObj, orgKorObj, orgEngObj
+        var myform = document.fmEditCard;
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+        var emailObj = null;
+
+        var locationObj = null;
+        @* var locationNameObj = null; *@
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = null;
+        var personTypeIdObj = null;
+        @* var personTypeIdNameObj = null; *@
+        var cardNoObj = null;
+
+        var genderObj = null;
+        var genderNameObj = null;
+        var birthDateObj = null;
+        var personStatusIdObj = null;
+        var personStatusNameObj = null;
+        var homeAddrObj = null;
+
+        if(sMode == 1){
+            nameObj = myform.Name;
+            console.log("nameObj:", nameObj);
+            sabunObj =  myform.Sabun;
+            orgIdObj =  myform.OrgID;
+            orgKorObj =  myform.OrgNameKor;
+            orgEngObj =  myform.OrgNameEng;
+            telObj = myform.Tel;
+            mobileObj = myform.Mobile; 
+            emailObj = myform.Email;
+
+            locationObj = myform.Location;
+            @* locationNameObj = myform.LocationName; *@
+            companyIdObj = myform.CompanyID;
+            companyNameObj = myform.CompanyName;
+            gradeIdObj = myform.GradeID;
+            gradeNameObj = myform.GradeName;
+            personTypeIdObj = myform.PersonTypeID;
+            @* personTypeIdNameObj = myform.PersonTypeIDName;   *@
+            cardNoObj = myform.CardNo;
+            //Gender BirthDate PersonStatusID Email HomeAddr
+            genderObj = myform.Gender;
+            genderNameObj = myform.GenderName;
+            birthDateObj = myform.BirthDate;
+            personStatusIdObj = myform.PersonStatusID;
+            personStatusNameObj = myform.PersonStatusName;
+            homeAddrObj = myform.HomeAddr;
+        }
+        // ContactSabun ContactOrgID
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, null, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, null, cardNoObj, null, null, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj);
+        //popSelectPerson(personObj, null, sabunObj, orgIdObj, orgKorObj, orgEngObj);
+    } 
+
+    // edit - 변경
+    function saveEditForm(){
+        const myform = document.fmEditCard;
+        @* if(myform.ApplyReason.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for applying for a pass"]';
+            myform.ApplyReason.focus();
+            return;
+        } *@
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    function goList(){
+        window.location = '/card/list/?culture=@CultureInfo.CurrentCulture'
+    }
+</script>
+<form name="fmEditCard" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="Location" value='' />
+    @* @(Model.ViewCardPerson.Location == null ? "" : Model.ViewCardPerson.Location) *@
+    <input type="hidden" name="CompanyID" value='' />
+    @* @(Model.ViewCardPerson.CompanyID == null ? "" : Model.ViewCardPerson.CompanyID) *@
+    <input type="hidden" name="OrgID" value='@(Model.ViewCardPerson.OrgCode == null ? "" : Model.ViewCardPerson.OrgCode)' />
+    <input type="hidden" name="OrgNameEng" value='@(Model.ViewCardPerson.OrgName == null ? "" : Model.ViewCardPerson.OrgName)' />
+    <input type="hidden" name="PersonTypeID" value='' />
+    @* @(Model.ViewCardPerson.PersonTypeID == null ? "" : Model.ViewCardPerson.PersonTypeID) *@
+    <input type="hidden" name="GradeID" value='' />
+    @* @(Model.ViewCardPerson.GradeID == null ? "" : Model.ViewCardPerson.GradeID) *@
+    <input type="hidden" name="CardID" value='' /> @* 출입카드ID *@
+    @* @(Model.ViewCardPerson.CardID == null ? "" : Model.ViewCardPerson.CardID) *@
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Access Card Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Access CardNo"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Access CardNo"]' name="CardNo" value='@Model.ViewCardPerson.CardNo' readonly/>
+                    </div>                            
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Reissue Number"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @* placeholder='@Localizer["Reissue Number"]' *@
+                        <input type="text" class="inp" name="ReissueNo" value='@Model.ViewCardPerson.ReIssueCnt' readonly />
+                    </div>    
+                </div>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Access Card Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardTypeID" asp-items='@(new SelectList(Model.CodeCardType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ViewCardPerson.CardType))' disabled></select>
+                        }else{
+                            <select class="select" name="CardTypeID" asp-items='@(new SelectList(Model.CodeCardType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ViewCardPerson.CardType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Status Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardIssueStatus" asp-items='@(new SelectList(Model.CodeCardIssueStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ViewCardPerson.CardStatusId))' disabled>
+                            </select>
+                        }else{
+                            <select class="select" name="CardIssueStatus" asp-items='@(new SelectList(Model.CodeCardIssueStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ViewCardPerson.CardStatusId))' disabled>
+                            </select>
+                        }
+                    }
+                </div>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Access Card Name"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Access Card Name"]' name="CardName" value='@Model.ViewCardPerson.CardNo' readonly/>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Valid Period"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+@{
+    var cardValidDate=""; 
+    if(Model.ViewCardPerson?.ValidDate != null){
+        cardValidDate=string.Format("{0:yyyy-MM-dd}", Model.ViewCardPerson.ValidDate);
+    }
+}
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="CardValidDate" value='@cardValidDate' disabled /> 
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    @* 사원정보 *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Person Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        @* <div class="profile-item-wrap">
+        @if(ViewBag.img1 != null){
+            <div class="upic" id="upic" style="background:url(@ViewBag.img1) no-repeat center center;"></div>
+        } else {
+            <div class="upic" id="upic" style="background:no-repeat center center;"></div>
+        }
+        </div> *@
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Sabun"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Sabun"]' name="Sabun" value='@Model.Person.Sabun' readonly />
+                    @* <button type="button" class="btn-search" onclick="goSearchPerson(1);"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    @* @Model.ViewCardPerson.CompanyName *@
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value='@Model.ViewCardPerson?.Company' readonly />
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" value='@Model.Person.Name' readonly />
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Gender"]</div>
+                <div class="form-item-wrap">
+                    @{  
+                        var genderName = "";
+                        if (Model.Person.Gender != null && Model.CodeGenderType != null) {
+                            foreach(var m in Model.CodeGenderType) {
+                                if (m.SubCodeID != null && m.SubCodeID.Equals(Model.Person.Gender)) {
+                                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                        genderName = m.CodeNameKor;
+                                    }else {
+                                        genderName = m.CodeNameEng;
+                                    }
+                                }
+                            }
+                            <input type="text" class="inp" placeholder='@Localizer["Gender"]' name="GenderName" value='@genderName' readonly />
+                            <input type="hidden" class="inp" placeholder='@Localizer["Gender"]' name="Gender" value='@Model.Person.Gender' readonly />
+                        } else {
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Birth Date"]' name="BirthDate" value='@Model.Person.BirthDate' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Status"]</div>
+                <div class="form-item-wrap">
+                    @{  
+                        var personStatusName = "";
+                        if (Model.Person.PersonStatusID != null && Model.CodePersonStatus != null) {
+                            foreach(var m in Model.CodePersonStatus) {
+                                if (m.SubCodeID != null && m.SubCodeID.Equals(Model.Person.PersonStatusID)) {
+                                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                        personStatusName = m.CodeNameKor;
+                                    }else {
+                                        personStatusName = m.CodeNameEng;
+                                    }
+                                }
+                            }
+                            <input type="text" class="inp" name="PersonStatusName" value='@personStatusName' readonly />
+                            <input type="hidden" class="inp" name="PersonStatusID" value='@Model.Person.PersonStatusID' readonly />
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="OrgNameKor" value='@Model.Person.OrgNameKor' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Position"]' name="GradeName" value='@Model.Person.GradeName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value='@Model.Person.Mobile' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Home Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Home Tel"]' name="Tel" value='@Model.Person.Tel' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Email"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Email"]' name="Email" value='@Model.Person.Email' readonly />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Home Address"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Home Address"]' name="HomeAddr" value='@Model.Person.HomeAddr' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼 정리 start ~end 
+    <div class="lt-item">
+    </div> *@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveEditForm();" style="display:none;">@Localizer["Save"]</button>
+        <button type="button" class="btn-gray" onclick="goList();">@Localizer["Confirm"]</button>
+    </div>
+</div>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />

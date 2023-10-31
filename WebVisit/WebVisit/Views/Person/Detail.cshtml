@@ -1,0 +1,425 @@
+@model PersonDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Person"]; //"임직원 상세";
+    PersonGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+}
+<script>
+    window.onload = function (){
+        selectForeigner();
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    // edit
+    function saveEditForm(){
+        var myform = document.fmEditPerson;
+        @* var regBizNo = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/; *@
+        var regEmail = /^[a-z0-9\.\_%+-]+@@[a-z0-9\.\-]+\.[a-z]{2,4}$/i;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        if(myform.Location.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a place of business"]';
+            myform.Location.focus();
+            return;
+        }
+        if(myform.Name.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.Name.focus();
+            return;
+        }
+        if(myform.IsEmployee.value == "0" && myform.BirthDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        if(myform.OrgNameKor.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your department"]';
+            myform.OrgNameKor.focus();
+            return;
+        }
+        if(myform.GradeName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your position"]';
+            myform.GradeName.focus();
+            return;
+        }
+        if(myform.Mobile.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number"]';
+            myform.Mobile.focus();
+            return;
+        }
+        if(!regPhone.test(myform.Mobile.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number correctly"] ex)000-0000-0000';
+            myform.Mobile.focus();
+            return;
+        }
+        if(myform.Email.value.trim().length > 1 ){
+            if(!regEmail.test(myform.Email.value)) {
+                document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your email correctly"] ex)0000@0000.000';
+                myform.Email.focus();
+                return;
+            }
+        }
+        if(myform.IsEmployee.value == "0" && myform.HomeAddr.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your home address"]';
+            myform.HomeAddr.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    function selectForeigner(){
+        const myform = document.fmEditPerson;
+        const foreigner = myform.IsForeigner.value;
+        console.log("[selectForeigner] foreigner:"+foreigner);
+        if(foreigner == 1){
+            $('#ForeignerArea1').css("display", "flex");
+            $('#ForeignerArea2').css("display", "flex");
+            $('#ForeignerArea3').css("display", "flex"); 
+        }else{
+            $('#ForeignerArea1').css("display", "none");
+            $('#ForeignerArea2').css("display", "none");
+            $('#ForeignerArea3').css("display", "none");
+        }
+    }
+    // file events    
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+    $("body").on("change", "#file2", function (ev) {
+      console.log("[body>change file2]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload2", function (ev) {
+      console.log("[body>click btn-upload2]");
+      $("#file2").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+    function changePic(evt){
+        //style="background:url(/images/etc/etc-upic01.jpg) no-repeat center center;"
+        var upic = document.getElementById("upic");
+        var file = evt.files[0];//this.files[0];
+        console.log("[changePic]",evt, file);
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            upic.style.backgroundImage="url("+reader.result+")";
+        }
+        if (file) {
+            reader.readAsDataURL(file);
+        }        
+        @* upic.style="background:url(/images/etc/etc-upic01.jpg) no-repeat center center;" *@
+    }
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Registration Information"]</div>
+</div>
+<div class="reg-form-wrap">    
+<form method="post" name="fmEditPerson" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="PersonID" value="@Model.Person.PersonID" />
+    <input type="hidden" name="Sabun" value="@Model.Person.Sabun" />
+    @{
+        var cssPhotoVisible = "visible";
+        if(ViewBag.IsEmployee) {
+            @* cssPhotoVisible = "hidden"; *@
+            <input type="hidden" name="IsEmployee" value="1" />
+        } else {
+            <input type="hidden" name="IsEmployee" value="0" />
+        }
+
+    }
+    
+    <div class="profile-item-wrap" style="visibility:@cssPhotoVisible;">
+        @* 프로필 이미지 *@
+        @if(ViewBag.img1 != null){
+            <div class="upic" id="upic" style="background:url(@ViewBag.img1) no-repeat center center;"></div>
+        } else {
+            <div class="upic" id="upic" style="background:no-repeat center center;"></div>
+        }
+        @if(ViewBag.IsEmployee == false) {
+            <button type="button" id="btn-upload1" ><img src="/images/ico/ico-photo.svg" alt="사진등록" /></button>
+            @* <label asp-for="Person.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label> *@
+            <input asp-for="Person.FormFile" name = "FormFile" id="file1" accept=".jpeg, .jpg, .png, .gif" style="display:none;" type="file" onchange="changePic(this)"  disabled="@ViewBag.IsEmployee">
+            <span asp-validation-for="Person.FormFile"></span>
+            @* <button type="button"><img src="/images/ico/ico-photo.svg" alt="사진등록" /></button> *@
+        }
+    </div>
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Place Of Business"]</div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.Person.Location))' disabled="@ViewBag.IsEmployee">
+                            <option value=''>@Localizer["Select"]</option>
+                        </select>
+                    }else{
+                        <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.Person.Location))' disabled="@ViewBag.IsEmployee">
+                            <option value=''>@Localizer["Select"]</option>
+                        </select>
+                    }
+                }
+            </div>
+        </li>
+        <li class="empty">&nbsp;</li>
+        <li>
+            <div class="label s03">@Localizer["Select Level"]</div>
+            <div class="form-item-wrap">
+                <select class="select" name="LevelCodeID"  disabled="@ViewBag.IsNotMaster">
+@{
+    foreach(Level level in Model.Levels){
+        if(level.LevelID == Model.Person.LevelCodeID){
+            <option value=@level.LevelID selected>@level.LevelName</option>
+        }else{
+            <option value=@level.LevelID>@level.LevelName</option>
+        }
+    }
+}
+                </select>
+            </div>
+        </li>
+        <li class="empty">&nbsp;</li>
+        <li>
+            <div class="label s03">@Localizer["Company Name"]<span></span></div>
+            <div class="form-item-wrap">
+                @{
+                    if (ViewBag.IsEmployee){
+                        <text>DBHiTeK</text>
+                    }else {
+                <select class="select" name="CompanyID" disabled="@ViewBag.IsEmployee" disabled="@ViewBag.IsNotMaster">
+@{
+    foreach(Company company in Model.Companies){
+        if(company.CompanyID == Model.Person.CompanyID){
+            <option value=@company.CompanyID selected>@company.CompanyName</option>
+        }else{
+            <option value=@company.CompanyID>@company.CompanyName</option>
+        }
+    }
+}                             
+                </select>
+
+                    }
+                }
+            </div>
+        </li>
+        <li class="empty">&nbsp;</li>
+        <li>
+            <div class="label s03">@Localizer["Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" value='@Model.Person.Name' disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Birth Date"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate" value='@Model.Person.BirthDate'  disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Gender"]<span></span></div>
+            <div class="form-item-wrap">
+                @{
+                    if (Model.Person.Gender != null){
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.Gender))' disabled="@ViewBag.IsEmployee"></select>
+                        }else{
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.Gender))' disabled="@ViewBag.IsEmployee"></select>
+                        }
+                    } else {
+                        <text>@Localizer["No Information"]</text>
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Sabun"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.Sabun</div>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Work Status"]<span></span></div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.PersonStatusID))' disabled="@ViewBag.IsEmployee"></select>
+                    }else{
+                        <select class="select" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.PersonStatusID))' disabled="@ViewBag.IsEmployee"></select>
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Department Name"]<span></span></div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="OrgNameEng" value='@Model.Person.OrgNameEng'  disabled="@ViewBag.IsEmployee" />
+                    }else{
+                        <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="OrgNameKor" value='@Model.Person.OrgNameKor'  disabled="@ViewBag.IsEmployee" />
+                    }
+                }                
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Position"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Position"]' name="GradeName" value='@Model.Person.GradeName'  disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value='@Model.Person.Mobile' disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Home Tel"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Home Tel"]' name="Tel" value='@Model.Person.Tel' disabled="@(ViewBag.IsEditable == false)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Domestic Foreigner"]<span></span></div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="IsForeigner" asp-items='@(new SelectList(Model.CodeForeignerType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.IsForeigner))' onchange="selectForeigner()" disabled="@ViewBag.IsEmployee"></select>
+                    }else{
+                        <select class="select" name="IsForeigner" asp-items='@(new SelectList(Model.CodeForeignerType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.IsForeigner))' onchange="selectForeigner()" disabled="@ViewBag.IsEmployee"></select>
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Work Type"]<span></span></div>
+            <div class="form-item-wrap">  
+                @{
+                    if (Model.Person.WorkTypeCodeID != null) {
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="WorkTypeCodeID" asp-items='@(new SelectList(Model.CodeWorkTypeCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.WorkTypeCodeID))' disabled="@ViewBag.IsEmployee"></select>
+                        }else{
+                            <select class="select" name="WorkTypeCodeID" asp-items='@(new SelectList(Model.CodeWorkTypeCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.WorkTypeCodeID))' disabled="@ViewBag.IsEmployee"></select>
+                        }
+                    } else {
+                        <text>@Localizer["No Information"]</text>
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Access CardNo"]</div>
+            <div class="form-item-wrap">
+                @* 출입증 번호 *@
+                <input type="text" class="inp" placeholder='@Localizer["Access CardNo"]' name="CardNo" value="@Model.Person.CardNo"  disabled="@ViewBag.IsEmployee" readonly/>
+                @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="검색" /></button> *@
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Email"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Email"]' name="Email" value='@Model.Person.Email' disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li class="full">
+            <div class="label s03">@Localizer["Home Address"]<span></span></div>
+            <div class="form-item-wrap">                
+                <input type="text" class="inp" placeholder='@Localizer["Home Address"]' name="HomeAddr" value='@Model.Person.HomeAddr' disabled="@(ViewBag.IsEditable == false)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Vehicles Allowed Number"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Vehicles Allowed Number"]' name="CarAllowCnt" value='@Model.Person.CarAllowCnt' readonly=@(ViewBag.IsNotMaster)  />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Privacy Policy Doc"]<span></span></div>
+            <div class="form-item-wrap">
+                @* <input type="file" class="hidden" accept=".pdf"  />
+                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button> *@
+                <div class="value">
+                    @{
+                        if(Model.Person.TermsPrivarcyFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(0)">@Localizer["Privacy Policy Doc"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                </div>
+            </div>
+        </li>
+        <li id="ForeignerArea1" style='display:@(Model.Person.IsForeigner == 0 ? "none" : "flex")'>
+            <div class="label s03">@Localizer["Nationality"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Nationality"]' name="Nationality" value='@Model.Person.Nationality' disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+        <li id="ForeignerArea2" style='display:@(Model.Person.IsForeigner == 0 ? "none" : "flex")'>
+            <div class="label s03">@Localizer["Status Residence"]<span></span></div>
+            <div class="form-item-wrap">  
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="ImmStatusCodeID" asp-items='@(new SelectList(Model.CodeImmStatusCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.ImmStatusCodeID))' disabled="@ViewBag.IsEmployee"></select>
+                    }else{
+                        <select class="select" name="ImmStatusCodeID" asp-items='@(new SelectList(Model.CodeImmStatusCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.ImmStatusCodeID))' disabled="@ViewBag.IsEmployee"></select>
+                    }
+                }
+            </div>
+        </li>
+        <li id="ForeignerArea3" style='display:@(Model.Person.IsForeigner == 0 ? "none" : "flex")'>
+            <div class="label s03">@Localizer["Period Stay"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp datepicker" placeholder="YYYY-MM-DD" name="ImmStartDate" value='@Model.Person.ImmStartDate' disabled="@ViewBag.IsEmployee" /> ~ 
+                <input type="text" class="inp datepicker" placeholder="YYYY-MM-DD" name="ImmEndDate" value='@Model.Person.ImmEndDate' disabled="@ViewBag.IsEmployee" />
+            </div>
+        </li>
+
+    </ul>
+</form>    
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    <div class="lt-item">
+        @*2023.09.21 신인아 버튼 정리 start*@
+        @if (ViewBag.IsMaster)
+        {
+            <form name="fmReturnAccessCard" method="post" asp-action="ReturnAccessCard" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <button type="button" class="btn-gray">@Localizer["Return Access Card"]</button>
+                @* <button type="button" class="btn-gray">비밀번호 초기화</button> *@
+            </form>
+        }
+        @{
+            if (ViewBag.IsEditable)
+            {
+                <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+            }
+        }
+        @*2023.09.21 신인아 버튼 정리 end*@
+        @* <button type="button" class="btn-green">@Localizer["Confirm"]</button> *@
+    </div>
+</div>
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="Download" target="ifTemp">
+    <input type="hidden" name="PersonID" value="@Model.Person.PersonID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

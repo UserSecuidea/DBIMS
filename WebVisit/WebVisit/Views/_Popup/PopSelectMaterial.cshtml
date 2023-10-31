@@ -1,0 +1,172 @@
+<script>
+    // popSelectMaterial(callbackObj, itemNameObj, itemCodeObj, standardObj, unitObj, prNoObj)
+    var callback; // function callback(itemCode, itemName, standard, unit)
+    var searchItemNameObj;
+    var searchItemCodeObj;
+    var searchStandardObj;
+    var searchUnitObj;
+    var searchPrNoObj
+    function popSelectMaterial(callbackObj, itemNameObj, itemCodeObj, standardObj, unitObj, prNoObj){
+        var myform = document.fmSearchMaterial;
+        myform.itemName.value="";
+        myform.itemCode.value="";
+
+        searchItemNameObj = itemNameObj;
+        searchItemCodeObj = itemCodeObj;
+        searchStandardObj = standardObj;
+        searchUnitObj = unitObj;
+        searchPrNoObj = prNoObj;
+        callback = callbackObj;
+
+        common.popOpen(document.getElementById('popSelectMaterial'));
+    }
+    function searchMaterial(){
+        var myform = document.fmSearchMaterial;
+        var itemName = myform.itemName.value.trim();
+        var itemCode = myform.itemCode.value.trim();
+        var fab = myform.fab.value;
+        if((itemName == null || itemName.length < 1) && (itemCode == null || itemCode.length < 1)) {
+            document.getElementById("popMaterialErrormsg").innerHTML = '@Localizer["Please enter the material name or material code"]';
+            myform.itemName.focus();
+            return false;
+        }
+        $.ajax({
+            url: "/exportimport/getitemlist",
+            data: { itemName, itemCode },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[searchMaterial]", json);
+            var rows= "";
+            /// Field1 11 / 22 / 33 
+            /// Field2 사업장 FAB1: 2000, FAB2: 3000 (확인 필요)
+            /// Field3
+            /// Field4 자재코드 
+            /// Field5 자재이름  FAB1 FAB2
+            /// Field6 규격
+            /// Field7 단위
+            /// Field8 날짜
+            /// Field9, Field10 사용 안함.
+            for(var m of json){
+                console.log("[searchMaterial]", m);               
+                rows+="<tr onclick=\"selectSearchMaterial('"+m.field4+"','"+m.field5+"','"+m.field6+"','"+m.field7+"')\">";
+                rows+="<td>"+m.field4+"</td><td>"+m.field5+"</td><td>"+m.field6+"</td><td>"+m.field7+"</td></tr>";
+            }
+            var o = document.getElementById("dvSearchMaterialList");
+            o.innerHTML = rows;
+        });
+        document.getElementById("popMaterialErrormsg").innerHTML = '';
+    }
+
+    function selectSearchMaterial(itemCode, itemName, standard, unit){
+        console.log("[selectSearchMaterial]itemCode:"+itemCode+", itemName:"+itemName+", standard:"+standard+", unit:"+unit);
+        searchItemNameObj.value = itemName;
+        searchItemCodeObj.value = itemCode;
+        searchStandardObj.value = standard;
+        searchUnitObj.value = unit;
+        @* searchPrNoObj.value = prNo; *@
+
+        var o = document.getElementById("dvSearchMaterialList");
+        o.innerHTML = "";
+        common.popClose(document.getElementById('popSelectMaterial'));
+    }
+
+    function enterSearchMaterial() {
+	    if (window.event.keyCode == 13) {
+            searchMaterial();
+        }
+    }
+</script>
+
+<div id="popSelectMaterial" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search Material"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <section class="page-search-wrap mt0">
+                <div class="mob-toggle-wrap">
+                    <a href="javascript:void(0)">
+                        <span>@Localizer["Filter"]</span>
+                        <img src="/images/ico/ico-arr-up01.svg" alt="검색" />
+                    </a>
+                </div>
+                <div class="search-group-wrap">
+<form name="fmSearchMaterial">
+                    <div class="search-form-wrap">
+                        <ul>
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Material Code"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="itemCode" value="" class="inp" onkeyup="enterSearchMaterial()" />
+                                </div>
+                            </li>
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Material Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="itemName" value="" class="inp" onkeyup="enterSearchMaterial()" />
+                                </div>
+                            </li>
+                            <li class="per02" style="display:none;">
+                                <div class="label auto">@Localizer["Place Of Business"]</div>
+                                <div class="form-item-wrap">
+                                    <label>
+                                        <input type="radio" name="fab" value="FAB1" checked /> FAB1
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="fab" value="FAB2" /> FAB2
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+</form>
+                    <div class="search-btn-wrap">
+                        <button type="button" onclick="searchMaterial();">@Localizer["Search"]</button>
+                    </div>
+                </div>
+                <div class="label org">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="popMaterialErrormsg" style="font-size:13px;color:#F15A22;">&nbsp;</span>
+                </div>
+            </section>
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" aria-label="자재 검색 결과">
+                        <tr>
+                            <th>@Localizer["Material Code"]</th>
+                            <th>@Localizer["Material Name"]</th>
+                            <th>@Localizer["Standard"]</th>
+                            <th>@Localizer["Unit"]</th>
+                        </tr>
+                        
+                        @* <tr onclick="selectRow(this, 1);">
+                            <td>MCC016</td>
+                            <td>WATER PROOF PIPE</td>
+                            <td>C-26</td>
+                            <td>EA</td>
+                        </tr> *@
+
+                    </table>
+                </div>
+
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchMaterialList" aria-label="자재 리스트">
+
+                    </table>
+                </div>
+                @* <div class="paging-item-wrap">
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-first.svg" alt="" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-prev.svg" alt="" /></a>
+                    <div class="value">
+                        <input type="text" class="inp" value="1" />
+                        <span>/ 1</span>
+                    </div>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-next.svg" alt="" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-last.svg" alt="" /></a>
+                </div> *@
+
+            </section>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,712 @@
+
+**** Trace file opened at 2023-10-30 20:00:36.252323 UTC+09:00 (´ëÇÑ¹Î±¹ Ç¥ÁØ½Ã), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 12
+Compilation date          : Jul  7 2023 22:54:54
+CPIC library              : 753.2023.07.06 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1216
+Current working directory : D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\통합출입관리\WebVisit\WebVisit
+Program                   : WebVisit
+User                      : user
+Hardware                  : PC with Windows NT 8x AMD64 Level 6 (Mod 158 Step 13)
+Operating_system          : Windows NT 10.0
+Hostname                  : DESKTOP-E3PT4U9
+IP address                : 100.64.0.1
+IPv6 address              : fe80::3546:7d2f:45bc:36c3
+Global trace level        : 0
+
+>> Passed parameters
+	ASHOST: 10.145.2.31
+	CLIENT: 100
+	LANG: EN
+	PASSWD: (- secret -)
+	POOL_SIZE: 5
+	SYSNR: 00
+	TRACE: 8
+	USER: S0000014
+<< Passed parameters
+
+
+2023-10-30 20:00:36.253009 [38640] >> API RfcOpenConnection
+>> RfcOptions
+	Partner Char Size: 1
+	Client: 100
+	User: S0000014
+	Passwd: (- secret -)
+	Language: E
+	SysNr: 00
+	ASHost: 10.145.2.31
+	Codepage: 1100
+	Trace: 32767
+	LogonCheck: 1
+	CompressionType: 1
+	Serialization: 0
+	Ignore Char Conv Errors: 0
+	Substitution Char: 35
+	UseRoundtripOptimization: Off
+	Delta Manager: 1
+<< RfcOptions
+
+2023-10-30 20:00:36.253123 [38640] 	>> RfcOptions::determineType
+determined type RFC_CLIENT
+2023-10-30 20:00:36.253196 [38640] 	<< RfcOptions::determineType returned 0
+
+2023-10-30 20:00:36.253223 [38640] 	>> RfcConnectionBase::openNew
+2023-10-30 20:00:36.253349 [38640] 	>> RfcConnectionBase::connect
+2023-10-30 20:00:36.253378 [38640] 	>> CpicConnection::connectAsClient
+>> RfcOptions
+	Partner Char Size: 1
+	Client: 100
+	User: S0000014
+	Passwd: (- secret -)
+	Language: E
+	SysNr: 00
+	ASHost: 10.145.2.31
+	ASService: sapdp00
+	GWHost: 10.145.2.31
+	GWService: 3300
+	Codepage: 1100
+	Trace: 32767
+	LogonCheck: 1
+	CompressionType: 1
+	Serialization: 0
+	Ignore Char Conv Errors: 0
+	Substitution Char: 35
+	UseRoundtripOptimization: Off
+	Delta Manager: 1
+<< RfcOptions
+
+2023-10-30 20:00:36.291707 [38640] 	<< CpicConnection::connectAsClient returned 0
+
+2023-10-30 20:00:36.291778 [38640] 	>> RfcConnectionBase::setConnOptions
+2023-10-30 20:00:36.291813 [38640] 	<< RfcConnectionBase::setConnOptions returned 0
+
+2023-10-30 20:00:36.291838 [38640] Connection ID: 005056C000081EDE9DE271A73D5D7801 
+2023-10-30 20:00:36.291860 [38640] 	>> RfcConnectionBase::writeRfcSessionLogon
+2023-10-30 20:00:36.291880 [38640] 	<< RfcConnectionBase::writeRfcSessionLogon returned 0
+
+>> HEXDUMP
+2023-10-30 20:00:36.291906 [38640] Sending data for handle 2626455983168, convID 91539690, codepage 1100
+000000 | D9C6C3F0 F0F0F0F0 F0F0F0E3 01010008 |ÙÆÃððððððððã....|
+000010 | 03010101 01010000 01010103 00040000 |................|
+000020 | 0E0B0103 0106000B 04010003 000A0200 |................|
+000030 | 00002301 06051400 10005056 C000081E |..#.......PVÀ...|
+000040 | DE9DE271 A73D5D78 01051401 14000331 |Þ.âq§=]x.......1|
+000050 | 30300114 01110008 53303030 30303134 |00......S0000014|
+000060 | 01110117 00102900 00005850 A50F936B |......)...XP¥..k|
+000070 | 2F4B022B A92B0117 01150001 45011505 |/K.+©+......E...|
+000080 | 01000101 05010007 000A3130 302E3634 |..........100.64|
+000090 | 2E302E31 00070018 00196665 38303A3A |.0.1......fe80::|
+0000a0 | 33353436 3A376432 663A3435 62633A33 |3546:7d2f:45bc:3|
+0000b0 | 36633300 18001100 01450011 00120003 |6c3......E......|
+0000c0 | 37353300 12001300 03373533 00130008 |753......753....|
+0000d0 | 000F4445 534B544F 502D4533 50543455 |..DESKTOP-E3PT4U|
+0000e0 | 39000800 0600093C 756E6B6E 6F776E3E |9......<unknown>|
+0000f0 | 00060130 00085765 62566973 69740130 |...0..WebVisit.0|
+000100 | 05020000 0502000B 00033735 33000B01 |..........753...|
+000110 | 02000752 46435049 4E470102 FFFF0000 |...RFCPING..ÿÿ..|
+000120 | FFFF0000 00000000 00000000 00000000 |ÿÿ..............|
+<< HEXDUMP
+
+2023-10-30 20:00:36.292046 [38640] 	>> RfcConnectionBase::readUpTo
+2023-10-30 20:00:36.292101 [38640] 	>> CpicConnection::receive
+2023-10-30 20:00:36.292124 [38640] Changing client receive timeout from -1 to 60000, loop is disabled
+>> HEXDUMP
+2023-10-30 20:00:36.310304 [38640] Receiving data for handle 2626455983168, convID 91539690, codepage unknown
+000000 | 01010008 01020105 04010002 01010103 |................|
+000010 | 00040000 060B0103 0106000B 04010002 |................|
+000020 | 00030200 00002301 06001600 08003100 |......#.......1.|
+000030 | 31003000 30001600 07001E00 31003000 |1.0.0.......1.0.|
+000040 | 2E003100 34003500 2E003200 2E003300 |..1.4.5...2...3.|
+000050 | 31002000 20002000 20000700 18001600 |1. . . . .......|
+000060 | 31003000 2E003100 34003500 2E003200 |1.0...1.4.5...2.|
+000070 | 2E003300 31001800 08001A00 73006100 |..3.1.......s.a.|
+000080 | 70006400 65007600 5F004400 41004400 |p.d.e.v._.D.A.D.|
+000090 | 5F003000 30000800 11000200 33001100 |_.0.0.......3...|
+0000a0 | 13000800 37003200 31002000 13001200 |....7.2.1. .....|
+0000b0 | 08003700 30003200 20001200 06001200 |..7.0.2. .......|
+0000c0 | 73006100 70006400 65007600 5F004400 |s.a.p.d.e.v._.D.|
+0000d0 | 41000601 30001000 53004100 50004C00 |A...0...S.A.P.L.|
+0000e0 | 53005900 53005401 30015000 10005300 |S.Y.S.T.0.P...S.|
+0000f0 | 30003000 30003000 30003100 34015001 |0.0.0.0.0.1.4.P.|
+000100 | 51000600 31003000 30015101 52000200 |Q...1.0.0.Q.R...|
+000110 | 45015205 00000005 00050300 00050305 |E.R.............|
+000120 | 14001000 5056C000 081EDE9D E271A73D |....PVÀ...Þ.âq§=|
+000130 | 5D780105 14042000 04000000 00042005 |]x.... ....... .|
+000140 | 12000005 12013000 50005300 41005000 |......0.P.S.A.P.|
+000150 | 4C005300 59005300 54002000 20002000 |L.S.Y.S.T. . . .|
+000160 | 20002000 20002000 20002000 20002000 | . . . . . . . .|
+000170 | 20002000 20002000 20002000 20002000 | . . . . . . . .|
+000180 | 20002000 20002000 20002000 20002000 | . . . . . . . .|
+000190 | 20002000 20002000 20013006 67000840 | . . . . .0.g..@|
+0001a0 | 67E00000 00000006 67012600 04000000 |gà......g.&.....|
+0001b0 | 020126FF FF0000FF FF000000 00000000 |..&ÿÿ..ÿÿ.......|
+<< HEXDUMP
+
+2023-10-30 20:00:36.310526 [38640] 	<< CpicConnection::receive returned 0
+
+Received RFCID 0x0101 (257), 8 bytes
+Received RFCID 0x0103 (259), 4 bytes
+Received RFCID 0x0106 (262), 11 bytes
+Received RFCID 0x0016 (22), 8 bytes
+Skipping RFCID 0x0016 (22), 8 bytes
+Received RFCID 0x0007 (7), 30 bytes
+Received RFCID 0x0018 (24), 22 bytes
+Received RFCID 0x0008 (8), 26 bytes
+Received RFCID 0x0011 (17), 2 bytes
+Received RFCID 0x0013 (19), 8 bytes
+Received RFCID 0x0012 (18), 8 bytes
+Received RFCID 0x0006 (6), 18 bytes
+Received RFCID 0x0130 (304), 16 bytes
+Received RFCID 0x0150 (336), 16 bytes
+Received RFCID 0x0151 (337), 6 bytes
+Received RFCID 0x0152 (338), 2 bytes
+Received RFCID 0x0500 (1280), 0 bytes
+Skipping RFCID 0x0500 (1280), 0 bytes
+Received RFCID 0x0503 (1283), 0 bytes
+Skipping RFCID 0x0503 (1283), 0 bytes
+Received RFCID 0x0514 (1300), 16 bytes
+Skipping RFCID 0x0514 (1300), 16 bytes
+Received RFCID 0x0420 (1056), 4 bytes
+Skipping RFCID 0x0420 (1056), 4 bytes
+Received RFCID 0x0512 (1298), 0 bytes
+Skipping RFCID 0x0512 (1298), 0 bytes
+Received RFCID 0x0130 (304), 80 bytes
+Received RFCID 0x0667 (1639), 8 bytes
+Received RFCID 0x0126 (294), 4 bytes
+Received RFCID 0xFFFF (65535), 0 bytes
+Skipping RFCID 0xFFFF (65535), 0 bytes
+2023-10-30 20:00:36.311006 [38640] 	<< RfcConnectionBase::readUpTo returned 0
+
+RfcConnection handle 2626455983168 established
+2023-10-30 20:00:36.311043 [38640] 	<< RfcConnectionBase::connect returned 0
+
+>> RfcConnection name="none"
+Handle: 2626455983168	ConvID: 91539690
+	Asynchron: 0
+	Has Error: 0
+>> RfcControl name="sapdev_DA"
+	Program Name: SAPLSYST                                
+	Codepage: 4103		Communication Codepage: 1100
+	SysID: DAD		Target: sapdev		Mandant: 100		SysNr: 00		Language: E		User: S0000014
+	Conversation ID: 91539690	Role: C753
+	Partner Rel: 702 		Partner Kernel Rel: 721 		Partner IP: 10.145.2.31		Partner IPv6: 10.145.2.31		Partner external IP: 10.145.2.31		Protocol version: 1547
+	Convert Char: true		Convert Float: true		Convert Int: true		Ignore Conv Errors: 0		Substitution Char: #
+	Exclusive: false		Get SSO2: false		Use basXML: 0
+<< RfcControl
+
+>> CpicConnection
+	CPIC Handle: 0
+	Gateway Host: 		Gateway Service: 		AS Host: 		AS Service: 		Program ID: 
+	Protocol: I
+	Conversation ID: 91539690
+	Last IO Time: Mon Oct 30 20:00:36 2023
+
+	Data Received: 3		Status Received: 2		All Received: 1
+	Connected: true		Deallocated: false		Accepted: 0
+	Registered Mode: false		Just Accepted: 0
+<< CpicConnection
+
+<< RfcConnection
+
+2023-10-30 20:00:36.311153 [38640] 	<< RfcConnectionBase::openNew returned 0
+
+2023-10-30 20:00:36.311175 [38640] << API RfcOpenConnection returned RFC_OK
+
+2023-10-30 20:00:36.311216 [38640] >> API RfcGetFunctionDesc (connection 2626455983168, error 000000D50393D310)
+RfcGetFunctionDesc(Z_MM_VISITOR_PR_CHECK) via handle 2626455983168
+RfcGetFunctionDesc(Z_MM_VISITOR_PR_CHECK) via handle 2626455983168 (SID=DAD) returned 000002638395C950
+2023-10-30 20:00:36.311281 [38640] << API RfcGetFunctionDesc returned RFC_OK
+
+2023-10-30 20:00:36.311322 [38640] >> API RfcInvoke (connection 2626455983168, error 000000D50393D298)
+Invoking Z_MM_VISITOR_PR_CHECK on handle 2626455983168
+
+>> RfcFunction name="Z_MM_VISITOR_PR_CHECK"
+>> IMPORTING parameters
+>> I_BANFN, RFCTYPE_CHAR, Length: 20, Active: true, Requested: false
+	Value: 1000100770
+<< I_BANFN
+
+<< IMPORTING parameters
+
+>> EXPORTING parameters
+>> E_FRGKZ, RFCTYPE_CHAR, Length: 2, Active: true, Requested: false
+	Value: 
+<< E_FRGKZ
+
+>> E_MASSAGE, RFCTYPE_CHAR, Length: 200, Active: true, Requested: false
+	Value: 
+<< E_MASSAGE
+
+<< EXPORTING parameters
+
+>> CHANGING parameters
+<< CHANGING parameters
+
+>> TABLES parameters
+>> IZSMM0097, RFCTYPE_TABLE, Length: 0, Active: true, Requested: false
+	Value: (empty)
+<< IZSMM0097
+
+<< TABLES parameters
+
+<< RfcFunction
+
+2023-10-30 20:00:36.311414 [38640] 	>> ContextBase::rfcCallReceive
+2023-10-30 20:00:36.311432 [38640] 	>> RfcConnectionBase::setInCall
+2023-10-30 20:00:36.311449 [38640] Locking connection mutex 0000026384F9F000 for 2626455983168
+2023-10-30 20:00:36.311469 [38640] 	<< RfcConnectionBase::setInCall returned 0
+
+2023-10-30 20:00:36.311492 [38640] Connection ID: 005056C000081EDE9DE271A73D5D7801 
+>> HEXDUMP
+2023-10-30 20:00:36.311514 [38640] Sending data for handle 2626455983168, convID 91539690, codepage 4103
+000000 | 01010008 03010105 04010003 01010103 |................|
+000010 | 00040000 060B0103 0106000B 04010003 |................|
+000020 | 000A0200 00002301 06051400 10005056 |......#.......PV|
+000030 | C000081E DE9DE271 A73D5D78 01051405 |À...Þ.âq§=]x....|
+000040 | 02000005 02000B00 06370035 00330000 |.........7.5.3..|
+000050 | 0B010200 2A5A005F 004D004D 005F0056 |....*Z._.M.M._.V|
+000060 | 00490053 00490054 004F0052 005F0050 |.I.S.I.T.O.R._.P|
+000070 | 0052005F 00430048 00450043 004B0001 |.R._.C.H.E.C.K..|
+000080 | 02051200 00051202 05000E45 005F0046 |...........E._.F|
+000090 | 00520047 004B005A 00020502 05001245 |.R.G.K.Z.......E|
+0000a0 | 005F004D 00410053 00530041 00470045 |._.M.A.S.S.A.G.E|
+0000b0 | 00020502 05001249 005A0053 004D004D |.......I.Z.S.M.M|
+0000c0 | 00300030 00390037 00020502 01000E49 |.0.0.9.7.......I|
+0000d0 | 005F0042 0041004E 0046004E 00020102 |._.B.A.N.F.N....|
+0000e0 | 03001431 00300030 00300031 00300030 |...1.0.0.0.1.0.0|
+0000f0 | 00370037 00300002 03FFFF00 00FFFF00 |.7.7.0...ÿÿ..ÿÿ.|
+<< HEXDUMP
+
+2023-10-30 20:00:36.311625 [38640] 	>> RfcFunction::rfcDeserialize
+2023-10-30 20:00:36.311644 [38640] 	>> RfcConnectionBase::readUpTo
+2023-10-30 20:00:36.311663 [38640] 	>> CpicConnection::receive
+2023-10-30 20:00:36.311679 [38640] Changing client receive timeout from -1 to 1000, loop is enabled
+>> HEXDUMP
+2023-10-30 20:00:36.532034 [38640] Receiving data for handle 2626455983168, convID 91539690, codepage 4102
+000000 | 05000000 05000503 00000503 05140010 |................|
+000010 | 005056C0 00081EDE 9DE271A7 3D5D7801 |.PVÀ...Þ.âq§=]x.|
+000020 | 05140420 00040000 00000420 05120000 |... ....... ....|
+000030 | 05120201 000E0045 005F0046 00520047 |.......E._.F.R.G|
+000040 | 004B005A 02010203 00020052 02030201 |.K.Z.......R....|
+000050 | 00120045 005F004D 00410053 00530041 |...E._.M.A.S.S.A|
+000060 | 00470045 02010203 00C80053 00200020 |.G.E.....È.S. . |
+000070 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000080 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000090 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000a0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000b0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000c0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000d0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000e0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0000f0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000100 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000110 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000120 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000130 | 00200203 03010012 0049005A 0053004D |. .......I.Z.S.M|
+000140 | 004D0030 00300039 00370301 03300004 |.M.0.0.9.7...0..|
+000150 | 00000001 03300302 00080000 01060000 |.....0..........|
+000160 | 00010302 03040106 00310030 00300030 |.........1.0.0.0|
+000170 | 00310030 00300037 00370030 00300030 |.1.0.0.7.7.0.0.0|
+000180 | 00300031 0030004D 00450054 00300031 |.0.1.0.M.E.T.0.1|
+000190 | 00340039 00520020 00200020 00200020 |.4.9.R. . . . . |
+0001a0 | 00200020 00200020 0020005B 0052005D |. . . . . .[.R.]|
+0001b0 | 00430048 0049004C 004C0045 00520020 |.C.H.I.L.L.E.R. |
+0001c0 | 00520043 00440031 00300035 00300041 |.R.C.D.1.0.5.0.A|
+0001d0 | 005F0052 00430044 00310030 00350030 |._.R.C.D.1.0.5.0|
+0001e0 | 0041002D 00420030 0031002D 00540045 |.A.-.B.0.1.-.T.E|
+0001f0 | 004C0020 00200020 00200000 00000100 |.L. . . . ......|
+000200 | 0C000045 00410020 00590020 00200020 |...E.A. .Y. . . |
+000210 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000220 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000230 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000240 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+000250 | 00200020 00200030 00300030 00300030 |. . . .0.0.0.0.0|
+000260 | 00300030 00300030 00300030 00300304 |.0.0.0.0.0.0.0..|
+000270 | 01300050 00530041 0050004C 005A004D |.0.P.S.A.P.L.Z.M|
+000280 | 004D0030 00320020 00200020 00200020 |.M.0.2. . . . . |
+000290 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0002a0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0002b0 | 00200020 00200020 00200020 00200020 |. . . . . . . . |
+0002c0 | 00200020 01300667 00084109 9A900000 |. . .0.g..A.....|
+0002d0 | 00000667 FFFF0000 FFFF0000 00000000 |...gÿÿ..ÿÿ......|
+<< HEXDUMP
+
+2023-10-30 20:00:36.532348 [38640] 	<< CpicConnection::receive returned 0
+
+Received RFCID 0x0500 (1280), 0 bytes
+Skipping RFCID 0x0500 (1280), 0 bytes
+Received RFCID 0x0503 (1283), 0 bytes
+Skipping RFCID 0x0503 (1283), 0 bytes
+Received RFCID 0x0514 (1300), 16 bytes
+Skipping RFCID 0x0514 (1300), 16 bytes
+Received RFCID 0x0420 (1056), 4 bytes
+Skipping RFCID 0x0420 (1056), 4 bytes
+Received RFCID 0x0512 (1298), 0 bytes
+Skipping RFCID 0x0512 (1298), 0 bytes
+Received RFCID 0x0201 (513), 14 bytes
+Received RFCID 0x0203 (515), 2 bytes
+Received RFCID 0x0201 (513), 18 bytes
+Received RFCID 0x0203 (515), 200 bytes
+Received RFCID 0x0301 (769), 18 bytes
+Received RFCID 0x0330 (816), 4 bytes
+Skipping RFCID 0x0330 (816), 4 bytes
+Received RFCID 0x0302 (770), 8 bytes
+Received RFCID 0x0304 (772), 262 bytes
+Received RFCID 0x0130 (304), 80 bytes
+Received RFCID 0x0667 (1639), 8 bytes
+Received RFCID 0xFFFF (65535), 0 bytes
+Skipping RFCID 0xFFFF (65535), 0 bytes
+2023-10-30 20:00:36.532750 [38640] 	<< RfcConnectionBase::readUpTo returned 0
+
+2023-10-30 20:00:36.532774 [38640] 	<< RfcFunction::rfcDeserialize returned 0
+
+2023-10-30 20:00:36.532796 [38640] 	>> RfcConnectionBase::setInCall
+2023-10-30 20:00:36.532816 [38640] Unlocking connection mutex 0000026384F9F000 for 2626455983168
+2023-10-30 20:00:36.532839 [38640] 	<< RfcConnectionBase::setInCall returned 0
+
+2023-10-30 20:00:36.532862 [38640] 	<< ContextBase::rfcCallReceive returned 0
+
+>> RfcFunction name="Z_MM_VISITOR_PR_CHECK"
+>> IMPORTING parameters
+>> I_BANFN, RFCTYPE_CHAR, Length: 20, Active: true, Requested: false
+	Value: 1000100770
+<< I_BANFN
+
+<< IMPORTING parameters
+
+>> EXPORTING parameters
+>> E_FRGKZ, RFCTYPE_CHAR, Length: 2, Active: true, Requested: false
+	Value: R
+<< E_FRGKZ
+
+>> E_MASSAGE, RFCTYPE_CHAR, Length: 200, Active: true, Requested: false
+	Value: S
+<< E_MASSAGE
+
+<< EXPORTING parameters
+
+>> CHANGING parameters
+<< CHANGING parameters
+
+>> TABLES parameters
+>> IZSMM0097, RFCTYPE_TABLE, Length: 0, Active: true, Requested: false
+>> RfcRecordMetaData name="ZSMM0097"
+	FieldCount: 12
+	FieldName: BANFN		FieldType: RFCTYPE_CHAR		NUC-length: 10		UC-length: 20		NUC-offset: 0		UC-offset: 0
+	FieldName: BNFPO		FieldType: RFCTYPE_NUM		NUC-length: 5		UC-length: 10		NUC-offset: 10		UC-offset: 20
+	FieldName: MATNR		FieldType: RFCTYPE_CHAR		NUC-length: 18		UC-length: 36		NUC-offset: 15		UC-offset: 30
+	FieldName: MAKTX		FieldType: RFCTYPE_CHAR		NUC-length: 40		UC-length: 80		NUC-offset: 33		UC-offset: 66
+	FieldName: MENGE		FieldType: RFCTYPE_BCD		NUC-length: 7		UC-length: 7		NUC-offset: 73		UC-offset: 146
+	FieldName: MEINS		FieldType: RFCTYPE_CHAR		NUC-length: 3		UC-length: 6		NUC-offset: 80		UC-offset: 154
+	FieldName: WADYN		FieldType: RFCTYPE_CHAR		NUC-length: 1		UC-length: 2		NUC-offset: 83		UC-offset: 160
+	FieldName: EXTSRVNO		FieldType: RFCTYPE_CHAR		NUC-length: 18		UC-length: 36		NUC-offset: 84		UC-offset: 162
+	FieldName: CHARG		FieldType: RFCTYPE_CHAR		NUC-length: 10		UC-length: 20		NUC-offset: 102		UC-offset: 198
+	FieldName: MBLNR		FieldType: RFCTYPE_CHAR		NUC-length: 10		UC-length: 20		NUC-offset: 112		UC-offset: 218
+	FieldName: MJAHR		FieldType: RFCTYPE_NUM		NUC-length: 4		UC-length: 8		NUC-offset: 122		UC-offset: 238
+	FieldName: GIDAT		FieldType: RFCTYPE_DATE		NUC-length: 8		UC-length: 16		NUC-offset: 126		UC-offset: 246
+<< RfcRecordMetaData
+
+>> RfcTable name="ZSMM0097"
+	Width: 262
+	Number of rows: 1
+	Compressed: 0
+>> RfcStructure name="ZSMM0097"
+	Width: 262		FieldCount: 12
+	FieldName: BANFN
+	Value: 1000100770
+	FieldName: BNFPO
+	Value: 00010
+	FieldName: MATNR
+	Value: MET0149R
+	FieldName: MAKTX
+	Value: [R]CHILLER RCD1050A_RCD1050A-B01-TEL
+	FieldName: MENGE
+	Value: 1.000
+	FieldName: MEINS
+	Value: EA
+	FieldName: WADYN
+	Value: Y
+	FieldName: EXTSRVNO
+	Value: 
+	FieldName: CHARG
+	Value: 
+	FieldName: MBLNR
+	Value: 
+	FieldName: MJAHR
+	Value: 0000
+	FieldName: GIDAT
+	Value: 0000-00-00
+<< RfcStructure
+
+<< RfcTable
+
+<< IZSMM0097
+
+<< TABLES parameters
+
+<< RfcFunction
+
+2023-10-30 20:00:36.533225 [38640] << API RfcInvoke returned RFC_OK
+
+2023-10-30 20:00:36.533282 [38640] >> API RfcGetString
+RfcGetString(0000026382C0DD20, "E_FRGKZ", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393D140)
+2023-10-30 20:00:36.533718 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 2
+
+2023-10-30 20:00:36.533779 [38640] >> API RfcGetString
+RfcGetString(0000026382C0DD20, "E_FRGKZ", buf=0000026404A15050, buf len=2, errorInfo=000000D50393D140)
+RfcGetString(): string len=1
+>> HEXDUMP
+2023-10-30 20:00:36.533834 [38640] RfcGetString(E_FRGKZ) buffer:
+000000 | 52000000 00000000 00000000 00000000 |R...............|
+<< HEXDUMP
+
+2023-10-30 20:00:36.533861 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.533882 [38640] >> API RfcGetTable
+RfcGetTable(0000026382C0DD20, "IZSMM0097", pval=000000D50393DA50, errorInfo=000000D50393CFD8)
+RfcGetTable(IZSMM0097) returns hdl=0000026384F7F800
+2023-10-30 20:00:36.533935 [38640] << API RfcGetTable returned RFC_OK
+
+2023-10-30 20:00:36.533954 [38640] >> API RfcGetRowCount
+RfcGetRowCount(0000026384F7F800, rowcount 1 for "ZSMM0097", errorInfo=000000D50393CFE0)
+2023-10-30 20:00:36.533990 [38640] << API RfcGetRowCount returned RFC_OK
+
+2023-10-30 20:00:36.534010 [38640] >> API RfcMoveToFirstRow
+RfcMoveToFirstRow(0000026384F7F800, "ZSMM0097", errorInfo=000000D50393CFE8)
+2023-10-30 20:00:36.534046 [38640] << API RfcMoveToFirstRow returned RFC_OK
+
+2023-10-30 20:00:36.534066 [38640] >> API RfcGetCurrentRow
+Current row at 0 for "ZSMM0097" at 0000026384F7F800. Returning 000002638446CC10
+2023-10-30 20:00:36.534100 [38640] << API RfcGetCurrentRow returned RFC_OK
+
+2023-10-30 20:00:36.534123 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "BANFN", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.534207 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 11
+
+2023-10-30 20:00:36.534241 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "BANFN", buf=0000026404A152A0, buf len=11, errorInfo=000000D50393CD70)
+RfcGetString(): string len=10
+>> HEXDUMP
+2023-10-30 20:00:36.534292 [38640] RfcGetString(BANFN) buffer:
+000000 | 31003000 30003000 31003000 30003700 |1.0.0.0.1.0.0.7.|
+000010 | 37003000 00000000 00000000 00000000 |7.0.............|
+<< HEXDUMP
+
+2023-10-30 20:00:36.534327 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.534346 [38640] >> API RfcGetInt
+RfcGetInt(000002638446CC10, "BNFPO", pval=000000D50393D6B8, errorInfo=000000D50393CE28)
+RfcGetInt(BNFPO) returns 10
+2023-10-30 20:00:36.534395 [38640] << API RfcGetInt returned RFC_OK
+
+2023-10-30 20:00:36.534414 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MATNR", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.534475 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 9
+
+2023-10-30 20:00:36.534509 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MATNR", buf=0000026404A15470, buf len=9, errorInfo=000000D50393CD70)
+RfcGetString(): string len=8
+>> HEXDUMP
+2023-10-30 20:00:36.534560 [38640] RfcGetString(MATNR) buffer:
+000000 | 4D004500 54003000 31003400 39005200 |M.E.T.0.1.4.9.R.|
+000010 | 00000000 00000000 00000000 00000000 |................|
+<< HEXDUMP
+
+2023-10-30 20:00:36.534591 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.534609 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MAKTX", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.534678 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 37
+
+2023-10-30 20:00:36.534712 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MAKTX", buf=0000026404A15618, buf len=37, errorInfo=000000D50393CD70)
+RfcGetString(): string len=36
+>> HEXDUMP
+2023-10-30 20:00:36.534762 [38640] RfcGetString(MAKTX) buffer:
+000000 | 5B005200 5D004300 48004900 4C004C00 |[.R.].C.H.I.L.L.|
+000010 | 45005200 20005200 43004400 31003000 |E.R. .R.C.D.1.0.|
+000020 | 35003000 41005F00 52004300 44003100 |5.0.A._.R.C.D.1.|
+000030 | 30003500 30004100 2D004200 30003100 |0.5.0.A.-.B.0.1.|
+000040 | 2D005400 45004C00 00000000 00000000 |-.T.E.L.........|
+<< HEXDUMP
+
+2023-10-30 20:00:36.534811 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.534831 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MENGE", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.534905 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 6
+
+2023-10-30 20:00:36.534939 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MENGE", buf=0000026404A15830, buf len=6, errorInfo=000000D50393CD70)
+RfcGetString(): string len=5
+>> HEXDUMP
+2023-10-30 20:00:36.534991 [38640] RfcGetString(MENGE) buffer:
+000000 | 31002E00 30003000 30000000 00000000 |1...0.0.0.......|
+<< HEXDUMP
+
+2023-10-30 20:00:36.535019 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.535039 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MEINS", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.535470 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 3
+
+2023-10-30 20:00:36.535516 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MEINS", buf=0000026404A159C8, buf len=3, errorInfo=000000D50393CD70)
+RfcGetString(): string len=2
+>> HEXDUMP
+2023-10-30 20:00:36.535569 [38640] RfcGetString(MEINS) buffer:
+000000 | 45004100 00000000 00000000 00000000 |E.A.............|
+<< HEXDUMP
+
+2023-10-30 20:00:36.535598 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.535617 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "WADYN", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.535702 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 2
+
+2023-10-30 20:00:36.535738 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "WADYN", buf=0000026404A15B58, buf len=2, errorInfo=000000D50393CD70)
+RfcGetString(): string len=1
+>> HEXDUMP
+2023-10-30 20:00:36.535788 [38640] RfcGetString(WADYN) buffer:
+000000 | 59000000 00000000 00000000 00000000 |Y...............|
+<< HEXDUMP
+
+2023-10-30 20:00:36.535816 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.535835 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "EXTSRVNO", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.535930 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 1
+
+2023-10-30 20:00:36.535977 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "EXTSRVNO", buf=0000026404A15CE0, buf len=1, errorInfo=000000D50393CD70)
+RfcGetString(): string len=0
+>> HEXDUMP
+2023-10-30 20:00:36.536032 [38640] RfcGetString(EXTSRVNO) buffer:
+000000 | 00000000 00000000 00000000 00000000 |................|
+<< HEXDUMP
+
+2023-10-30 20:00:36.536059 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.536079 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "CHARG", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.536374 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 1
+
+2023-10-30 20:00:36.536419 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "CHARG", buf=0000026404A15E50, buf len=1, errorInfo=000000D50393CD70)
+RfcGetString(): string len=0
+>> HEXDUMP
+2023-10-30 20:00:36.536472 [38640] RfcGetString(CHARG) buffer:
+000000 | 00000000 00000000 00000000 00000000 |................|
+<< HEXDUMP
+
+2023-10-30 20:00:36.536499 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.536519 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MBLNR", buf=00000263E9C6EF18, buf len=0, errorInfo=000000D50393CD70)
+2023-10-30 20:00:36.536765 [38640] << API RfcGetString returned RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.key: RFC_BUFFER_TOO_SMALL
+	RFC_ERROR_INFO.message: value with the type RFCTYPE_STRING does not fit into given buffer with the length 0 required buffer length 1
+
+2023-10-30 20:00:36.536810 [38640] >> API RfcGetString
+RfcGetString(000002638446CC10, "MBLNR", buf=0000026404A15FC0, buf len=1, errorInfo=000000D50393CD70)
+RfcGetString(): string len=0
+>> HEXDUMP
+2023-10-30 20:00:36.536866 [38640] RfcGetString(MBLNR) buffer:
+000000 | 00000000 00000000 00000000 00000000 |................|
+<< HEXDUMP
+
+2023-10-30 20:00:36.536896 [38640] << API RfcGetString returned RFC_OK
+
+2023-10-30 20:00:36.536917 [38640] >> API RfcGetInt
+RfcGetInt(000002638446CC10, "MJAHR", pval=000000D50393D6B8, errorInfo=000000D50393CE28)
+RfcGetInt(MJAHR) returns 0
+2023-10-30 20:00:36.536966 [38640] << API RfcGetInt returned RFC_OK
+
+2023-10-30 20:00:36.536987 [38640] >> API RfcGetDate
+RfcGetDate(000002638446CC10, "GIDAT", buf=0000026404A16020, errorInfo=000000D50393CD68)
+>> HEXDUMP
+2023-10-30 20:00:36.537024 [38640] RfcGetDate(GIDAT) buffer:
+000000 | 30003000 30003000 30003000 30003000 |0.0.0.0.0.0.0.0.|
+<< HEXDUMP
+
+2023-10-30 20:00:36.537050 [38640] << API RfcGetDate returned RFC_OK
+
+2023-10-30 20:00:36.537071 [38640] >> API RfcMoveToNextRow
+RfcMoveToNextRow(0000026384F7F800, "ZSMM0097", errorInfo=000000D50393CFE8)
+2023-10-30 20:00:36.537106 [38640] << API RfcMoveToNextRow returned RFC_TABLE_MOVE_EOF
+	RFC_ERROR_INFO.key: RFC_TABLE_MOVE_EOF
+	RFC_ERROR_INFO.message: No next row
+
+2023-10-30 20:00:36.538382 [38640] >> API RfcDestroyFunction
+Deleting function Z_MM_VISITOR_PR_CHECK at 0000026382C0DD20
+2023-10-30 20:00:36.538441 [38640] << API RfcDestroyFunction returned RFC_OK
+
+2023-10-30 20:00:36.538480 [38640] >> API RfcCloseConnection (connection 2626455983168, error 000000D50393D288)
+Closing handle 2626455983168
+2023-10-30 20:00:36.538518 [38640] 	>> RfcConnectionBase::closeHandle
+>> RfcConnection name="none"
+Handle: 2626455983168	ConvID: 91539690
+	Asynchron: 0
+	Has Error: 0
+>> RfcControl name="sapdev_DA"
+	Program Name: SAPLZMM02                               
+	Codepage: 4103		Communication Codepage: 1100
+	SysID: DAD		Target: sapdev		Mandant: 100		SysNr: 00		Language: E		User: S0000014
+	Conversation ID: 91539690	Role: C753
+	Partner Rel: 702 		Partner Kernel Rel: 721 		Partner IP: 10.145.2.31		Partner IPv6: 10.145.2.31		Partner external IP: 10.145.2.31		Protocol version: 1547
+	Convert Char: true		Convert Float: true		Convert Int: true		Ignore Conv Errors: 0		Substitution Char: #
+	Exclusive: false		Get SSO2: false		Use basXML: 0
+<< RfcControl
+
+>> CpicConnection
+	CPIC Handle: 0
+	Gateway Host: 		Gateway Service: 		AS Host: 		AS Service: 		Program ID: 
+	Protocol: I
+	Conversation ID: 91539690
+	Last IO Time: Mon Oct 30 20:00:36 2023
+
+	Data Received: 3		Status Received: 2		All Received: 1
+	Connected: true		Deallocated: false		Accepted: 0
+	Registered Mode: false		Just Accepted: 0
+<< CpicConnection
+
+<< RfcConnection
+
+2023-10-30 20:00:36.538623 [38640] 	>> RfcConnectionBase::setInCall
+2023-10-30 20:00:36.538641 [38640] Locking connection mutex 0000026384F9F000 for 2626455983168
+2023-10-30 20:00:36.538663 [38640] 	<< RfcConnectionBase::setInCall returned 0
+
+2023-10-30 20:00:36.538683 [38640] 	>> RfcConnectionBase::disconnect
+2023-10-30 20:00:36.538700 [38640] 	>> CpicConnection::close
+2023-10-30 20:00:36.538717 [38640] Locking CPIC_Cancel mutex 0000026382E39D28
+2023-10-30 20:00:36.538736 [38640] Locked CPIC_Cancel mutex 0000026382E39D28
+2023-10-30 20:00:36.561707 [38640] Unlocking CPIC_Cancel mutex 0000026382E39D28 
+2023-10-30 20:00:36.561831 [38640] Unlocked CPIC_Cancel mutex 0000026382E39D28 
+2023-10-30 20:00:36.561898 [38640] 	<< CpicConnection::close returned 0
+
+2023-10-30 20:00:36.561946 [38640] 	<< RfcConnectionBase::disconnect returned 0
+
+2023-10-30 20:00:36.561976 [38640] 	<< RfcConnectionBase::closeHandle returned 0
+
+2023-10-30 20:00:36.562002 [38640] << API RfcCloseConnection returned RFC_OK
+

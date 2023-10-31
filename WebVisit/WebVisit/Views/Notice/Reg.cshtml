@@ -1,0 +1,150 @@
+@model Notice
+@{
+    ViewData["Title"] = @Localizer["Register Notice"]; //"공지사항 - 등록";
+}
+<script>
+    function goList(){
+        window.history.go(-1);
+    }
+    function saveForm(){
+        var myform = document.fmSave;
+        if (myform.StartDate.value == null || myform.StartDate.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a start date"]';
+            myform.StartDate.focus();
+            return;
+        }
+        if (myform.EndDate.value == null || myform.EndDate.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select an end date"]';
+            myform.EndDate.focus();
+            return;
+        }
+        if (myform.Title.value == null || myform.Title.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the subject"]';
+            myform.Title.focus();
+            return;
+        }
+        if (myform.Contents.value == null || myform.Contents.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter contents"]';
+            myform.Contents.focus();
+            return;
+        }
+        myform.submit();
+    }
+
+    /**
+    onchange="onChangeFile(this.value)"
+    */
+    function onChangeFile(fullPath){
+        @* var fullPath = document.getElementById('upload').value; *@
+        if (fullPath) {
+            var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+            var filename = fullPath.substring(startIndex);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+            alert(filename);
+        }        
+    }
+
+    // file events
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    $("body").on("change", "#file2", function (ev) {
+      console.log("[body>change file2]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload2", function (ev) {
+      console.log("[body>click btn-upload2]");
+      $("#file2").trigger("click");
+      @* $(this).prev("#file2").trigger("click"); *@
+    });
+
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Registration Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+<form name="fmSave" method="post" enctype="multipart/form-data">
+        <li>
+            <div class="label s03">@Localizer["Writer Name"]</div>
+            <div class="form-item-wrap">
+                <input type="text" asp-for="InsertName" class="inp" placeholder='@Localizer["Writer Name"]' value="마스터" readonly/>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Registration Period"]</div>
+            <div class="form-item-wrap">
+                <input type="text" asp-for="StartDate" value='@Model.StartDate.ToString("yyyy-MM-dd")' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                <span class="e01">~</span>
+                <input type="text" asp-for="EndDate" value='@Model.EndDate.ToString("yyyy-MM-dd")' placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Attach File"]</div>
+            <div class="form-item-wrap">
+                <label asp-for="FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                <input asp-for="FormFile" id="file1"  style="display:none;" type="file">
+                <span asp-validation-for="FormFile"></span>
+                <div class="value">@Localizer["No Files Selected"]</div>
+                @* <input type="file" class="hidden" name="FormFile" multiple />
+                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>*@
+            </div>
+        </li>
+        @* <li>
+            <div class="label s03">@Localizer["Attach File"]</div>
+            <div class="form-item-wrap">
+                <label asp-for="FormFile" id="btn-upload2" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                <input asp-for="FormFile" id="file2" style="display:none;" type="file">
+                <span asp-validation-for="FormFile"></span>
+                <div class="value">@Localizer["No Files Selected"]</div>
+            </div>
+        </li> *@
+        <li class="full">
+            <div class="label s03">@Localizer["Title"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" asp-for="Title" placeholder='@Localizer["Title"]' />
+            </div>
+        </li>
+        <li class="empty02"></li>
+        <li class="full">
+            <div class="label s03">@Localizer["Contents"]</div>
+            <div class="form-item-wrap">
+                <textarea class="textarea" asp-for="Contents" placeholder='@Localizer["Contents"]'></textarea>
+            </div>
+        </li>
+</form>
+    </ul>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveForm();">@Localizer["Save"]</button>
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["Cancel"]</button>
+    </div>
+</div>
+@* <img src = "@ViewBag.img1" alt="test" /> *@

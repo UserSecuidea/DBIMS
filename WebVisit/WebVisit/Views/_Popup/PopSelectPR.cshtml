@@ -1,0 +1,243 @@
+<script>
+    @* searchPR searchMaterial *@
+    // popSelectPR(callbackObj, itemNameObj, itemCodeObj, standardObj, unitObj, prNoObj)
+    var callbackPR; // function callback(itemCode, itemName, standard, unit)
+    var searchPRItemNameObj; // 자재이름
+    var searchPRItemCodeObj; // 자재코드
+    @* var searchPRStandardObj; // 규격 *@
+    var searchPRUnitObj; // 단위
+    var searchPRPrNoObj // PR No
+    var searchQuantityObj;
+    var urlPRItemList = "/exportimport/getitemlistbypr"; // prcode
+    var urlPRVendorCheck = "/exportimport/vendorcheck"; // itemCode location
+    var currentLocation;
+    function popSelectPR(callbackObj, itemNameObj, itemCodeObj, unitObj, prNoObj, standardObj, quantityObj, loc){
+        var myform = document.fmSearchPR;
+        myform.prcode.value="";
+        var myform2 = document.fmSearchPRMaterial;
+        myform2.itemCode.value="";
+        var o = document.getElementById("dvSearchPRMaterialList");
+        o.innerHTML = "";
+        document.getElementById("popPRErrormsg").innerHTML ='';
+        
+        currentLocation = loc;
+        searchPRItemNameObj = itemNameObj;
+        searchPRItemCodeObj = itemCodeObj;
+        searchPRStandardObj = standardObj;
+        searchPRUnitObj = unitObj;
+        searchPRPrNoObj = prNoObj;
+        searchQuantityObj = quantityObj;
+        callbackPR = callbackObj;
+
+        common.popOpen(document.getElementById('popSelectPR'));
+    }
+    function searchPR(){
+        var myform = document.fmSearchPR;
+        var prcode = myform.prcode.value.trim();
+        document.getElementById("popPRErrormsg").innerHTML ='';
+        @* var itemCode = myform.itemCode.value.trim();
+        var fab = myform.fab.value; *@
+        if((prcode == null || prcode.length < 1) ) {
+            document.getElementById("popPRErrormsg").innerHTML = '@Localizer["Please enter PR No correctly"]';
+            myform.prcode.focus();
+            return false;
+        }
+        prList = null;
+        document.getElementById("searchMaterial").style.display = "none";
+        $.ajax({
+            url: urlPRItemList,
+            data: { prcode },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[searchPR]", json);
+            /*  e_FRGKZ: "R"
+                izsmM0097: Array(1)
+                    0: 
+                    banfn: "1000150932"     PR 번호
+                    bnfpo: 10               PR Item
+                    charg: ""               bach no
+                    extsrvno: "S1-2798"     serial no
+                    gidat: "0001-01-01T00:00:00"    출고 일자
+                    maktx: "[VMI][R]RF-10S" 자재 description
+                    matnr: "MEM0733R"       자재코드
+                    mblnr: ""               출고 문서번호
+                    meins: 0                단위
+                    menge: "1.000"          수량
+                    mjahr: 0                출고년도
+                    wadyn: "Y"              품질 보장 유무*/ 
+            if(json.e_FRGKZ == "R"){
+                var myform = document.fmSearchPRMaterial;
+                myform.itemCode.value = '';
+                document.getElementById("searchMaterial").style.display = "block";
+                searchItemCode = null;
+                prList = json.izsmM0097;
+                drawPRList();
+            }
+        }); 
+    }
+    var prList = null;
+    var searchItemCode=null;
+    function drawPRList(){
+        if(prList != null) {
+            var rows= "";
+            var o = document.getElementById("dvSearchPRMaterialList");
+            o.innerHTML = "";
+            for(var m of prList){
+                console.log("[searchPR]", m);
+                if(searchItemCode == null || searchItemCode == m.matnr) {
+                    @* PR번호,  PR Item,    자재코드,   자재 Description, 수량, 단위, 보증기간 유무, Serial No*@  
+                    @* PR번호   자재이름     자재코드   규격                    단위  *@
+                    rows+="<tr onclick=\"selectSearchPR('"+m.banfn+"','"+m.bnfpo+"','"+m.matnr+"','"+m.meins+"','"+m.maktx+"','"+m.extsrvno+"','"+m.menge+"')\">";
+                    rows+="<td>"+m.banfn+"</td><td>"+m.bnfpo+"</td><td>"+m.matnr+"</td><td>"+m.maktx+"</td><td>"+m.menge+"</td><td>"+m.meins+"</td><td>"+m.wadyn+"</td><td>"+m.extsrvno+"</td></tr>";
+                }
+            }
+            o.innerHTML = rows;
+        }
+    }
+    function searchPRMaterial(){
+        var myform = document.fmSearchPRMaterial;
+        var itemCode = myform.itemCode.value.trim();
+        @* var fab = myform.fab.value; *@
+        if(itemCode == null || itemCode.length < 1) {
+            document.getElementById("popPRErrormsg").innerHTML = '@Localizer["Please enter material code"]';
+            myform.itemCode.focus();
+            return false;
+        }
+        searchItemCode = itemCode;
+        drawPRList();
+    }
+    function searchPRMaterialInit(){
+        searchItemCode = null;
+        drawPRList();
+    }
+    //prcode, pr item, 자재코드, 단위,
+    function selectSearchPR(prcode, prItem, itemCode, unit, itemDesc, sn, quantity){
+        console.log("[selectSearchPR]prcode:"+prcode+", prItem:"+prItem+", itemCode:"+itemCode+", unit:"+unit+", itemDesc:"+itemDesc);
+
+        var location = currentLocation;
+        $.ajax({
+            url: urlPRVendorCheck,
+            data: { location, itemCode },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[selectSearchPR]", json);
+            if(json.e_SUBRC == "S") {
+                searchPRItemNameObj.value = itemDesc;
+                searchPRItemCodeObj.value = itemCode;
+                searchPRStandardObj.value = sn;
+                searchPRUnitObj.value = unit;
+                searchPRPrNoObj.value = prcode;
+                searchQuantityObj.value = quantity;
+                var o = document.getElementById("dvSearchPRMaterialList");
+                o.innerHTML = "";
+                common.popClose(document.getElementById('popSelectPR'));
+            } else {
+                document.getElementById("popPRErrormsg").innerHTML = '선택한 사업장에서 사용할 수 없는 자재코드 입니다';//@Localizer["Please enter PR No correctly"]
+            }
+        });
+    }
+</script>
+
+<div id="popSelectPR" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search PR No"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <section class="page-search-wrap mt0">
+                <div class="mob-toggle-wrap">
+                    <a href="javascript:void(0)">
+                        <span>@Localizer["Filter"]</span>
+                        <img src="/images/ico/ico-arr-up01.svg" alt="검색" />
+                    </a>
+                </div>
+<form name="fmSearchPR">
+                <div class="search-group-wrap">
+                    <div class="search-form-wrap" id="searchPR">
+                        <ul>
+                            <li class="per02">
+                                <div class="label auto">PR No</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="prcode" value="" class="inp" />
+                                </div>
+                            </li>
+                            <li class="per02">
+                                <button type="button" onclick="searchPR();">@Localizer["Search"]</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+</form>
+                <div class="search-group-wrap">
+<form name="fmSearchPRMaterial">
+                    <div class="search-form-wrap" id="searchMaterial" style="display:none;">
+                        <BR />
+                        <ul>
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Material Code"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="itemCode" value="" class="inp" />
+                                </div>
+                            </li>
+                            <li class="per02">
+                                <button type="button" onclick="searchPRMaterial();">@Localizer["Search"]</button>
+                                <button type="button" onclick="searchPRMaterialInit();">@Localizer["Reset"]</button>
+                            </li>
+                        </ul>
+                    </div>
+</form>
+                    <div class="search-btn-wrap">
+                    </div>
+                </div>
+                <div class="label org">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="popPRErrormsg" style="font-size:13px;color:#F15A22;">&nbsp;</span>
+                </div>
+            </section>
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" id="dvSearchPRList" aria-label="자재 검색 결과">
+                        <tr>
+                            <th>@Localizer["PR No"]</th>
+                            <th>PR Item</th>
+                            <th>@Localizer["Material Code"]</th>
+                            <th>@Localizer["Material"] Description</th>
+                            <th>@Localizer["Quantity"]</th>
+                            <th>@Localizer["Unit"]</th>
+                            <th>@Localizer["Warranty Period"]</th>
+                            <th>Serial No</th>
+                        </tr>
+                        
+                        @* <tr onclick="selectRow(this, 1);">
+                            <td>MCC016</td>
+                            <td>WATER PROOF PIPE</td>
+                            <td>C-26</td>
+                            <td>EA</td>
+                        </tr> *@
+
+                    </table>
+                </div>
+
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchPRMaterialList" aria-label="자재 리스트">
+
+                    </table>
+                </div>
+
+                @* <div class="paging-item-wrap">
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-first.svg" alt="" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-prev.svg" alt="" /></a>
+                    <div class="value">
+                        <input type="text" class="inp" value="1" />
+                        <span>/ 1</span>
+                    </div>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-next.svg" alt="" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-last.svg" alt="" /></a>
+                </div> *@
+
+            </section>
+        </div>
+    </div>
+</div>

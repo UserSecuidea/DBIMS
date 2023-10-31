@@ -1,0 +1,346 @@
+<script>
+    /**
+    popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj)
+    */
+    var searchPersonNameObj;
+    var searchPersonSabunObj;
+    var searchPersonTelObj;
+    var searchPersonMobileObj;
+    var searchPersonEmailObj;
+    var searchPersonOrgIdObj;
+    var searchPersonOrgKorObj;
+    var searchPersonOrgEngObj;
+
+    var searchPersonLocationObj;
+    var searchPersonLocationNameObj;
+    var searchPersonCompanyIdObj;
+    var searchPersonCompanyNameObj;
+    var searchPersonGradeIdObj;
+    var searchPersonGradeNameObj;
+    var searchPersonPersonTypeIdObj;
+    var searchPersonPersonTypeIdNameObj;
+    var searchCardNoObj;
+    var searchCarAllowCntObj;
+    var searchCarRegCntObj;
+
+    var searchGenderObj;
+    var searchGenderNameObj;
+    var searchBirthDateObj;
+    var searchPersonStatusIdObj;
+    var searchPersonStatusNameObj;
+    var searchHomeAddrObj;
+
+    var callback; // function callback(sabun)
+    var returnCallback;
+    var searchType = "A";
+    var persontypeid = 3;
+    var issafeeduonly = true;
+    var isemployeeonly = false;
+
+    function popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj){
+        @* console.log("[selectSearchPerson]", nameObj, telObj, orgKorObj); *@
+        console.log("[selectSearchPerson]", genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj);
+        searchType = "A";
+        returnCallback = null;
+
+        searchPersonNameObj = nameObj;
+        searchPersonTelObj = telObj;
+        searchPersonMobileObj = mobileObj;
+        searchPersonEmailObj = emailObj;
+        searchPersonOrgKorObj = orgKorObj;
+        searchPersonOrgEngObj = orgEngObj;
+        searchPersonOrgIdObj = orgIdObj;
+        searchPersonSabunObj = sabunObj;
+
+        searchPersonLocationObj = locationObj;
+        searchPersonLocationNameObj = locationNameObj;
+        searchPersonCompanyIdObj = companyIdObj;
+        searchPersonCompanyNameObj = companyNameObj;
+        searchPersonGradeIdObj = gradeIdObj;
+        searchPersonGradeNameObj = gradeNameObj;
+        searchPersonPersonTypeIdObj = personTypeIdObj;
+        searchPersonPersonTypeIdNameObj = personTypeIdNameObj;
+        searchCardNoObj = cardNoObj;
+        searchCarAllowCntObj = carAllowCntObj;
+        searchCarRegCntObj = carRegCntObj;
+
+        searchGenderObj = genderObj;
+        searchGenderNameObj = genderNameObj;
+        searchBirthDateObj = birthDateObj;
+        searchPersonStatusIdObj = personStatusIdObj;
+        searchPersonStatusNameObj = personStatusNameObj;        
+        searchHomeAddrObj = homeAddrObj;
+
+        callback = callbackObj;
+        common.popOpen(document.getElementById('popSelectPerson'));
+    }
+
+    // name, sabun, tel, mobile, email, orgId, orgKor, orgEng, location, locationName, companyId, companyName, gradeId, gradeName, personTypeId, personTypeIdName, cardNo, carAllowCnt, carRegCnt, gender, genderName, birthDate, personStatusId, personStatusName, homeAddr
+    @* persontypeid: 0:임직원, 1:임직원 - 상주업체 직원, 2:비상주업체 관리자, 3:비상주업체 직원 *@
+    function popSelectPersonByCallback(callbackObj, ptypeid=3, issafe=true){
+        console.log("[popSelectPersonByCallback] issafe:"+issafe);
+        searchType = "P";
+        returnCallback = callbackObj;
+        persontypeid = ptypeid;
+        issafeeduonly = issafe;
+        common.popOpen(document.getElementById('popSelectPerson'));
+    }
+
+    function selectSearchPerson(name, sabun, tel, mobile, email, orgId, orgKor, orgEng, location, locationName, companyId, companyName, gradeId, gradeName, 
+        personTypeId, personTypeIdName, cardNo, carAllowCnt, carRegCnt, gender, genderName, birthDate, personStatusId, personStatusName, homeAddr,
+        isVisitorEdu, isCleanEdu, isSafetyEdu, workTypeCodeID){
+        console.log("[selectSearchPerson]", searchPersonNameObj, name);
+        if (returnCallback != null){
+            returnCallback(name, sabun, tel, mobile, email, orgId, orgKor, orgEng, location, locationName, companyId, companyName, gradeId, gradeName, personTypeId, personTypeIdName, cardNo, carAllowCnt, carRegCnt, gender, genderName, birthDate, personStatusId, personStatusName, homeAddr, isVisitorEdu, isCleanEdu, isSafetyEdu, workTypeCodeID);
+        }else {
+            if(searchPersonNameObj != null) {
+                searchPersonNameObj.value=name;
+            }
+            if(searchPersonSabunObj != null) {
+                searchPersonSabunObj.value=sabun;
+            }        
+            if(searchPersonTelObj != null) {
+                searchPersonTelObj.value=tel;
+            }
+            if(searchPersonMobileObj != null) {
+                searchPersonMobileObj.value=mobile;
+            }
+            if(searchPersonEmailObj != null) {
+                searchPersonEmailObj.value=email;
+            }
+            if(searchPersonOrgIdObj != null) {
+                searchPersonOrgIdObj.value=orgId;
+            }
+            if(searchPersonOrgKorObj != null) {
+                searchPersonOrgKorObj.value=orgKor;
+            }
+            if(searchPersonOrgEngObj != null) {
+                searchPersonOrgEngObj.value=orgEng;
+            }
+            if(searchPersonLocationObj != null) {
+                searchPersonLocationObj.value=location;
+            }
+            if(searchPersonLocationNameObj != null) {
+                searchPersonLocationNameObj.value=locationName;
+            }
+            if(searchPersonCompanyIdObj != null) {
+                searchPersonCompanyIdObj.value=companyId;
+            }
+            if(searchPersonCompanyNameObj != null) {
+                searchPersonCompanyNameObj.value=companyName;
+            }
+            if(searchPersonGradeIdObj != null) {
+                searchPersonGradeIdObj.value=gradeId;
+            }
+            if(searchPersonGradeNameObj != null) {
+                searchPersonGradeNameObj.value=gradeName;
+            }
+            if(searchPersonPersonTypeIdObj != null) {
+                searchPersonPersonTypeIdObj.value=personTypeId;
+            }
+            if(searchPersonPersonTypeIdNameObj != null) {
+                searchPersonPersonTypeIdNameObj.value=personTypeIdName;
+            }
+            if(searchCardNoObj != null) {
+                searchCardNoObj.value=cardNo;
+            }
+            if(searchCarAllowCntObj != null) {
+                searchCarAllowCntObj.value=carAllowCnt;
+            }
+            if(searchCarRegCntObj != null) {
+                searchCarRegCntObj.value=carRegCnt;
+            }
+
+            if(searchGenderObj != null) {
+                searchGenderObj.value=gender;
+            }
+            if(searchGenderNameObj != null) {
+                searchGenderNameObj.value=genderName;
+            }
+            if(searchBirthDateObj != null) {
+                searchBirthDateObj.value=birthDate;
+            }
+            if(searchPersonStatusIdObj != null) {
+                searchPersonStatusIdObj.value=personStatusId;
+            }
+            if(searchPersonStatusNameObj != null) {
+                searchPersonStatusNameObj.value=personStatusName;
+            }
+            if(searchHomeAddrObj != null) {
+                searchHomeAddrObj.value=homeAddr;
+            }
+            if(callback != null){
+                callback(sabun);
+            }
+        }
+
+        // clear
+        var o = document.getElementById("dvSearchPersonList");
+        o.innerHTML = "";
+        var myform = document.fmSearchPerson;
+        myform.Name.value = "";
+        myform.Department.value = "";
+        common.popClose(document.getElementById('popSelectPerson'));
+    }
+
+    function searchPerson(){
+        ///visit/getsearchperson
+        var myform = document.fmSearchPerson;
+        var name = myform.Name.value.trim();
+        var department = myform.Department.value.trim();
+        console.log("name length: "+ name.length);
+        if (name.length < 1) {
+            document.getElementById("popPersonErrormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.Name.focus();
+            return;
+        }
+        document.getElementById("popPersonErrormsg").innerHTML = '';
+        @* if (department.length < 1) {
+            document.getElementById("popPersonErrormsg").innerHTML = '부서를 입력해 주세요.';
+            myform.Department.focus();
+            return;
+        } *@
+        @* name, department, searchType = "A", persontypeid = 3, issafeedu = true *@
+        console.log("issafeeduonly:"+issafeeduonly);
+        personJson = null;
+        $.ajax({
+            url: "/person/getsearchperson",
+            data: { name, department, searchType, persontypeid, issafeeduonly, isemployeeonly },
+            method: "GET",
+            dataType: "JSON" 
+        }).done(function(json) {
+            console.log("[searchPerson]", json);
+            var rows= "";
+            // name, sabun, tel, mobile, email, orgID, orgNameKor, orgNameEng location, locationName, companyID, companyName, personTypeID, personTypeIDName  
+            personJson = json;
+            for(var m of json){
+                console.log("[searchPerson]", m);               
+                rows+="<tr onclick=\"selectSearchPerson('"+m.name+"','"+m.sabun+"','"+m.tel+"','"+m.mobile+"','"+m.email+"','"+m.orgID+"','"+m.orgNameKor+"','"+m.orgNameEng+"','"+m.location+"','"+m.locationName+"','"+m.companyID+"','"+m.companyName+"','"+m.gradeID+"','"+m.gradeName+"','"+m.personTypeID+"','"+m.personTypeIDName+"','"+m.cardNo+"','"+m.carAllowCnt+"','"+m.carRegCnt+"','"+m.gender+"','"+m.genderName+"','"+m.birthDate+"','"+m.personStatusId+"','"+m.personStatusName+"','"+m.homeAddr+"','"+m.isVisitorEdu+"','"+m.isCleanEdu+"','"+m.isSafetyEdu+"','"+m.workTypeCodeID+"')\">";
+                rows+="<td>"+m.name+"</td><td>"+m.orgNameKor+"</td><td>"+m.gradeName+"</td></tr>";
+                @* <td>"+m.sabun+"</td> <td>"+m.tel+"</td><td>"+m.mobile+"</td><td>"+m.email+"</td>*@
+            }
+            var o = document.getElementById("dvSearchPersonList");
+            o.innerHTML = rows;
+        });
+    }
+    var personJson = null;
+    function popSelectPersonGetPersonObj(){
+        return personJson;
+    }
+    function enterSearchPerson() {
+	    if (window.event.keyCode == 13) {
+            searchPerson();
+        }
+    }
+</script>
+
+<div id="popSelectPerson" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search Person"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <section class="page-search-wrap mt0">
+                <div class="mob-toggle-wrap">
+                    <a href="javascript:void(0)">
+                        <span>@Localizer["Filter"]</span>
+                        <img src="/images/ico/ico-arr-up01.svg" alt='@Localizer["Filter"]' />
+                    </a>
+                </div>
+                <div class="search-group-wrap">
+                    <div class="search-form-wrap">
+                        <ul>
+<form name="fmSearchPerson">
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="Name" maxlength="30" class="inp" onkeyup="enterSearchPerson()" />
+                                </div>
+                            </li>
+                            <li class="per02">
+                                <div class="label auto">@Localizer["Department Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="Department" maxlength="30" class="inp" onkeyup="enterSearchPerson()" />
+                                </div>
+                            </li>
+</form>
+                        </ul>
+                    </div>
+                    <div class="search-btn-wrap">
+                        <button type="button" onclick="searchPerson();">@Localizer["Search"]</button>
+                    </div>
+                </div>
+                <div class="label org">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="popPersonErrormsg" style="font-size:13px;color:#F15A22;">&nbsp;</span>
+                </div>
+            </section>
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" aria-label="사원 리스트">
+                        <tr>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["Department Name"]</th>
+                            <th>@Localizer["Position"]</th>
+                            @* <th>@Localizer["Sabun"]</th>
+                            <th>@Localizer["Tel"]</th>
+                            <th>@Localizer["CellPhone"]</th>
+                            <th>@Localizer["Email"]</th> *@
+                            
+                        </tr>
+                    </table>
+                </div>
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchPersonList" aria-label="사원 리스트">
+@* 
+                        <tr onclick="selectRow(this, 1);">
+                            <td>홍길동</td>
+                            <td>B12541254</td>
+                            <td>인사</td>
+                            <td>031-259-96996</td>
+                            <td>010-2159-96996</td>
+                            <td>hone@test.com</td>
+                        </tr>
+                        <tr onclick="selectRow(this, 2);">
+                            <td>홍길동</td>
+                            <td>B12541254</td>
+                            <td>인사</td>
+                            <td>031-259-96996</td>
+                            <td>010-2159-96996</td>
+                            <td>hone@test.com</td>
+                        </tr>
+                        <tr onclick="selectRow(this, 3);">
+                            <td>홍길동</td>
+                            <td>B12541254</td>
+                            <td>인사</td>
+                            <td>031-259-96996</td>
+                            <td>010-2159-96996</td>
+                            <td>hone@test.com</td>
+                        </tr>
+                        <tr onclick="selectRow(this, 4);">
+                            <td>홍길동</td>
+                            <td>B12541254</td>
+                            <td>인사</td>
+                            <td>031-259-96996</td>
+                            <td>010-2159-96996</td>
+                            <td>hone@test.com</td>
+                        </tr> *@
+
+                    </table>
+                </div>
+
+                @* <div class="paging-item-wrap">
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-first.svg" alt="처음으로" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-prev.svg"  alt="이전으로" /></a>
+                    <div class="value">
+                        <input type="text" class="inp" value="1" />
+                        <span>/ 1</span>
+                    </div>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-next.svg" alt="다음으로" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-last.svg"  alt="마지막으로" /></a>
+                </div> *@
+
+            </section>
+        </div>
+    </div>
+</div>

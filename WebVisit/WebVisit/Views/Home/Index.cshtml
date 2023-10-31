@@ -1,0 +1,1426 @@
+﻿@model IndexViewModel
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_FirstLayout";
+}
+<script>
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            console.log("clkick btn-add");
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            var obj =  {...playerObj};
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+            $( ".inpdate" ).datepicker({ regional:"@CultureInfo.CurrentCulture", dateFormat: 'yy-mm-dd' });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            console.log("click .reg-header-wrap a");
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+        $("body").on("click", ".dialog", function(evt){
+            console.log("dialog click");
+           // evt.stopPropagation();
+           // evt.preventDefault ();
+        });
+
+        $("body").on("click", function(evt){
+            console.log("body click");
+            @* if (isOpenPopup){
+                common.popClose(popupObj);
+            } *@
+        });
+        /*
+        $("body").on("click", ".enter-play-btn", function(evt){
+            console.log("enter-play-btn")
+            var ck = $(this).hasClass("on");
+            if(ck){
+                $(this).removeClass("on");
+                vid.pause();
+            }else{
+                $(this).addClass("on");
+                vid.play();
+            }
+            evt.preventDefault();
+            evt.stopPropagation();
+        });
+        */
+    });
+
+
+    function popRegVisit(){
+        common.popOpen(document.getElementById('visitReg'));
+    }
+
+    function popPrivacy1(){
+        common.popOpen(document.getElementById('privacy1'));
+    }
+
+    function popPrivacy2(){
+        common.popOpen(document.getElementById('privacy2'));
+    }
+
+    function popNoticeRead(idx){
+        // noticeTitle noticeWriter noticeWriteDate noticeContents noticeAttachList <li><a href="javascript:void(0)" onclick="dl(0)">출입증발급기준.pdf</a></li>
+        common.popOpen(document.getElementById('noticeRead'+idx));
+    }
+
+    // ##### <로그인> #####
+
+    function goLogin(){
+        @* window.location = "/person/list"; *@
+        var myform = document.fmLogin;
+        if (myform.UserId.value.trim() == ''){
+            @* alert('@Localizer["please enter username."]'); *@
+            document.getElementById("spLoginError").innerText='@Localizer["please enter username."]';
+            myform.UserId.value = '';
+            myform.UserId.focus();
+            return false;
+        }
+        if (myform.UserPwd.value.trim() == ''){
+            @* alert('@Localizer["please enter password."]'); *@
+            document.getElementById("spLoginError").innerText='@Localizer["please enter password."]';
+            myform.UserPwd.value = '';
+            myform.UserPwd.focus();
+            return false;
+        }
+        if (myform.UserId.value.trim().length < 4){
+            @* alert('@Localizer["Please enter at least 4 characters for your username."]'); *@
+            document.getElementById("spLoginError").innerText='@Localizer["Please enter at least 4 characters for your username."]';
+            myform.UserId.focus();
+            @* myform.UserId.value = ''; *@
+            return false;
+        }
+        if (myform.UserPwd.value.trim().length < 4){
+            @* alert('@Localizer["Please enter at least 4 characters for your password."]'); *@
+            document.getElementById("spLoginError").innerText='@Localizer["Please enter at least 4 characters for your password."]';
+            myform.UserPwd.focus();
+            @* myform.UserPwd.value = ''; *@
+            return false;
+        }
+        myform.submit();
+    }
+    function enterGoLogin() {
+	    if (window.event.keyCode == 13) {
+            goLogin();
+        }
+    }
+
+    function goFindIdPwd(){
+        window.alert('@Localizer["Ask administrator"]');
+    }
+
+    function changeLang(evt) {
+        console.log("[changeLang]"+evt.value);
+        window.location = "/?culture="+evt.value;
+    }
+    // ##### </로그인> #####
+
+    // ##### <방문객> #####
+   @*2023.09.20 신인아 start*@
+    function driveVisitForm() {
+        var myform = document.fmAddVisit;
+        if (myform.ckAgree2.checked == false) {
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please agree to the Terms of Use about Car"]';
+            return;
+        }
+    }
+    function driveCheck() {
+        var myform = document.fmAddVisit;
+        if(myform.ckAgree2.checked == true) {
+            $("input[name='CarNo[]']").val("");
+            $("input[name='CarNo[]']").attr("readonly", false);
+        } else if(myform.ckAgree2.checked == false){
+            $("input[name='CarNo[]']").val("");
+            $("input[name='CarNo[]']").attr("readonly", true);
+        }
+    }
+    @*2023.09.20 신인아 end*@
+    function saveVisitForm(){
+        var myform = document.fmAddVisit;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+
+    @*2023.09.20 신인아 start*@
+        if (myform.ckAgree1.checked == false) {
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please agree to the Terms of Use"]';
+            return;
+        }
+    @*2023.09.20 신인아 end*@
+        if(myform.VisitStartDate.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the date of visit"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        if(myform.VisitEndDate.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the date of visit"]';
+            myform.VisitEndDate.focus();
+            return;
+        }
+        //방문신청: mode VisitorType VisitApplyType RegVisitorType Location VisitStartDate VisitEndDate ContactSabun ContactName	ContactOrgID	ContactOrgNameKor ContactOrgNameEng PlaceCodeID VisitPurposeCodeID
+        if(myform.ContactName.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please select contact person"]';
+            return;
+        }
+        if(myform.PlaceCodeID.value < 0 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please select an access area"]';
+            return;
+        }
+        let s = new Date(myform.VisitStartDate.value.trim());
+        let e = new Date(myform.VisitEndDate.value.trim());
+        let t = new Date();
+        let d = e.getTime() - s.getTime();
+        @* console.log("date", isValidDate(s),s, "/", isValidDate(e), e,"/",d); *@
+        if (isValidDate(s) == false){ // s == "Invalid Date"
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            myform.VisitStartDate.value = '';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        if (isValidDate(e) == false){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            myform.VisitEndDate.value = '';
+            myform.VisitEndDate.focus();
+            return;
+        }
+        if (d < 0){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["The visit end date is before the visit start date"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        var d2 = parseInt(ToYYMMDD(s)) - parseInt(ToYYMMDD(t));
+        @* console.log("s: "+parseInt(ToYYMMDD(s))+", t: "+parseInt(ToYYMMDD(t))); *@
+        if (d2 < 0){
+            @* console.log("date", s.getDate(), "/", t,"/",d2); *@
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["The visit date is earlier than the current date"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please select contact person"]';
+            myform.ContactName.focus();
+            return;
+        }
+        
+        //방문신청회원 arr : Name BirthDate Gender Mobile CompanyName ckVisitorEdu ckCleanEdu CarNo, ckIsVIP, VipTypeCodeID
+        @* console.log("[saveAddForm] form", myform); *@
+        @* console.log("[saveAddForm] myform.length: "+myform.length); *@
+        var ckCleanEdu=[], ckVisitorEdu=[], ckCarryItem=[], ckIsVIP = [];
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+            if (el.name == "ckVisitorEdu[]") {
+                if (el.checked)
+                    ckVisitorEdu[j] = "Y"
+                else
+                    ckVisitorEdu[j] = "N"
+                
+                if(j==0){//방문신청자
+                    @* console.log("[saveAddForm-"+j+"]"+myform[i].name+" / "+myform[i].value); *@
+                    if(ckVisitorEdu[j]=="N"){
+                        document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Visitor training is compulsory"]';
+                        return;
+                    }
+                }
+            }
+            if (el.name == "ckCleanEdu[]") {
+                if (el.checked)
+                    ckCleanEdu[j] = "Y"
+                else 
+                    ckCleanEdu[j] = "N"
+
+                if(j == 0 && myform.PlaceCodeID.value == 6){//방문신청자 클린룸 선택시
+                    if(ckCleanEdu[j] == "N"){
+                        document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Clean room visitors must complete online training"]';
+                        return;
+                    }
+                }
+            }
+            if (el.name == "ckCarryItem[]") {
+                if (el.checked)
+                    ckCarryItem[j] = "Y"
+                else 
+                    ckCarryItem[j] = "N"
+            }
+            if (el.name == "ckIsVIP[]") {
+                if (el.checked)
+                    ckIsVIP[j] = "Y"
+                else 
+                    ckIsVIP[j] = "N"
+            }
+            if (el.name == "Name[]" && el.value.trim().length < 1) {
+                @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+                document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the visitor name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "BirthDate[]") {
+                if(el.value.trim().length < 1) {
+                    document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your birth date"]';
+                    el.focus();
+                    return;
+                }
+                let b = new Date(el.value.trim());
+                if (isValidDate(b) == false){
+                    document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+                    el.value = '';
+                    el.focus();
+                    return;
+                }
+
+            }
+            if (el.name == "Mobile[]") {
+                @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+                if (el.value.trim().length < 1){
+                    document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your mobile phone number"]';
+                    el.focus();
+                    return;
+                }
+                if(!regPhone.test(el.value)) {
+                    document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your mobile phone number correctly"] ex)000-0000-0000';
+                    el.focus();
+                    return;
+                }
+            }
+            if (el.name == "CompanyName[]" && el.value.trim().length < 1) {
+                document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your company name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        // ckVisitorEdu ckCleanEdu ckCarryItem ckIsVIP 010-1234-1234
+        var con = confirm('@Localizer["Would you like to request a visit"]');
+        console.log("[saveAddForm] ckVisitorEdu:"+ckVisitorEdu.toString());
+        if(con){
+            myform.ckVisitorEdus.value = ckVisitorEdu.toString();
+            myform.ckCleanEdus.value = ckCleanEdu.toString();
+            myform.ckCarryItems.value = ckCarryItem.toString();
+            myform.ckIsVIPs.value = ckIsVIP.toString();
+            myform.submit();
+        }
+    }
+
+    var cd = 24 * 60 * 60 * 1000;
+    function checkVisitor(obj){
+        var idx = findIndex(obj);
+        var myform = document.fmAddVisit;
+        var j = -1;
+        var name="";
+        var birth="";
+        var formGender = null;
+        var formMobile = null;
+        var formCarNo = null;
+        var formCompanyName = null;
+        var formCleanEdue = null;
+        var formVisitorEdu = null;        
+        if (idx > -1) {
+            for(var i =0 ;i<myform.length; i++) {
+                var el = myform[i];
+                if (el.name == "Name[]"){
+                    j++;
+                }
+                if (idx == j) {
+                    if (el.name == "Name[]") {
+                        if (el.value.trim().length < 1){
+                            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter the visitor name"]';
+                            el.focus();
+                            return;
+                        }
+                        name = el.value.trim();
+                    } else if (el.name == "BirthDate[]") {
+                        if(el.value.trim().length < 1) {
+                            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Please enter your birth date"]';
+                            el.focus();
+                            return;
+                        }
+                        let b = new Date(el.value.trim());
+                        if (isValidDate(b) == false){
+                            document.getElementById("visitorErrorMsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+                            el.value = '';
+                            el.focus();
+                            return;
+                        }
+                        birth = el.value.trim();
+                    }else if (el.name == "ckVisitorEdu[]") {
+                        formVisitorEdu = el;
+                    }else if (el.name == "ckCleanEdu[]") {
+                        formCleanEdue = el;
+                    }else if(el.name == "Gender[]"){
+                        formGender = el;
+                    }else if(el.name == "Mobile[]"){
+                        formMobile = el;
+                    }else if(el.name == "CompanyName[]"){
+                        formCompanyName = el;
+                    }else if(el.name == "CarNo[]"){
+                        formCarNo = el;
+                    }
+                }
+            }
+        }
+        $.ajax({
+            url: "/visit/getvisitorinfo",
+            data: { name, birth },
+            method: "GET",
+            dataType: "JSON"
+        }).done(function(json) {
+            formVisitorEdu.checked = false;
+            formCleanEdue.checked = false;
+            if (json != null){
+                console.log("[checkVisitor]", json);
+                let t = new Date();
+                if(json.isBlackList != null && json.isBlackList =="Y"){
+                    alert("신청할 수 없는 사용자 입니다");
+                }else{
+                    @* if (json.gender != null)
+                        formGender.selectedIndex = json.gender; *@
+                    if (json.mobile != null)
+                        formMobile.value = json.mobile;
+                    if (json.carNo != null)
+                        formCarNo.value = json.carNo;
+                    if (json.companyName != null)
+                        formCompanyName.value = json.companyName;
+                    if (json.safetyEduLastDate != null && json.safetyEduLastDate != ""){
+                        let e = new Date(json.safetyEduLastDate);
+                        let d = Math.floor((t.getTime() - e.getTime())/cd);
+                        if (d < 365) {
+                            formVisitorEdu.checked = true;
+                        }
+                        @* console.log("d:"+d) *@
+                    }
+                    if (json.cleanEduLastDate != null && json.cleanEduLastDate != ""){
+                        let e = new Date(json.cleanEduLastDate);
+                        let d = Math.floor((t.getTime() - e.getTime())/cd);
+                        if (d < 365) {
+                            formCleanEdue.checked = true;
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+    
+    function findIndex(obj) {
+        var myform = document.fmAddVisit;
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el == obj) {
+                console.log("[findIndex] idx: "+ j);
+                break;
+            }
+            if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        return j;
+    }
+
+    function goCarryItem(obj){
+        var myform = document.fmAddVisit;
+        var j = -1;
+        var cicontainer = null;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el == obj) {
+                console.log("[goCarryItem] idx: "+ j);
+                break;
+            }
+            if (el.name == "carryItems[]"){
+                cicontainer = el;
+            }else if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        console.log("getPersonObj", popSelectPersonGetPersonObj());
+        popCarryItem(j, cicontainer, popSelectPersonGetPersonObj());
+    }
+
+    function goSearchPerson(){
+        var myform = document.fmAddVisit;
+        var nameObj = myform.ContactName;
+        var sabunObj =  myform.ContactSabun;
+        var departIdObj =  myform.ContactOrgID;
+        var departKorObj =  myform.ContactOrgNameKor;
+        var departEngObj =  myform.ContactOrgNameEng;
+        // popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, departIdObj, departKorObj, departEngObj)
+        popSelectPerson(nameObj, sabunObj, null, null, null, departIdObj, departKorObj, departEngObj);
+    }
+
+    function popVisitorEdu(obj){
+        common.popOpen(document.getElementById('visitorEdu'));
+        currentPlayerObj =  {...playerObj};
+        currentPlayerObj.idx = findIndex(obj);
+        currentPlayerObj.vType = 0;
+        currentPlayerObj.player = playerVisitor;
+        currentPlayerObj.duration = visitorDuration;
+        console.log("[popVisitorEdu]"+findIndex(obj));
+        var myform = document.fmAddVisit;
+        @* var ck = findFormElementByIndex(myform, "VisitorType[]", "ckVisitorEdu[]", currentPlayerObj.idx);
+        ck.checked = true;
+        console.log("[popVisitorEdu]",ck); *@
+    }
+
+    function popCleanEdu(obj){
+        var myform = document.fmAddVisit;
+        var location = myform.Location.options[myform.Location.selectedIndex].value;
+        if(location == "2000" || location == "3000"){
+            common.popOpen(document.getElementById('cleanEdu'));
+            currentPlayerObj =  {...playerObj};
+            currentPlayerObj.idx = findIndex(obj);
+            currentPlayerObj.vType = 1;
+            currentPlayerObj.player = playerClean;
+            currentPlayerObj.duration = cleanDuration;
+            console.log("[popCleanEdu]"+findIndex(obj));
+
+            @* 부천 :Fab1_CR_video_v0.mp4 상우 :FAB2_CleanRoom.mp4 *@
+            if(location == "2000"){
+                currentPlayerObj.player.setAttribute('src', '/videos/Fab1_CR_video_v0.mp4');
+            }else{
+                currentPlayerObj.player.setAttribute('src', '/videos/FAB2_CleanRoom.mp4');
+            }
+            @* setAttribute('type', 'video/webm'); *@
+        }else{
+            document.getElementById("visitorErrorMsg").innerHTML = '클린룸은 부천과 상우 캠퍼스만 해당됩니다'; //@Localizer["Please enter your birth date"]
+        }
+    }
+
+    function closeEdu(){
+        console.log("[closeEdu]");
+        if (currentPlayerObj != undefined) {
+            currentPlayerObj.player.pause();
+            currentPlayerObj.player.currentTime = 0;
+        }
+    }
+
+@* v_player_visitor v_player_clean *@
+    var currentPlayerObj;
+    var playerObj = {idx: -1, vType:0, player:null, duration:0, playTime:0};
+    var visitorDuration = 0;
+    var cleanDuration = 0;
+    var playerVisitor = null;
+    var playerClean = null;
+    var playStartTime = 0;
+@* findIndex(myform, strFirstElementName, obj) *@
+@* findFormElementByIndex(myform, strFirstElementName, strFindElementName, idx) *@
+    window.onload = function () {
+        // 방문 교육 영상
+        playerVisitor = document.getElementById("v_player_visitor");
+        playerVisitor.onended = function() {
+            console.log("playerVisitor end "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration+"/"+Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ));
+            if (Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ) < 3000){
+                console.log("success "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration);
+                var myform = document.fmAddVisit;
+                var ck = findFormElementByIndex(myform, "VisitorType[]", "ckVisitorEdu[]", currentPlayerObj.idx);
+                ck.checked = true;
+                @* var ck = findFormElementByIndex(myform, "VisitorType[]", "ckCleanEdu[]", currentPlayerObj.idx); *@
+                common.popClose(popupObj);
+            }
+        };
+        playerVisitor.onplay = function() {
+            playStartTime = new Date().getTime();
+            console.log("playerVisitor onplay "+playStartTime);
+        };
+        playerVisitor.onpause = function() {
+            currentPlayerObj.playTime += new Date().getTime() - playStartTime;
+            console.log("playerVisitor onpause "+currentPlayerObj.playTime);
+        };
+
+        playerVisitor.addEventListener('loadedmetadata', function() {
+            console.log("playerVisitor duraton:"+ playerVisitor.duration);
+            visitorDuration = playerVisitor.duration * 1000;
+        });
+        if (playerVisitor.readyState >= 2) {
+            console.log("playerVisitor duraton:"+ playerVisitor.duration);
+            visitorDuration = playerVisitor.duration * 1000;
+        }
+        // 클린룸 영상
+        var cleanRoomTestWin;
+        playerClean = document.getElementById("v_player_clean");
+        playerClean.onended = function() {
+            console.log("playerClean end "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration+"/"+Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ));
+            if (Math.abs(currentPlayerObj.duration - currentPlayerObj.playTime ) < 3000){
+                console.log("success "+currentPlayerObj.playTime +" / "+ currentPlayerObj.duration);
+                @* var myform = document.fmAddVisit;
+                var ck = findFormElementByIndex(myform, "VisitorType[]", "ckCleanEdu[]", currentPlayerObj.idx);
+                ck.checked = true; *@
+                common.popClose(popupObj);
+                document.getElementById("commonConfirmPopup").classList.add("ing");
+                document.getElementById("commonConfirmPopup").classList.add("on");
+            }
+        };
+        playerClean.onplay = function() {
+            console.log("playerClean onplay");
+        };
+        playerClean.onpause = function() {
+            console.log("playerClean onpause");
+        };
+        playerClean.addEventListener('loadedmetadata', function() {
+            console.log("playerClean duraton:"+ playerClean.duration);
+            cleanPlayerObj = playerClean.duration * 1000;
+        });
+        if (playerClean.readyState >= 2) {
+            console.log("playerClean duraton:"+ playerClean.duration);
+            cleanPlayerObj = playerClean.duration * 1000;
+        }
+        @* document.getElementById("commonConfirmPopup").classList.add("ing");
+        document.getElementById("commonConfirmPopup").classList.add("on"); *@
+    }
+    function playPauseEdu(obj){
+        currentPlayerObj.player = playerVisitor;
+        var ck = $(obj).hasClass("on");
+        if(ck){
+            $(obj).removeClass("on");
+            currentPlayerObj.player.pause();
+        }else{
+            $(obj).addClass("on");
+            currentPlayerObj.player.play();
+        }
+    }
+    function playPauseClean(obj){
+        currentPlayerObj.player = playerClean;
+        var ck = $(obj).hasClass("on");
+        if(ck){
+            $(obj).removeClass("on");
+            currentPlayerObj.player.pause();
+        }else{
+            $(obj).addClass("on");
+            currentPlayerObj.player.play();
+        }
+    }
+    var isPassCleanRoomTest = false;
+    function cleanRoomTestResult(isPass){
+        console.log("[cleanRoomTestResult]");
+        if(isPass == true){
+            isPassCleanRoomTest = true;
+            if (currentPlayerObj != undefined && currentPlayerObj.idx != undefined){
+                var myform = document.fmAddVisit;
+                var ck = findFormElementByIndex(myform, "VisitorType[]", "ckCleanEdu[]", currentPlayerObj.idx);
+                ck.checked = true;
+            }
+        }
+    }
+    
+    function startCleanRoomTest(){
+        isPassCleanRoomTest = false;
+        var myform = document.fmAddVisit;
+        var location = myform.Location.options[myform.Location.selectedIndex].value;
+        @* 부천 : \\10.141.5.200\WebApp\VISITOR\GCMSRF\GCMS.war\upload\cleanRoomVideo\fab1\ Fab1_CR_video_v0.mp4
+        상우 : \\10.141.5.200\WebApp\VISITOR\GCMSRF\GCMS.war\upload\cleanRoomVideo\fab2\ FAB2_CleanRoom.mp4 *@
+        if(location == "2000" || location == "3000"){
+            window.open('','_blank', 'titlebar=yes,toolbar=yes,location=yes, directories=yes, status=yes,location=yes,menubar=yes,scrollbars=yes,resizable=no,top=0,left=0,width=960,height=750').location.href = "/home/CleanRoomTest?location="+location; // &name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#
+        }
+        @* if(myform.Location.options[myform.Location.selectedIndex].value == "2000") {
+            location = 
+        } else if (myform.Location.options[myform.Location.selectedIndex].value == "3000") {
+
+        } *@
+
+        @* window.open('','_blank', 'titlebar=no,toolbar=no,location=no, directories=no, status=no,location=no,menubar=no,scrollbars=no,resizable=no,top=0,left=0,width=960,height=750').location.href = "/home/CleanRoomTest?location=2000&name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#"; *@
+        closeConfirm();
+        @* cleanRoomTestWin = window.open("/home/CleanRoomTest?location=2000&name=%EC%9D%B4%EC%9C%A4%ED%9D%AC&companyname=%EC%BD%94%EB%85%B8%EC%A6%88#", "cleanRoomTestWin", "toolbar=0,location=0, directories=0, status=0,location=no,menubar=0,scrollbars=no,resizable=no,top=0,left=0,width=960,height=600"); *@
+    }
+    // ##### </방문객> #####
+
+    // ##### <공지사항> #####
+    function dl(idx, noticeID) {
+        var myform = document.fmDL;
+        myform.NoticeID.value=noticeID;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+    // ##### </공지사항> #####
+
+    function closeAlert(){
+        document.getElementById("commonAlertPopup").classList.remove("on");
+        document.getElementById("commonAlertPopup").classList.remove("ing");
+        @* $(obj).removeClass("on"); *@
+    }
+    function closeConfirm(){
+        document.getElementById("commonConfirmPopup").classList.remove("on");
+        document.getElementById("commonConfirmPopup").classList.remove("ing");
+        @* $(obj).removeClass("on"); *@
+    }
+</script>
+<style>
+    .radio-list {
+        margin-top: 10px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 0 10px 0;
+        width: 100%;
+    }
+
+    .radio-list label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+    }
+
+    .radio-list label span {
+        display: flex;
+        margin-left: 5px;
+        font-size: 13px;
+    }
+
+    .radio-list label input {
+        display: flex;
+    }
+</style>
+<div class="dialog" id="commonConfirmPopup" style="z-index: 1000;">
+    <div class="pop-item-wrap test-type">
+        <div class="pop-cont-wrap">
+            <div class="msg-ico"><img src="images/ico/ico-chk02.svg" alt="" /></div>
+            <div class="msg-tit">클린룸 시청 완료</div>
+            <div class="msg-desc">동영상 시청이 완료되었습니다. 시험방으로 바로 이동하시겠습니까?<br />바로 이동하지 않고 종료할 경우 영상을 처음부터 시청하셔야 합니다.</div>
+        </div>
+        <div class="pop-btn-wrap">
+            <button type="button" class="btn-cancel" onclick="closeConfirm();">취소</button>
+            <button type="button" class="btn-req" onclick="startCleanRoomTest();">확인</button>
+        </div>
+    </div>
+</div>
+
+@* 공통 alert 팝업 *@
+@if (TempData.Keys.Contains("UI.AlertMsg")){
+    var alertMsg = @TempData["UI.AlertMsg"]?.ToString();
+    if (!string.IsNullOrEmpty(alertMsg)) {
+        <div class="dialog ing on" id="commonAlertPopup">
+            <div class="pop-item-wrap test-type">
+                <div class="pop-cont-wrap">
+                    <div class="msg-ico"><img src="images/ico/ico-chk02.svg" alt="" /></div>
+                    <div class="msg-tit">@alertMsg</div>
+                </div>
+                <div class="pop-btn-wrap">
+                    <button type="button" class="btn-req" onclick="closeAlert()">@Localizer["Confirm"]</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- 로그인 -->
+<section class="login-page-wrap">
+    <div class="mlogo" style="top: 40%;width:70%;">DB HiTek/DB GlobalChip @Localizer["Integrated Management System"]</div>
+    <div class="lt-item-wrap">
+        <div class="mtit">World Leader In Specialty Foundry</div>
+        <div class="mdesc">@Localizer["Welcome to DB HiTek DB GlobalChip"]</div>
+        <!-- start Swiper -->
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                @{
+                    int i = 0;
+                    foreach(Notice m in ViewBag.notices??new List<Notice>()){
+                        <div class="swiper-slide">
+                            <a href="javascript:void(0)" onClick="popNoticeRead(@i)">@m.Title</a>
+                        </div>
+                        i++;
+                    }
+                }
+            </div>
+        </div>
+        <script>
+            var swiper = new Swiper(".mySwiper", {
+                loop: true,
+                direction: "vertical",
+                autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                },
+            });
+        </script>
+        <!-- end Swiper -->
+    </div>
+    <div class="login-form-wrap">
+        <ul class="logo-list-wrap">
+            <li><img src="images/etc/etc-logo-green.svg" alt="DB HiTek Logo" /></li>
+            <li><img src="images/etc/etc-logo-global.svg" alt="Global Chip Logo" /></li>
+        </ul>
+
+    <form name="fmLogin" asp-action="Login" method="post">
+        <div class="login-sw-wrap">
+            <div class="mtit">@Localizer["Login"]</div>
+            <div class="lang-item-wrap">
+                <a href="javascript:void(0)">
+                    <img src="images/ico/ico-lang.svg" alt="언어 선택 아이콘" />
+                    <select name="UserLang" class="select lang" onchange="changeLang(this)">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <option value="ko">KR</option>
+                        <option value="en" selected>EN</option>
+                            } else {
+                        <option value="ko" selected>KR</option>
+                        <option value="en">EN</option>
+                            }
+                        }
+                    </select>
+                </a>
+            </div>
+        </div>
+        <span id="spLoginError"  style="color:#F15A22;">
+        @if (TempData.Keys.Contains("errMsg")){
+            var errMsg = @TempData["errMsg"]?.ToString();
+            if (!string.IsNullOrEmpty(errMsg)) {
+                @Localizer[@TempData["errMsg"]?.ToString()]
+            }
+        }
+        </span>
+        <div class="label">@Localizer["Id"]</div>
+        <div class="form-item-wrap">
+            <input type="text" name="UserId" class="inp" placeholder='@Localizer["please enter username."]' onkeyup="enterGoLogin()" />
+        </div>
+        <div class="label">@Localizer["Password"]</div>
+        <div class="form-item-wrap">
+            <input type="password" name="UserPwd" class="inp" placeholder='@Localizer["please enter password."]' onkeyup="enterGoLogin()" />
+        </div>
+        <button type="button" onclick="goLogin()">@Localizer["Login"]</button>
+    </form>
+<environment include="Development">
+<script>
+    function testData(idx){
+        if(idx == 1){
+            var myform = document.fmLogin;
+            myform.UserId.value="master";
+            myform.UserPwd.value="123456";
+        }else if(idx == 2){
+            var myform = document.fmLogin;
+            myform.UserId.value = "214-02-12456";
+            myform.UserPwd.value = "214-02-12456";
+        }else if (idx == 3){
+            var myform = document.fmLogin;
+            myform.UserId.value="10006877";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 4){
+            var myform = document.fmLogin;
+            myform.UserId.value="10006901";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 5){
+            var myform = document.fmLogin;
+            myform.UserId.value="00297534";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 6){
+            var myform = document.fmLogin;
+            myform.UserId.value="10005761";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 7){
+            var myform = document.fmLogin;
+            myform.UserId.value="00041125";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 8){
+            var myform = document.fmLogin;
+            myform.UserId.value="10005179";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 9){
+            var myform = document.fmLogin;
+            myform.UserId.value="10004309";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 10){
+            var myform = document.fmLogin;
+            myform.UserId.value="10007044";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 11){
+            var myform = document.fmLogin;
+            myform.UserId.value="00280615";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 12){
+            var myform = document.fmLogin;
+            myform.UserId.value="10003054";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 13){
+            var myform = document.fmLogin;
+            myform.UserId.value="10001287";
+            myform.UserPwd.value="abc1234$";
+        }else if (idx == 14){
+            var myform = document.fmLogin;
+            myform.UserId.value="00000311";
+            myform.UserPwd.value="abc1234$";
+        }
+    }    
+</script>
+<table>
+    <tr>
+        <td colspan='4'>
+            <a href="javascript:void(0)" onclick="testData(1)">master</a> &nbsp;&nbsp;
+            <a href="javascript:void(0)" onclick="testData(2)">협력사1</a> &nbsp;&nbsp; <BR />
+        <td>
+    </tr>
+    <tr>
+        <td>부천<td>
+        <td>
+            <a href="javascript:void(0)" onclick="testData(5)">일반관리자 강규</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(9)">임직원(일반) 강민욱</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(3)">임직원(인사) 김도희</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(13)">임직원(ESH) 강영주</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(4)">보안실 강경인</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(10)">임직원(영양사) 강민채</a> &nbsp;&nbsp; 
+        <td>
+        <td>상우<td>
+        <td>
+            <a href="javascript:void(0)" onclick="testData(8)">일반관리자 강동민</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(11)">임직원(일반) 강석희</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(6)">임직원(인사) 강다영</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(14)">임직원(ESH) 강영신</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(7)">보안실 강미정</a> &nbsp;&nbsp; <BR />
+            <a href="javascript:void(0)" onclick="testData(12)">임직원(영양사) 강소라</a> &nbsp;&nbsp; <BR />
+        </td>
+    </tr>
+</table>
+    
+</environment>
+        <div class="link-list01">
+            <a href="#" onclick="goFindIdPwd()">@Localizer["Forgot ID/PW?"]</a>
+        </div>
+        <div class="btn-item-wrap">
+            <button type="button" onclick="popRegVisit();">@Localizer["Apply Visit"]</button>
+        </div>
+    </div>
+    <div class="bottom-item-wrap">
+        <ul>
+            <li>
+                <a href="javascript:void(0)"  onclick="popPrivacy1()">DB HiTek @Localizer["Privacy Policy"]</a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="popPrivacy2()">DB GlobalChip @Localizer["Privacy Policy"]</a>
+            </li>
+        </ul>
+        <div class="copy">Copyright © 2022 DB HiTek All rights reserved.</div>
+    </div>
+</section>
+
+<!-- 방문 신청 se팝업 dialog ing off / on -->
+<div id="visitReg" class="dialog">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Apply Visit"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+        <div class="pop-cont-wrap scrolls">
+            <div class="pop-req-box-wrap">
+                <div class="tit-header-wrap mt0">
+                    <div class="rtit">@Localizer["Agree Privacy Policy"]</div>
+                </div>
+@* <form name="fmVisit" asp-action="VisitReg" method="post"> *@
+<form name="fmAddVisit" asp-controller="Visit" asp-action="Reg" method="post">
+                <div class="reg-form-wrap type02">
+                    <partial name="~/Views/_Popup/PopVisitPrivacy.cshtml" />
+                    @*<div class="agree-chk-wrap">
+                        <label>
+                            <input type="checkbox" name="ckAgree" value="1" />
+                            <span>@Localizer["I have fully recognized the above information in advance and agree to the collection and use of personal information and unique identification information."]</span>
+                        </label>
+                    </div>*@
+                    <div class="agree-chk-wrap">
+                        <div class="radio-list">
+                            <label>
+                                <input type="checkbox" name="ckAgree1" value="Y"/>
+                                <span>(필수)동의</span>
+                            </label>
+                            <label>
+                                    <input type="checkbox" name="ckAgree2" value="Y" onclick="driveCheck()" />
+                                <span>(선택)동의</span>
+                            </label>
+                        </div>
+                        <!--div class="radio-list">
+                            <label>
+                                <input type="radio" name="radio2"  value="Y"/>
+                                <span>(선택)동의</span>
+                            </label>
+                            <label>
+                                    <input type="radio" name="radio2" value="N" />
+                                <span>미동의</span>
+                            </label>
+                        </div-->
+                    </div>
+                </div>
+                <input type="hidden" name="mode" value="AH" />
+                <input type="hidden" name="RegVisitorType" value="1" />@* 방문신청자구분(등록자):임직원(0)/방문자(1) *@
+                <input type="hidden" name="VisitApplyType" value="0" />@* 방문신청구분: 방문신청(0)*@
+                <input type="hidden" name="VisitorType" value="1" />@* 방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1) *@
+
+                <input type="hidden" name="ContactSabun" value="" />
+                <input type="hidden" name="ContactOrgID" value="" />
+
+                <input type="hidden" name="ckVisitorEdus" value="" />
+                <input type="hidden" name="ckCleanEdus" value="" />
+                <input type="hidden" name="ckCarryItems" value="" />
+                <input type="hidden" name="ckIsVIPs" value="" />
+                
+                <input type="hidden" name="VisitPersonID" value="" />@* 방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 PersonID *@
+                <input type="hidden" name="Sabun" value="" />@* 회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun *@
+                <input type="hidden" name="OrgID" value="" />
+
+                <div class="tit-header-wrap">
+                    <div class="rtit">@Localizer["Application Visit Information"]</div>
+                </div>
+                <div>
+                    <div class="reg-form-wrap">
+                        <ul>
+                            <li>
+                                <div class="label s03">@Localizer["Place Of Business"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    @{
+                                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                                        }else{
+                                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                                        }
+                                    }
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Visit Date"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    <input type="text" name="VisitStartDate" class="inpdate" value='@DateTime.Now.ToString("yyyy-MM-dd")' onkeyup="generateDateString(this)" />
+                                     ~ 
+                                    <input type="text" name="VisitEndDate" class="inpdate"value='@DateTime.Now.ToString("yyyy-MM-dd")' onkeyup="generateDateString(this)" />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Contact Person"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    @* 담당자 이름: ContactSabun ContactName	ContactOrgID	ContactOrgNameKor ContactOrgNameEng *@
+                                    <input type="text" class="inp" placeholder='@Localizer["Contact Person"]' readonly  onclick="goSearchPerson();" name="ContactName" />
+                                    <button type="button" class="btn-search"  onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="담당자 찾기 팝업" /></button>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Visit Department"]</div>
+                                <div class="form-item-wrap">
+                                    @* 담당자 부서: ContactSabun ContactName	ContactOrgID	ContactOrgNameKor ContactOrgNameEng *@
+                            @{
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameKor" readonly value="" style="visibility:hidden;" onclick="goSearchPerson();" />
+                                    <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameEng" readonly value="" onclick="goSearchPerson();" />
+                                }else{
+                                    <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameKor" readonly value="" onclick="goSearchPerson();" />
+                                    <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameEng" readonly value="" style="visibility:hidden;" onclick="goSearchPerson();" />
+                                }
+                            }
+                                    @* <input type="text" class="inp" placeholder='@Localizer["Visit Department"]' readonly  onclick="goSearchPerson();" name="ContactOrgNameKor" /> *@
+                                    @* <button type="button" class="btn-search" onclick="popSelectPerson();"><img src="/images/ico/ico-search.svg" alt=""/></button> *@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Access Area"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    @{
+                                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                            <select class="select" name="PlaceCodeID">
+                                                <option value='-1'>@Localizer["Select"]</option> 
+                                                @foreach(var m in Model.CodePlace){
+                                                    if(m.SubCodeID==7){
+                                                    <option value="@m.SubCodeID" disabled>@m.CodeNameEng</option>
+                                                    }else{
+                                                    <option value="@m.SubCodeID">@m.CodeNameEng</option>
+                                                    }
+                                                }
+                                            </select>
+                                            @* <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                                                <option value='-1'>@Localizer["Select"]</option> 
+                                            </select> *@
+                                        }else{
+                                            <select class="select" name="PlaceCodeID">
+                                                <option value='-1'>@Localizer["Select"]</option> 
+                                                @foreach(var m in Model.CodePlace){
+                                                    if(m.SubCodeID==7){
+                                                    <option value="@m.SubCodeID" disabled>@m.CodeNameKor</option>
+                                                    }else{
+                                                    <option value="@m.SubCodeID">@m.CodeNameKor</option>
+                                                    }
+                                                }
+                                            </select>
+                                            @* <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                                                <option value='-1'>@Localizer["Select"]</option> 
+                                            </select> *@
+                                        }
+                                    }
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Visit Purpose"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    @{
+                                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                            <select class="select" name="VisitPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                                        }else{
+                                            <select class="select" name="VisitPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                                        }
+                                    }
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                @* 방문객 정보 *@
+                <div class="tit-header-wrap">
+                    <div class="rtit">@Localizer["Visitor Information"]</div>
+                    <input type="hidden" name="VisitorType[]" value="0" /> @*방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1)*@
+                    <input type="hidden" name="VisitPersonID[]" value="0" /> @*방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 VisitPersonID*@
+                    <input type="hidden" name="VisitorSabun[]" value="" /> @*회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun*@
+                    <input type="hidden" name="Gender[]" value="0" />@*2023-08-04 수정: 성별 => 삭제함*@
+                </div>
+                <div id="add-form-wrap">
+                    <div class="reg-form-wrap">
+                        <div class="reg-header-wrap">
+                            <div class="num">01</div>
+                            <textarea name="carryItems[]" style="visibility:hidden;" cols="80"></textarea>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="label s03">@Localizer["Name"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name[]" />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Birth Date"]<span></span></div> 
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" pattern = "yyyy-MM-dd" name="BirthDate[]" onkeyup="generateDateString(this)" />
+                                    <button type="button" class="btn-gray" onclick="checkVisitor(this);">@Localizer["Confirm"]</button>
+                                </div>
+                            </li>
+                            @* 2023-08-04 수정: 성별 => 삭제함
+                            <li>
+                                <div class="label s03">@Localizer["Gender"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    @{
+                                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                            <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>                        
+                                        }else{
+                                            <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>                        
+                                        }
+                                    }
+                                </div>
+                            </li> *@
+                            <li>
+                                <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile[]" onkeyup="generatePhoneString(this);" maxlength="13" />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Company Name"]<span></span></div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName[]" maxlength="30" />
+                                </div>
+                            </li>
+                            @* <li>
+                                <div class="label s03"></div>
+                                <div class="form-item-wrap"></div>
+                            </li> *@
+                            <li>
+                                <div class="label s03">@Localizer["Introductory Visitor Training"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="checkbox" name="ckVisitorEdu[]" value="Y" disabled /> &nbsp;&nbsp;
+                                    <button type="button" class="btn-green" onclick="popVisitorEdu(this);">@Localizer["Start Education"]</button>
+                                    @* <div class="help-msg" style="width:60%">
+                                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                                        <span>@Localizer["Required Watching Education"]</span>
+                                    </div> *@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["CleanRoom Education"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="checkbox" name="ckCleanEdu[]" value="Y" disabled /> &nbsp;&nbsp;
+                                    <button type="button" class="btn-green" onclick="popCleanEdu(this);">@Localizer["Start Education"]</button>
+                                    @* <div class="help-msg" style="width:60%">
+                                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                                        <span>@Localizer["Required Watching Education"]</span>
+                                    </div> *@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Car No"]</div>
+                                <div class="form-item-wrap">
+                                        <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo[]" onclick="driveVisitForm()" readonly /> @*2023.09.20 신인아*@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["CarryItem"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="checkbox" name="ckCarryItem[]" value="Y" disabled/> &nbsp;&nbsp;
+                                    <button type="button" class="btn-green" onclick="goCarryItem(this);">@Localizer["CarryItem"]</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+        
+        <div class="pop-btn-wrap">
+            <div class="msg-wrap">
+                <div class="label org">
+                    @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="visitorErrorMsg" class="label org red">@ViewBag.ErrorMsg</span>
+                </div>
+            </div>            
+            @* <span style="color:#ED3125;">@Localizer["This is a required field"]</span> &nbsp;<span id="visitorErrorMsg" class="label org red"></span> *@
+            <button type="button" class="btn-gray" id="btn-add" style="width:100px;">@Localizer["Add Visitor"]</button>
+            <button type="button" class="btn-req" onClick="saveVisitForm()">@Localizer["Application"]</button>
+        </div>
+        
+    </div>
+</div>
+
+<!-- 방문자 추가 입력 템플릿 -->
+<template id="temp" class="template">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">01</div>
+            <textarea name="carryItems[]" style="visibility:hidden;" cols="80"></textarea>
+@* test data: {"idx":1,"items":[{"CarryItemCodeID":"1","ItemName":"1","ItemSN":"2","Quantity":"3","Unit":"4"},{"CarryItemCodeID":"2","ItemName":"5","ItemSN":"6","Quantity":"7","Unit":"8"},{"CarryItemCodeID":"3","ItemName":"9","ItemSN":"10","Quantity":"11","Unit":"12"}],"ContactPersonSabun":"B0000001","ContactPersonOrgID":"1","ContactPersonTel":"031-259-96996","ContactPersonOrgNameKor":"인사팀","ContactPersonOrgNameEng":"HR","ImportDate":"2023-07-20","ExportDate":"2023-07-21","Location":"2000","ImportPurposeCodeID":"1","PlaceCodeID":"1","ContactPersonName":"홍길동","ContactPersonMobile":"010-2159-96996","__RequestVerificationToken":"CfDJ8Ivh_KhxMgBDvTvaO8s9_twGYyUPL17JDlpykcgAi-UVaFA9YYDfNbuCn0aFCyaBTQXHCv6urXSOjacl8kG14sRtw9pe140Z1tfEcaGLoG61Llo4GN10r14trFJbSjIa85V47CGcWDqfFGEZqWxQPoc"}             *@
+            <input type="hidden" name="VisitorType[]" value="0" /> @*방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1)*@
+            <input type="hidden" name="VisitPersonID[]" value="0" /> @*방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 VisitPersonID*@
+            <input type="hidden" name="VisitorSabun[]" value="" /> @*회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun*@
+            <input type="hidden" name="Gender[]" value="0" />@*2023-08-04 수정: 성별 => 삭제함*@
+            <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="방문객 삭제" /></a>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name[]" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate[]" onkeyup="generateDateString(this)" />
+                    &nbsp;
+                    <button type="button" class="btn-gray" onclick="checkVisitor(this);">@Localizer["Confirm"]</button>
+                </div>
+            </li>
+            @*  2023-08-04 수정: 성별 => 삭제함
+            <li>
+                <div class="label s03">@Localizer["Gender"]<span></span></div>
+                <div class="form-item-wrap">
+            @{
+                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                    <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>                        
+                }else{
+                    <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>                        
+                }
+            }
+                </div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile[]" onkeyup="generatePhoneString(this);" maxlength="13" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName[]" />
+                </div>
+            </li>
+            @* <li>
+                <div class="label s03"></div>
+                <div class="form-item-wrap"></div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["Introductory Visitor Training"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckVisitorEdu[]" value='Y' disabled /> &nbsp;&nbsp;
+                    @* <input type="checkbox" name="ckSafeEdu[]"/> *@
+                    @* <button type="button" class="btn-green" onclick="popVisitorEdu(this);">@Localizer["Start Education"]</button> *@
+                    @* <div class="help-msg" style="width:60%">
+                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                        <span>@Localizer["Required Watching Education"]</span>
+                    </div> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CleanRoom Education"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckCleanEdu[]" value="Y" disabled /> &nbsp;&nbsp;
+                    @* <button type="button" class="btn-green" onclick="popCleanEdu(this);">@Localizer["Start Education"]</button> *@
+                    @* <div class="help-msg" style="width:60%">
+                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                        <span>@Localizer["Required Watching Education"]</span>
+                    </div> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car No"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo[]" onclick="driveVisitForm()" readonly /> @*2023.09.20 신인아*@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CarryItem"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckCarryItem[]" value="Y" disabled /> &nbsp;&nbsp;
+                    <button type="button" name="btnCarryItem" class="btn-gray" onclick="goCarryItem(this);">@Localizer["CarryItem"]</button>
+                </div>
+            </li>
+@*             
+            <li>
+                <div class="label s03">VIP</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckIsVIP[]" value="Y" /> &nbsp;&nbsp;
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                            <option value="-1">@Localizer["Select"]</option>
+                        </select>
+                    }else{
+                        <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                            <option value="-1">@Localizer["Select"]</option>
+                        </select>
+                    }
+                }
+                </div>
+            </li> *@
+
+        </ul>
+    </div>
+</template>
+
+@* onclick="common.layerClose(event)" *@
+@*  onclick="common.popClose(this);" *@
+<div id="visitorEdu" class="dialog">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">@Localizer["Watch Introductory Visitor Training"]
+            <a href="javascript:void(0)" onclick="closeEdu();"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+
+        <div class="pop-item-wrap video-type" style="height:calc(40vh)">
+            <video id="v_player_visitor" poster="" playsinline="">
+                <source src="/videos/rain.mp4" type="video/mp4">
+                <track label="Korean" kind="subtitles" srclang="ko" src="" default />
+            </video>
+            <button class="enter-play-btn" type="button" onclick="playPauseEdu(this)"><img src="/images/ico/ico-play.svg" alt='@Localizer["Play"]' /></button>
+        </div>
+    </div>
+</div>
+@*  onclick="common.popClose(this);" *@
+<div id="cleanEdu" class="dialog">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">@Localizer["Watch CleanRoom Education"]
+            <a href="javascript:void(0)" onclick="closeEdu();"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+        <div class="pop-item-wrap video-type" style="height:calc(40vh)">
+            <video id="v_player_clean" poster="" playsinline="">
+                <source src="/videos/Fab1_CR_video_v0.mp4" type="video/mp4">
+                <track label="Korean" kind="subtitles" srclang="ko" src="" default />
+            </video>
+            <button class="enter-play-btn" type="button" onclick="playPauseClean(this)"><img src="/images/ico/ico-play.svg" alt='@Localizer["Play"]' /></button>
+        </div>
+    </div>
+</div>
+
+@{
+    var j = 0;
+    foreach (Notice m in ViewBag.notices ?? new List<Notice>())
+    {
+<div id="noticeRead@(j)" class="dialog">
+    <div class="pop-item-wrap notice-type">
+        <div class="pop-header-wrap">
+            <div></div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <div class="view-item-wrap">
+                <div class="view-header-wrap">
+                    <div class="vtit" id="noticeTitle">@m.Title</div>
+                    <ul>
+                        <li id="noticeWriter">@m.InsertName</li>
+                        <li id="noticeWriteDate">@m.InsertDate</li>
+                    </ul>
+                </div>
+                <div class="view-cont-wrap">
+                    <textarea class="textarea" name="noticeContents" id="noticeContents" placeholder='@Localizer["Contents"]'>@m.Contents</textarea>
+                </div>
+                <div class="view-file-wrap">
+                    <div class="key">@Localizer["Attachment Information"]</div>
+                    <ul id="noticeAttachList">
+                        @{
+                            if (!string.IsNullOrEmpty(m.FileData1)) {
+                                // WriteLog("notice.FileData1:" + notice.FileData1);
+                                FileDTO? ff = m.Deserialize<FileDTO>(m.FileData1);
+                                if (ff != null){
+                                    <li><a href="javascript:void(0)" onclick="dl(0, @m.NoticeID)">@ff.FileName</a></li>
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(m.FileData2)) {
+                                FileDTO? ff = m.Deserialize<FileDTO>(m.FileData2);
+                                if (ff != null){
+                                    <li><a href="javascript:void(0)" onclick="dl(1, @m.NoticeID)">@ff.FileName</a></li>
+                                }
+                            }
+                            @* if (@ViewBag.fileDTO != null){
+                                foreach(string[] n in @ViewBag.fileDTO[j] ?? new string[2]) {
+                                    if (n.Length>0 && !string.IsNullOrEmpty(n[0])) {
+                            <li><a href="javascript:void(0)" onclick="dl(0)">@n[0]</a></li>
+                                    }
+                                    if (n.Length>1 && !string.IsNullOrEmpty(n[1])) {
+                            <li><a href="javascript:void(0)" onclick="dl(1)">@n[1]</a></li>
+                                    }
+                                
+                                } *@
+                            }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        j++;
+    }
+}
+
+<partial name="~/Views/_Popup/PopRegCarryItem.cshtml" />
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+<partial name="~/Views/_Popup/PopPrivacy1.cshtml" />
+<partial name="~/Views/_Popup/PopPrivacy2.cshtml" />
+
+@* <partial name="~/Views/Home/PopCleanTestB.cshtml" /> *@
+
+<form name="fmDL" method="post" asp-controller="Notice" asp-action="Download" target="ifTemp">
+    <input type="hidden" name="NoticeID" value="" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+
+@* <!-- N/A -->
+<div id="noticeList" class="dialog">
+    <div class="pop-item-wrap notice-type">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Notice"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close"]' /></a>
+        </div>
+        <div class="pop-cont-wrap">
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table id="list" aria-label="리스트"><th><td></td><td></td></th></td></th><tr><td></td></tr></table>
+                </div>
+                <div class="paging-item-wrap">
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-first.svg" alt="처음으로" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-prev.svg"  alt="이전"/></a>
+                    <div class="value">
+                        <input type="text" class="inp" value="1" />
+                        <span>/ 1</span>
+                    </div>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-next.svg" alt="다음" /></a>
+                    <a href="javascript:void(0)"><img src="/images/ico/ico-paging-last.svg" alt="마지막으로" /></a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div> *@

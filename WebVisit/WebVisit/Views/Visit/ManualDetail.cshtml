@@ -1,0 +1,287 @@
+@model VisitDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Visitor Manual"]; //"수기등록방문객";
+    var m = Model.VisitApplyPersons.First();
+}
+<script>
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    function goList(){
+        window.location = '/visit/manuallist/?culture=@CultureInfo.CurrentCulture'
+    }
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+               $(this).text("0"+(i+2));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+2));
+            });
+        });
+    });
+    // edit - 경비실에서 승인상태 변경 (방문신청 승인/반려 처리)
+    function saveEditForm(){
+        var myform = document.fmEditManual;
+        var visitStatus = myform.VisitStatus.value;
+        var cardNo = myform.CardNo.value;
+        if(cardNo.trim().length >0 ){
+            if (!isNumber(cardNo)){
+                alert('@Localizer["Please enter only numbers for the pass number"]');
+                return;
+            }
+            if(cardNo.trim().length != 4 ){
+                alert('@Localizer["Please enter the pass number in 4 digits"]');
+                return;
+            }
+        }
+        if(visitStatus == 0 && cardNo.trim().length > 0){
+            alert('방문 대기 상태에서는 출입증 번호를 입력할 수 없습니다');
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+
+        if(con){
+            myform.submit();
+        }
+    }
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Visitor Information"]</div>
+</div>
+<form name="fmEditManual" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="VisitApplyID" value='@Model.VisitApply.VisitApplyID' />
+    <input type="hidden" name="VisitApplyPersonID" value='@m.VisitApplyPersonID' />
+    <input type="hidden" name="VisitorType" value="1" />@* 방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1) *@
+    <input type="hidden" name="VisitPersonID" value="" />@* 방문객회원ID: 성명과 생년월일을 이용하여 검색. *@
+
+    <div id="add-form-wrap">
+        <div class="reg-form-wrap">
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Visitor Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Visitor Name"]' name="Name" value='@m.Name' />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Birth Date"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate" value='@m.BirthDate' />
+                        &nbsp;
+                        <button type="button" class="btn-gray">@Localizer["Confirm"]</button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Gender"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), m.Gender))'></select>                        
+                            }else{
+                                <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), m.Gender))'></select>                        
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["CellPhone"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value='@m.Mobile' />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value='@m.CompanyName' />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Car No"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo" value='@m.CarNo'/>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Application Visit Information"]</div>
+    </div>
+    <div>
+        <div class="reg-form-wrap">
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.VisitApply.Location))' ></select>
+                            }else{
+                                <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.VisitApply.Location))' ></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Visit Date"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" name="VisitStartDate" class="inpdate" value='@Model.VisitApply.VisitStartDate'  />
+                            ~ 
+                        <input type="text" name="VisitEndDate" class="inpdate" value='@Model.VisitApply.VisitEndDate'  />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Access Area"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.VisitApply.PlaceCodeID))' ></select>
+                            }else{
+                                <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.VisitApply.PlaceCodeID))' ></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Visit Purpose"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="VisitManualPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitManualPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.VisitApply.VisitManualPurposeCodeID))' ></select>
+                            }else{
+                                <select class="select" name="VisitManualPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitManualPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.VisitApply.VisitManualPurposeCodeID))' ></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["Detailed Purpose"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Detailed Purpose"]' name="Purpose" value='@Model.VisitApply.Purpose'  />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @* 승인정보 *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Visit Status"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            if(Model.VisitApply.VisitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus" class="select">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameEng</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.VisitStatus == 1 || m.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.VisitStatus))' disabled></select>
+                            }
+                        }else{
+                            if(Model.VisitApply.VisitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus" class="select">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameKor</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.VisitStatus == 1 || m.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }
+                                        }
+                                        @* <option value="@m3.SubCodeID">@m3.CodeNameKor</option> *@
+                                    }
+                                </select>
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.VisitStatus))' disabled></select>
+                            }
+                        }
+                    }
+
+                    @* @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            if(Model.VisitApply.VisitApplyStatus == 1){
+                                <select class="select" name="VisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), m.VisitStatus))' ></select>
+                            }else{
+                                <select class="select" name="VisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), m.VisitStatus))' disabled></select>
+                            }
+                        }else{
+                            if(Model.VisitApply.VisitApplyStatus == 1){
+                                <select class="select" name="VisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), m.VisitStatus))' ></select>
+                            }else{
+                                <select class="select" name="VisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), m.VisitStatus))' disabled></select>
+                            }
+                        }
+                    } *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Access CardNo"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Access CardNo"]' name="CardNo" value='@m.CardNo' maxlength="4" @((Model.VisitApply.VisitApplyStatus == 1 && m.VisitStatus == 0) ? "" : "readonly") />
+                    </div>                            
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.22 신인아 버튼정리 start
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        @*  @((Model.VisitApply.VisitApplyStatus == 1 && m.VisitStatus == 0) ? "" : "disabled") *@
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Confirm"]</button>
+    </div>
+</div>
+@* for Prev Link *@
+<a asp-action="ManualList" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>

@@ -1,0 +1,371 @@
+@model PersonListViewModel
+@{
+    @* ViewData["Title"] = "임직원 관리"; *@
+    PersonGridData current = Model.CurrentRoute; // PersonGridData *@
+    GridData routes = Model.CurrentRoute.Clone(); // GridData *@
+    PersonGridData searchRoute = Model.SearchRoute;
+    @* PersonGridData searchRoutes = Model.CurrentRoute.Clone();
+    var dic = new Dictionary<string, string>(searchRoutes.ToDictionary());
+    Console.WriteLine("dic: 1>" + dic.Count);
+    dic.Remove(nameof(searchRoutes.PersonTypeID));
+    dic.Remove(nameof(searchRoutes.PersonStatusID));
+    dic.Remove(nameof(searchRoutes.CompanyID));
+    Console.WriteLine("dic: 2>" + dic.Count);
+    searchRoutes.SearchDictionary = dic;
+    Console.WriteLine("dic: 3>" + searchRoutes.SearchDictionary.Count); *@
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = "/person/reg/?culture=@CultureInfo.CurrentCulture"; *@
+    }
+
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&sabun='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.PersonTypeID.options[myform.PersonTypeID.selectedIndex].value;
+        var field2 = myform.PersonStatusID.options[myform.PersonStatusID.selectedIndex].value;
+        @* var field2 = myform.CompanyID.options[myform.CompanyID.selectedIndex].value; *@
+        var keyword1 = myform.OrgName.value.trim();
+        var keyword2 = myform.Name.value.trim();
+        var keyword3 = myform.CompanyName.value.trim();
+        var url = myform.action + field1 + "/" + field2; 
+        console.log("[search] field", field1);
+        @* console.log("[search] keyword", keyword); *@
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        ///-1/-1/0/+/ㅁ/?culture=ko
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="열기" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+ @* asp-action="List" asp-all-route-data="@dic" *@
+ @* {searchpersontypeid?}/{searchcompanyid?}/{searchpersonstatusid?}/{searchorgname?}/{searchname?} *@
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchpersontypeid="" asp-route-searchpersonstatusid="" asp-route-searchorgname="" asp-route-searchname="" asp-route-searchcompanyname="">
+                <li>
+                    <div class="label">@Localizer["Person Classify"]</div>
+                    <div class="form-item-wrap">
+                        <select class="select full" name="PersonTypeID">
+                            <option value='-1'>@Localizer["Entire"]</option>
+                            @{
+                                var personTypeName = "";
+                                foreach(var a in Model.CodePersonType) {
+                                    personTypeName = "";
+                                    if(a.SubCodeID != 2 && a.SubCodeID < 4){
+                                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                                            personTypeName = a.CodeNameKor;
+                                        }else{
+                                            personTypeName = a.CodeNameEng;
+                                        }
+                                        if(current.SearchPersonTypeID == a.SubCodeID.ToString()){
+                                            <option value="@a.SubCodeID" selected>@personTypeName</option>
+                                        }else{
+                                            <option value="@a.SubCodeID">@personTypeName</option>
+                                        }
+                                    }
+                                }
+                            }
+                        </select>
+                        @* @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="PersonTypeID" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), current.SearchPersonTypeID))'><option value='-1'>@Localizer["Entire"]</option></select>
+                            }else{
+                                <select class="select full" name="PersonTypeID" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), current.SearchPersonTypeID))'><option value='-1'>@Localizer["Entire"]</option></select>
+                            }
+                        } *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Company Name"]' name="CompanyName" value='@searchRoute.SearchCompanyName' maxlength="20" />
+                        @* <select class="select full" name="CompanyID">
+                            <option value="-1">@Localizer["Entire"]</option>
+@{
+    foreach(Company company in Model.Companies){
+        if (int.Parse(current.SearchCompanyID) == company.CompanyID) {
+            <option value=@company.CompanyID selected>@company.CompanyName</option>
+        } else {
+            <option value=@company.CompanyID>@company.CompanyName</option>
+        }
+    }
+}                          
+                        </select> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Department Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Department Name"]' name="OrgName" value='@searchRoute.SearchOrgName' maxlength="20" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Work Status"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), current.SearchPersonStatusID))'></select>                        
+                            }else{
+                                <select class="select full" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), current.SearchPersonStatusID))'></select>                        
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="Name" value="@searchRoute.SearchName" maxlength="20" />
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    @* ViewBag.ExcelDownloadable = false; *@
+    if (ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+    if(ViewBag.Registable){
+        <a asp-action="Reg" asp-all-route-data="@routes.ToDictionary()" >
+            <button type="button" class="btn-green">@Localizer["New registration"]</button>
+        </a>
+    }
+}
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+            @* <button type="button" class="btn-green" onClick="goDetail();">@Localizer["View details"]</button> *@
+            @* <button type="button" class="btn-gray">발급관리 실행</button>
+            <button type="button" class="btn-gray">엑셀 다운로드</button>
+            <button type="button" class="btn-green">탈퇴</button> *@
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="임직원 리스트">
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Person Classify"]</th>
+                <th>@Localizer["Sabun"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Position"]</th>
+                <th>@Localizer["CellPhone"]</th>
+                @* <th>@Localizer["Access Card"]</th>
+                <th>@Localizer["Personal Vehicle"]</th> *@
+                <th>@Localizer["Address"]</th>
+            </tr>
+
+@{
+    var location = "";
+    var personType = "";
+    foreach(Person person in Model.Persons){
+        location = "";
+        personType = "";
+        if (person.Location != null && Model.CodeLocation != null) {
+            foreach(var m in Model.CodeLocation) {
+                if (m.SubCodeDesc != null && m.SubCodeDesc.Equals(person.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = m.CodeNameKor;
+                    }else {
+                        location = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (person.PersonTypeID != null) {
+            if (Model.CodePersonType != null) {
+                foreach(var m in Model.CodePersonType) {
+                    if (m.SubCodeID == person.PersonTypeID) {
+                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                            personType = m.CodeNameKor;
+                        }else {
+                            personType = m.CodeNameEng;
+                        }
+                    }
+                }
+            }
+        }
+            <tr onclick="selectRow(this, '@person.Sabun');" ondblclick="goDetail('@person.Sabun')"> 
+                <td>@location</td>
+                <td>@personType</td>
+                <td>@person.Sabun</td>
+                <td>@person.Name</td>
+                <td>@person.GradeName</td>
+                <td>@person.Mobile</td>
+                @* todo: 출입증 번호있는 지 여부에 따라 표시 *@
+                @* <td><img src='/images/ico/ico-status-chk.svg' alt='보유' style='visibility:@(string.IsNullOrEmpty(person.CardNo)?"hidden":"visible")' /></td>
+                <td><img src='/images/ico/ico-status-chk.svg' alt='보유' style='visibility:@(person.CarRegCnt > 0?"visible":"hidden")' /></td> *@
+                <td>@person.HomeAddr</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap">        
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+
+@* <table>
+    <thead>
+        <tr>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(Person.PersonID), current);}
+                <a asp-action="List"
+                asp-all-route-data="@routes.ToDictionary()">Person ID</a>
+            </th>       
+            <th>
+                @{ routes.SetSortAndDirection(nameof(Person.Name), current);}
+                <a asp-action="List"
+                asp-all-route-data="@routes.ToDictionary()">Name</a>
+            </th>
+            <th>
+
+            </th>
+    </thead>
+    <tbody>
+        @foreach (Person person in Model.Persons) {
+            <tr>
+                <td>
+                    <a asp-action="Details"
+                        asp-route-id="@person.PersonID" 
+                        asp-route-slug="@person.Name.Slug()">@person.PersonID</a>
+                </td>
+                <td>
+                    <a asp-action="Details" 
+                        asp-route-id="@person.PersonID" 
+                        asp-route-slug="@person.Name.Slug()">@person.Name</a>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+ 
+@*{
+    // page nav
+    routes = current.Clone(); // reset to current route values
+    for (int i = 1; i<= Model.TotalPages; i++) {
+        routes.PageNumber = i;
+        string active = @Nav.Active(i, current.PageNumber); //@active
+        <a asp-action="List" asp-all-route-data="@routes.ToDictionary()">@i</a>
+    }
+}*@

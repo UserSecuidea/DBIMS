@@ -1,0 +1,1449 @@
+@using WebVisit.Models.ViewModels;   @*2023.09.15 dsyoo*@
+@model ExportImportDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail ExportImport"]; //"반출입 상세";
+}
+<script>
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+    };
+
+    // edit - 반입/반출처리 버튼: 담당자가 반입/반출 처리 
+    function changeImportExportStatus(fmName){
+        const myform = eval("document."+fmName+";");
+        myform.mode.value="EExportImportStatus";
+        @* 자산&수리: ExportImportStatus CheckCnt Opinion *@
+        @* 노트북: ExportImportStatus Opinion *@
+        var con = confirm('@Localizer["Do you want to handle import export"]');
+        if(con){
+            $("select[name='ExportImportPurposeType']").prop("disabled", "");   @*2023.09.17 dsyoo 반입반출상태 업데이트처리시 disable되어있으면 값이 부정확해짐 *@
+            $("select[name='ImportType']").prop("disabled", "");                @*2023.09.17 dsyoo 반입반출상태 업데이트처리시 disable되어있으면 값이 부정확해짐 *@
+            $("select[name='ExportImportApplyStatus']").prop("disabled", "");   @*2023.09.17 dsyoo 반입반출상태 업데이트처리시 disable되어있으면 값이 부정확해짐 *@
+            myform.submit();
+        }
+    }
+
+    // edit - 저장 버튼: 반출입사유 변경
+    function saveEditForm(fmName){
+        const myform = eval("document."+fmName+";");
+        if ($("select[name='ExportImportPurposeType']").val() == 0) {
+            myform.mode.value = "RepairCompany";  @*2023.10.04 dsyoo 수리업체 지정*@
+        }
+        else {
+            myform.mode.value="E";
+        }
+
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+
+    // 반입수량 변경
+    function checkExportCnt (fmName, obj) {
+        var myform = eval("document."+fmName+";");
+        var idx = findIndex(myform, "ExportImportItemID[]", obj);
+        var Quantity = findFormElementByIndex(myform, "ExportImportItemID[]", "Quantity[]", idx);
+        @* alert(Quantity.value); *@
+        var RemainCnt = findFormElementByIndex(myform, "ExportImportItemID[]", "RemainCnt[]", idx);
+        if (isNumber(obj.value)){
+            var v = parseFloat(obj.value);
+            var rc = parseFloat(Quantity.value - v).toFixed(2);
+            console.log("[checkExportCnt] idx:"+idx+" / rc: "+rc);
+            if (rc < 0){
+                document.getElementById("errormsg").innerHTML = '@Localizer["The quantity taken out cannot exceed the quantity taken in"]';
+                obj.value = 0;
+                obj.focus();
+                return;
+            }
+            RemainCnt.value = rc;//Quantity.value - obj.value;
+        }
+    }
+    @*--------------------------------------------------------------*@
+    @*2023.09.26 dsyoo *@
+    @*--------------------------------------------------------------*@
+        // search - 외부업체인수자
+    function goSearchRepairCompany(fmName) {
+        const myform = eval("document." + fmName + ";");
+        var companySabunObj = null;
+        var companyContactNameObj = null;
+        var companyNameObj = null;
+        var bizRegNoObj = null;
+        var companyTelObj = null;
+        companySabunObj = myform.CompanySabun;
+        companyContactNameObj = myform.CompanyContactName;
+        companyNameObj = myform.CompanyName;
+        bizRegNoObj = myform.BizRegNo;
+        companyTelObj = myform.CompanyTel;
+
+        popSelectRepairCompany(companySabunObj, companyContactNameObj, companyNameObj, bizRegNoObj, companyTelObj);
+    }
+    @*--------------------------------------------------------------*@
+</script>
+@if (TempData.Keys.Contains("DATA.ImportID"))
+{
+    var id = @TempData["DATA.ImportID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        @* 2023.09.08 기획수정으로 우선 주석처리 *@
+        @* document.getElementById("ifTemp").setAttribute('src', '/approval/exportimport?ExportImportID='+@id+'&eiType=2'); *@
+    }
+</script>
+    }
+}
+@{
+    //2023.09.16 dsyoo
+    var ReadOnly="";
+    var Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                0  //신청(0) 디폴트
+                            );
+    var HideImport="";
+
+
+}
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Progress Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li class="full">
+            <div class="form-item-wrap">
+                <table aria-label="승인리스트">
+                    <tr>
+                        <th>@Localizer["Status"]</th>
+                        <th>@Localizer["Approver"]</th>
+                        <th>@Localizer["Department Name"]</th>
+                        <th>@Localizer["Position"]</th>
+                        <th>@Localizer["DateTime"]</th>
+                        <th>@Localizer["Special Point"]</th>
+                    </tr>
+
+@{
+    var num9=0;
+    var exportImportStatusName = "";
+    foreach(ExportImportHistory m in Model.ExportImportHistory){
+        num9++; 
+        exportImportStatusName = "";
+        if (m.ExportImportStatus > -1 && Model.CodeExportImportStatus != null) {
+            foreach(var a in Model.CodeExportImportStatus) {
+                if (a.SubCodeID == m.ExportImportStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        exportImportStatusName = a.CodeNameKor;
+                    }else {
+                        exportImportStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        }             
+                                <tr>
+                                    <td>@exportImportStatusName</td>
+                                    <td>@m.UpdateName</td>
+                                    <td>@m.UpdateOrgNameKor</td>
+                                    <td>@m.UpdateGradeName</td>
+                                    <td>@m.InsertUpdateDate</td>
+                                    <td>@m.Opinion</td>
+                                </tr>
+    }
+}
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>
+
+@* 자산 *@
+<div id='tab1' style='display:@(Model.ExportImport.ExportImportType == 0 ? "inline" : "none");'>
+<form name="fmEditAsset" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="exportImportID" value='@Model.ExportImport.ExportImportID' />
+
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Export Classify"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="ExportType" @(Model.ExportImport.ExportType == 0 ? "checked" : "") disabled />
+                        <span>@Localizer["External Company"]</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="ExportType" @(Model.ExportImport.ExportType == 1 ? "checked" : "") disabled />
+                        <span>@Localizer["Inter Factory Movement"]</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="ExportType" @(Model.ExportImport.ExportType == 2 ? "checked" : "") disabled />
+                        <span>@Localizer["External Company Passage"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }else{
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            @{
+                HideImport = "";
+                if (Model.ExportImport.ImportType == 1 || Model.ExportImport.ImportType == 2 || Model.ExportImport.ImportType == 3)  //반입불요(1), 매각(2),반입불요(무상)()
+                {
+                 //   HideImport="hidden";
+                }
+            }
+            <li>
+                <div class="label s03" @HideImport>@Localizer["Import Affiliation Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" @HideImport name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.ExportImport.ImportLocation))' disabled><option value=''>-</option></select>
+                        }else{
+                                        <select class="select" @HideImport name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.ExportImport.ImportLocation))' disabled><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Import Purpose"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportImportPurposeType" asp-items='@(new SelectList(Model.CodeExportImportPurposeType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportImportPurposeType))' disabled></select>
+                        }else{
+                                        <select class="select" name="ExportImportPurposeType" asp-items='@(new SelectList(Model.CodeExportImportPurposeType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportImportPurposeType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" name="ImportDate" value='@Model.ExportImport.ImportDate' disabled />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ImportType" asp-items='@(new SelectList(Model.CodeImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ImportType))' disabled></select>
+                        }else{
+                                        <select class="select" name="ImportType" asp-items='@(new SelectList(Model.CodeImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ImportType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Delivery Method"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.DeliveryMethodType))' disabled></select>
+                        }else{
+                                        <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.DeliveryMethodType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" value='@Model.ExportImport.Reason' />
+                </div>
+            </li>
+        </ul>
+    </div>
+    @* 
+    인수자정보 
+    1. 자산: 반출구분(0-외부업체, 1-공장간 이동, 2-외부업체 경유 공장간 이동) 에 따라 다름  
+    [외부업체] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 
+    [공장간 이동] 인수자 정보: 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    [외부업체 경유 공장간 이동] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 , 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    2. 수리: 반출구분(0-외부업체, 2-외부업체 경유 공장간 이동) 에 따라 다름 
+    [외부업체] 인수자 정보 없음 
+    [외부업체 경유 공장간 이동] 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    3. 노트북은 인수자 정보 없음 
+    *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Aceptor Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <!-- 외부업체 인수자 -->
+            <div id="dExternalCompanyAceptor" style='display:@((Model.ExportImport.ExportType == 0 || Model.ExportImport.ExportType == 2) ? "inline" : "none");'>
+                <li>
+                    <div class="label s03">@Localizer["External Company Aceptor"]</div>
+                    <div class="form-item-wrap">
+                        @* 비상주사원검색: CompanyName 	BizRegNo	Tel  *@
+                        <input type="text" class="inp" placeholder='@Localizer["External Company Aceptor"]' name="CompanyContactName" value='@Model.ExportImport.CompanyContactName' readonly/>
+                        @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03"><input type="checkbox" name="IsSelf" @(Model.ExportImport.IsSelf == "Y" ? "checked" : "") disabled />&nbsp; @Localizer["Direct Transfer"]</div>
+                    <div class="form-item-wrap">
+                    </div>
+                </li>
+                <li>
+                    <div class="label s01">@Localizer["External Company Aceptor Information"]</div>
+                </li>
+                <li class="vtype">
+                    <div class="form-item-wrap">
+                        @* CompanyName 	BizRegNo	CompanyTel  *@ 
+                        <input type="text" class="inp" name="CompanyInfo" value='@Model.ExportImport.CompanyName / @Model.ExportImport.BizRegNo / @Model.ExportImport.CompanyTel' readonly />
+                    </div>
+                </li>
+            </div>
+            <!-- 반입사업장 인수자 -->
+            <div id="dImportAceptor" style='display:@((Model.ExportImport.ExportType == 1 || Model.ExportImport.ExportType == 2) ? "inline" : "none");'>
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor"]</div>
+                    <div class="form-item-wrap">
+                        @* 사원검색: Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel*@
+                        <input type="text" class="inp" placeholder='@Localizer["Import Place Of Business Aceptor"]' name="Name" value='@Model.ExportImport.Name' readonly/>
+                        @* &nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor Information"]</div>
+                    <div class="form-item-wrap">
+                        @* Sabun	Name 	OrgID	OrgNameKor	OrgNameEng*@
+                        <input type="text" class="inp" name="ImportAceptorInfo" value="@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel" readonly />
+                    </div>
+                </li>
+            </div>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" value='@Model.ExportImport.ApprovalName' readonly/>
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                    <input type="text" class="inp" name="ApprovalInfo" value="@Model.ExportImport.ApprovalOrgNameKor / @Model.ExportImport.ApprovalTel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Sub Contact Name"]' name="ContactName" value='@Model.ExportImport.ContactName' readonly/>
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" readonly /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Information"]</div>
+                <div class="form-item-wrap">
+                    @* ContactSabun	ContactName	ContactOrgID	ContactOrgNameKor	ContactOrgNameEng ContactTel *@
+                    <input type="text" class="inp" name="ContactInfo" value="@Model.ExportImport.ContactOrgNameKor / @Model.ExportImport.ContactTel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Payment Status"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        // if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }else{
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }
+                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                            );
+                        ReadOnly = "disabled";
+                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                    <select class="select" name="ExportImportApplyStatus" @ReadOnly>
+                                        @{
+
+                                foreach (var option in Opts)
+                                {
+                                                            <option value="@option.Id">@option.Text</option>
+                                }
+                                        }
+                                    </select>
+                    
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Item Information"]</div>
+    </div>
+
+        @{
+            var num=0;
+            foreach(ExportImportItem m in Model.ExportImportItems){  
+                num++;
+                if(m.ImportCnt == null){
+                    m.ImportCnt = 0.0f;
+                }
+
+                    <div class="reg-form-wrap">
+                        <input type="hidden" name="ExportImportItemID[]" value="@m.ExportImportItemID" />
+                        <div class="reg-header-wrap">
+                            <div class="num">@num</div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="label s03">@Localizer["Material Code"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode" value='@m.MaterialsCode' readonly />
+                                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Material Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName" value='@m.MaterialsName' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Export Quantity"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Export Quantity"]' name="Quantity[]"  value='@m.Quantity' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Unit"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit" value='@m.Unit' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Standard"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard" value='@m.Standard' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Description"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Description"]' name="Memo" value='@m.Memo' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Import Quantity"]</div>
+                                <div class="form-item-wrap">
+                                @{
+                        //2023.09.17 dsyoo 반입반출시 반입대기(9)!=true || 보안실등급==false 외에는 Readonly
+                        if(Model.ExportImport.ExportImportStatus!=9
+                            || SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ImportLocation, ViewBag.my.Location)==false
+                        ) //ExportImportStatus : 반입대기(9)
+                        {
+                            ReadOnly = "readonly";
+                        }
+                                }
+                                    <input type="number" name="ImportCnt[]" class="inp" placeholder='@Localizer["Import Quantity"]' min="1" max="100000" value='@m.ImportCnt' onkeyup="checkExportCnt('fmEditAsset', this)" oninput="checkExportCnt('fmEditAsset', this)" @ReadOnly />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Remain Quantity"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="number" name="RemainCnt[]" class="inp" placeholder='@Localizer["Remain Quantity"]' min="1" max="100000" value='@m.RemainCnt' readonly />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+    }
+}
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["State Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["ExportImport Status"]</div>
+                <div class="form-item-wrap">
+                @{
+                                @* 
+                    상신 주기(상신 누르기 전 단계):
+                    신청 : 신청 - 비활성화
+                    반려: 반려- 비활성화
+                    반출대기 : 반출대기/반출확인/정문반송 비활성화
+
+                    1.리클레임, 2.판매, 7.반환
+                    반출완료-비활성화
+
+                    3.세정(재생), 4.교환-대체품반입요/대체품선입고, 5.이체(이동), 6.분석
+                    반입대기 : 반입대기/반입확인 비활성화
+                    반입완료 - 비활성화
+
+                    8.태블릿
+                    반입대기 : 반입대기/반입확인/정문반송 비활성화
+                    반입완료 - 비활성화
+                    *@
+                    // 1 리클레임, 2 판매, 3: 세정(재성), 4: 교환, 5. 이체 가로 이동, 7: 분석, 8: 데모, 10: 워런티, 11: 반환, 12: 태블릿
+                    // 0 신청, 1 반출상신, 2 결제완료, 3 반려, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 8 반입상신, 9 반입대기, 10 반입확인, 11 반입완료
+                    // 2 결제완료, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 9 반입대기, 10 반입확인, 11 반입완료
+                                @* @Model.ExportImport.ExportImportStatus *@
+                    Opts = SelectItems.ExportImportOptions(CultureInfo.CurrentCulture.ToString(),
+                    Model.CodeExportImportStatus,
+                    Model.ExportImport.ExportImportPurposeType,
+                    Model.ExportImport.ExportImportApplyStatus,
+                    Model.ExportImport.ExportImportStatus,
+                    Model.ExportImport.ExportType,
+                    Model.ExportImport.ImportType
+                    );
+                    ReadOnly = "";
+                    if (Opts.Count == 1 || (Model.ExportImport.ExportImportStatus != 4
+                    && Model.ExportImport.ExportImportStatus != 9
+                    && Model.ExportImport.ExportImportStatus != 10)) //반출대기(4), 반입대기(9), 반입확인(10)
+                    {
+                        ReadOnly = "disabled";
+                    }
+                    // else if (ViewBag.IsMaster == false
+                    // && (Model.ExportImport.ExportImportStatus == 10)
+                    // && ViewBag.my.Sabun != Model.ExportImport.ContactSabun) //반입확인(10)
+                    // {
+                    //     ReadOnly = "disabled";  //확인처리는 마스터와 담당자만
+                    // }
+                    if(SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) !=true)
+                    {
+                       ReadOnly = "disabled";  //확인처리는 마스터와 보안실만
+                    }
+                            <select class="select" name="ExportImportStatus" @ReadOnly frm="fmEditAsset">
+                                @{
+
+			            foreach (var option in Opts)
+			            {
+                                                    <option value="@option.Id">@option.Text</option>
+			            }
+                                }
+                            </select>
+                }
+                </div>
+            </li>
+            @* 자산 / 수리 일 경우에만 수량 입력 
+            노트북 일 경우에는 입력 안함  *@
+            @* 2023.09.13 수량은 품목별 입력하도록 수정 변경 
+            <li>
+                <div class="label s03">@Localizer["Quantity"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Quantity"]' name="CheckCnt" />
+                    </div>
+                </div>
+            </li> *@
+            <li class="full">
+            <div class="label s03">@Localizer["Special Point"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                    <input type="text" class="inp" placeholder='@Localizer["Special Point"]' name="Opinion" />
+                    </div>                            
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="req-btn-wrap">
+        @* 2023.09.21 신인아 버튼정리 start~end
+        <div class="lt-item">
+            </div>*@
+        <div class="lt-item">
+@*             <button type="button" class="btn-gray" id="tab1-btn-add" onclick="changeImportExportStatus('fmEditAsset');">@Localizer["Export Import Processing"]</button>
+            <button type="button" class="btn-green" onclick="saveEditForm('fmEditAsset');">@Localizer["Save"]</button>
+ *@
+            @{
+                if (ViewBag.IsReApproval)
+                {
+                            <button type="button" class="btn-green" onClick="reApproval();">재상신하기</button>
+                }
+            }
+
+            @{
+                //2023.09.26 dsyoo 출력하기 버튼은 승인된건이고 반출대기 상태인건만 담당자 또는 관리자인지 체크하고 가능
+                if (Model.ExportImport.ExportImportApplyStatus == 1
+                && (ViewBag.my.Sabun != Model.ExportImport.ContactSabun || SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true) 
+                && (Model.ExportImport.ExportImportStatus == 4) //ExportImportStatus : 반출대기(4), 반입대기(9)
+                )
+                {
+                            <button type="button" class="btn-gray" onClick="printExportImport();">출력하기</button>
+                }
+            }
+            @* 권한에 따라 출력 버튼 처리 *@
+            @{
+                if (Model.ExportImport.ExportImportApplyStatus == 1
+                && (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true
+                || SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ImportLocation, ViewBag.my.Location) == true)
+                && (Model.ExportImport.ExportImportStatus == 4 || Model.ExportImport.ExportImportStatus == 9) //ExportImportStatus : 반출대기(4), 반입대기(9)
+
+                )
+                {
+                                 <button type="button" class="btn-green" id="tab1-btn-add" onclick="changeImportExportStatus('fmEditAsset');">@Localizer["Export Import Processing"]</button>
+                }
+            }
+            @{
+                //2023.09.17 dsyoo 저장버튼은 상세보기에서 필요 없어보임
+                //<button type="button" class="btn-green" onclick="saveEditForm('fmEditAsset');">@Localizer["Save"]</button>
+
+            }
+    </div>
+    </div>
+</form>
+</div>
+@* 수리 *@
+<div id='tab2' style='display:@(Model.ExportImport.ExportImportType == 1 ? "inline" : "none");'>
+<form name="fmEditRepairForm" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="exportImportID" value='@Model.ExportImport.ExportImportID' />    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Export Classify"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="ExportType" @(Model.ExportImport.ExportType == 0 ? "checked" : "") disabled />
+                        <span>@Localizer["External Company"]</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="ExportType" @(Model.ExportImport.ExportType == 2 ? "checked" : "") disabled/>
+                        <span>@Localizer["External Company Passage"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }else{
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                @{
+                    HideImport = "";
+                    if (Model.ExportImport.ImportType == 1 || Model.ExportImport.ImportType == 2 || Model.ExportImport.ImportType == 3)  //반입불요(1), 매각(2),반입불요(무상)()
+                    {
+                     //   HideImport = "hidden";
+                    }
+                }
+                    <div class="label s03" @HideImport>@Localizer["Import Affiliation Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ImportLocation" @HideImport asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.ExportImport.ImportLocation))' disabled @HideImport><option value=''>-</option></select>
+                        }else{
+                                        <select class="select" name="ImportLocation" @HideImport asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.ExportImport.ImportLocation))' disabled @HideImport><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Import Purpose"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportImportPurposeType" asp-items='@(new SelectList(Model.CodeExportImportPurposeType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportImportPurposeType))' disabled></select>
+                        }else{
+                                        <select class="select" name="ExportImportPurposeType" asp-items='@(new SelectList(Model.CodeExportImportPurposeType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportImportPurposeType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" name="ImportDate" value='@Model.ExportImport.ImportDate' disabled />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ImportType" asp-items='@(new SelectList(Model.CodeImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ImportType))' disabled></select>
+                        }else{
+                                        <select class="select" name="ImportType" asp-items='@(new SelectList(Model.CodeImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ImportType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Delivery Method"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.DeliveryMethodType))' disabled></select>
+                        }else{
+                                        <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.DeliveryMethodType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            @* [수리-외부업체] *@
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Request VMI"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="IsVMI" @(Model.ExportImport.IsVMI == "N" ? "checked" : "") disabled/>
+                        <span>@Localizer["General Repair"]</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="IsVMI" @(Model.ExportImport.IsVMI == "Y" ? "checked" : "") disabled/>
+                        <span>@Localizer["Request VMI"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" value='@Model.ExportImport.Reason' />
+                </div>
+            </li>
+        </ul>
+    </div>
+    @*
+        ----------------------------------------------------------------------------------------------------------------------------------------------------
+        2023.09.26 dsyoo 수리일경우 수리업체정보
+        ----------------------------------------------------------------------------------------------------------------------------------------------------
+    *@
+    <div class="tit-header-wrap" style='display:@(Model.ExportImport.ExportImportPurposeType == 0 ? "flex" : "none");'>
+            <div class="rtit">@Localizer["Repair company"]</div>
+    </div>
+        <div class="reg-form-wrap" style='display:@(Model.ExportImport.ExportImportPurposeType == 0 ? "flex" : "none");' frm="fmEditRepairForm">
+        <ul>
+            <!-- 수리업체정보 -->
+            <li >
+                <div class="label s03">@Localizer["Repair acceptor"]</div>
+                <div class="form-item-wrap">
+                    @* 비상주사원검색: CompanyName 	BizRegNo	Tel  *@
+                    <input type="hidden" name="CompanySabun" value="@Model.ExportImport.CompanySabun" />
+                    @{
+                        if (SelectItems.IsPurchasingManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true)
+                        {
+                            <input type="text" class="inp" placeholder='@Localizer["Repair acceptor"]' name="CompanyContactName" value='@Model.ExportImport.CompanyContactName' readonly onclick="goSearchRepairCompany('fmEditRepairForm');" />
+                            <button type="button" class="btn-search" onclick="goSearchRepairCompany('fmEditRepairForm');"><img src="/images/ico/ico-search.svg" alt="" /></button>
+                        }
+                        else
+                        {
+                            <input type="text" class="inp" placeholder='@Localizer["Repair acceptor"]' name="CompanyContactName" value='@Model.ExportImport.CompanyContactName' readonly  />
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value='@Model.ExportImport.CompanyName' />
+                </div>
+            </li>
+            <li >
+                <div class="label s03">@Localizer["Business Registration Number"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Business Registration Number"]' name="BizRegNo" value='@Model.ExportImport.BizRegNo' readonly  />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Tel"]' name="CompanyTel" value='@Model.ExportImport.CompanyTel' />
+                </div>
+            </li>
+
+            <!--
+                @*2023.09.27 dsyoo*@
+                @* 외부업체인수자 *@
+                <input type="hidden" name="CompanySabun" value="@Model.ExportImport.CompanySabun" />
+                <input type="text" class="inp" name="CompanyName" value="" readonly />
+                <input type="hidden" name="CompanyTel" value="@Model.ExportImport.CompanyTel" />
+                <input type="hidden" name="BizRegNo" value="@Model.ExportImport.BizRegNo" />
+            -->
+
+        </ul>
+    </div>
+    @*
+        ----------------------------------------------------------------------------------------------------------------------------------------------------
+    *@
+
+    @* 
+    인수자정보 
+    1. 자산: 반출구분(0-외부업체, 1-공장간 이동, 2-외부업체 경유 공장간 이동) 에 따라 다름  
+    [외부업체] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 
+    [공장간 이동] 인수자 정보: 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    [외부업체 경유 공장간 이동] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 , 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    2. 수리: 반출구분(0-외부업체, 2-외부업체 경유 공장간 이동) 에 따라 다름 
+    [외부업체] 인수자 정보 없음 
+    [외부업체 경유 공장간 이동] 반입사업장 인수자, @Localizer["Import Place Of Business Aceptor Information"] 
+    3. 노트북은 인수자 정보 없음 
+    *@
+    <div class="tit-header-wrap" style='display:@(Model.ExportImport.ExportType == 2 ? "flex" : "none");'>
+        <div class="rtit">@Localizer["Aceptor Information"]</div>
+    </div>
+    <div class="reg-form-wrap" style='display:@(Model.ExportImport.ExportType == 2 ? "flex" : "none");'>
+        <ul>
+            <!-- 반입사업장 인수자 -->
+            <li>
+                <div class="label s03">@Localizer["Import Place Of Business Aceptor"]</div>
+                <div class="form-item-wrap">
+                    @* 사원검색: Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel*@
+                    <input type="text" class="inp" placeholder='@Localizer["Import Place Of Business Aceptor"]' name="Name" value='@Model.ExportImport.Name' readonly/>
+                    @* &nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Place Of Business Aceptor Information"]</div>
+                <div class="form-item-wrap">
+                    @* Sabun	Name 	OrgID	OrgNameKor	OrgNameEng*@
+                    <input type="text" class="inp" name="ImportAceptorInfo" value="@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel" readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" value='@Model.ExportImport.ApprovalName' readonly/>
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                    <input type="text" class="inp" name="ApprovalInfo" value="@Model.ExportImport.ApprovalOrgNameKor / @Model.ExportImport.ApprovalTel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Sub Contact Name"]' name="ContactName" value='@Model.ExportImport.ContactName' readonly/>
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" readonly /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Information"]</div>
+                <div class="form-item-wrap">
+                    @* ContactSabun	ContactName	ContactOrgID	ContactOrgNameKor	ContactOrgNameEng ContactTel *@
+                    <input type="text" class="inp" name="ContactInfo" value="@Model.ExportImport.ContactOrgNameKor / @Model.ExportImport.ContactTel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Payment Status"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        // if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }else{
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }
+                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                            );
+                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                    <select class="select" name="ExportImportApplyStatus" @ReadOnly>
+                                        @{
+
+                                foreach (var option in Opts)
+                                {
+                                                            <option value="@option.Id">@option.Text</option>
+                                }
+                                        }
+                                    </select>
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Item Information"]</div>
+    </div>
+
+@{
+    var num2=0;
+    foreach(ExportImportItem m in Model.ExportImportItems){  
+        num2++;
+        if(m.ImportCnt == null){
+            m.ImportCnt = 0.0f;
+        }
+
+                    <div class="reg-form-wrap">            
+                        <input type="hidden" name="ExportImportItemID[]" value="@m.ExportImportItemID" />
+                        <div class="reg-header-wrap">
+                            <div class="num">@num2</div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="label s03">@Localizer["Material Code"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode" value='@m.MaterialsCode' readonly />
+                                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Material Name"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName" value='@m.MaterialsName' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Quantity"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]"  value='@m.Quantity' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Unit"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit" value='@m.Unit' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Standard"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard" value='@m.Standard' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Description"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="text" class="inp" placeholder='@Localizer["Description"]' name="Memo" value='@m.Memo' readonly/>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Import Quantity"]</div>
+                                <div class="form-item-wrap">
+                                    @{
+                            //2023.09.17 dsyoo 반입반출시 반입대기(9)!=true || 보안실등급==false 외에는 Readonly
+                            if(Model.ExportImport.ExportImportStatus!=9
+                                || SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ImportLocation, ViewBag.my.Location)==false
+                            ) //ExportImportStatus : 반입대기(9)
+                            {
+                                ReadOnly = "readonly";
+                            }
+                                    }
+                                    <input type="number" name="ImportCnt[]" class="inp" placeholder='@Localizer["Import Quantity"]' min="1" max="100000" value='@m.ImportCnt' onkeyup="checkExportCnt('fmEditRepairForm', this)" oninput="checkExportCnt('fmEditRepairForm', this)" @ReadOnly />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="label s03">@Localizer["Remain Quantity"]</div>
+                                <div class="form-item-wrap">
+                                    <input type="number" name="RemainCnt[]" class="inp" placeholder='@Localizer["Remain Quantity"]' min="1" max="100000" value='@m.RemainCnt' readonly />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+    }
+}
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["State Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["ExportImport Status"]</div>
+                <div class="form-item-wrap">
+                @{
+                                @* 
+                    상신 주기(상신 누르기 전 단계):
+                    신청 : 신청 - 비활성화
+                    반려: 반려- 비활성화
+                    반출대기 : 반출대기/반출확인/정문반송 비활성화
+
+                    1.리클레임, 2.판매, 7.반환
+                    반출완료-비활성화
+
+                    3.세정(재생), 4.교환-대체품반입요/대체품선입고, 5.이체(이동), 6.분석
+                    반입대기 : 반입대기/반입확인 비활성화
+                    반입완료 - 비활성화
+
+                    8.태블릿
+                    반입대기 : 반입대기/반입확인/정문반송 비활성화
+                    반입완료 - 비활성화
+                    *@
+                    // 1 리클레임, 2 판매, 3: 세정(재성), 4: 교환, 5. 이체 가로 이동, 7: 분석, 8: 데모, 10: 워런티, 11: 반환, 12: 태블릿
+                    // 0 신청, 1 반출상신, 2 결제완료, 3 반려, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 8 반입상신, 9 반입대기, 10 반입확인, 11 반입완료
+                    // 2 결제완료, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 9 반입대기, 10 반입확인, 11 반입완료
+                                @* @Model.ExportImport.ExportImportStatus *@
+                    Opts = SelectItems.ExportImportOptions(CultureInfo.CurrentCulture.ToString(),
+                    Model.CodeExportImportStatus,
+                    Model.ExportImport.ExportImportPurposeType,
+                    Model.ExportImport.ExportImportApplyStatus,
+                    Model.ExportImport.ExportImportStatus,
+                    Model.ExportImport.ExportType,
+                    Model.ExportImport.ImportType
+                    );
+                    ReadOnly = "";
+                    if (Opts.Count == 1 || (Model.ExportImport.ExportImportStatus != 4
+                    && Model.ExportImport.ExportImportStatus != 9
+                    && Model.ExportImport.ExportImportStatus != 10)) //반출대기(4), 반입대기(9), 반입확인(10)
+                    {
+                        ReadOnly = "disabled";
+                    }
+                    else if (ViewBag.IsMaster != true
+                    && (Model.ExportImport.ExportImportStatus == 10 || Model.ExportImport.ExportImportStatus == 4)
+                    && ViewBag.my.Sabun != Model.ExportImport.ContactSabun) //반입확인(10)
+                    {
+                        ReadOnly = "disabled";  //확인처리는 마스터와 담당자만
+                    }
+                            <select class="select" name="ExportImportStatus" @ReadOnly frm="fmEditRepairForm">
+                        @{
+
+			                foreach (var option in Opts)
+			                {
+                                <option value="@option.Id">@option.Text</option>
+			                }
+                        }
+                    </select>
+                }
+                </div>
+            </li>
+            @* 자산 / 수리 일 경우에만 수량 입력 
+            노트북 일 경우에는 입력 안함  *@
+            @* 2023.09.13 수량은 품목별 입력하도록 수정 변경 
+            <li>
+                <div class="label s03">@Localizer["Quantity"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Quantity"]' name="CheckCnt" />
+                    </div>
+                </div>
+            </li> *@
+            <li class="full">
+                    <div class="label s03">@Localizer["Special Point"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                            <input type="text" class="inp" placeholder='@Localizer["Special Point"]' name="Opinion" />
+                    </div>                            
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="req-btn-wrap">
+        @* 2023.09.21 신인아 버튼정리 start~end
+        <div class="lt-item">
+            </div>*@
+        <div class="lt-item">
+@*             <button type="button" class="btn-gray" id="tab1-btn-add" onclick="changeImportExportStatus('fmEditRepairForm');">@Localizer["Export Import Processing"]</button>
+ *@
+            @{
+                //2023.09.27 dsyoo 마스터, 구매부서는 수리업체를 지정할수 있다. 
+                if (SelectItems.IsPurchasingManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location)==true
+                       && Model.ExportImport.ExportImportApplyStatus==1 //승인상태(1)
+                       && Model.ExportImport.ExportImportStatus==4      //반출대기(4)
+                )
+                {
+                            <button type="button" class="btn-green" onclick="saveEditForm('fmEditRepairForm');">@Localizer["Save"]</button>
+                }
+            }
+            @{
+                if (ViewBag.IsReApproval)
+                {
+                            <button type="button" class="btn-green" onClick="reApproval();">재상신하기</button>
+                }
+            }
+            @{
+                //2023.09.26 dsyoo 출력하기 버튼은 승인된건이고 반출대기 상태인건만 담당자 또는 관리자인지 체크하고 가능
+                if (Model.ExportImport.ExportImportApplyStatus == 1
+                && (ViewBag.my.Sabun != Model.ExportImport.ContactSabun || SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true)
+                && (Model.ExportImport.ExportImportStatus == 4) //ExportImportStatus : 반출대기(4), 반입대기(9)
+                )
+                {
+                            <button type="button" class="btn-gray" onClick="printExportImport();">출력하기</button>
+                }
+            }
+            @* 권한에 따라 출력 버튼 처리 *@
+            @{
+                if (Model.ExportImport.ExportImportApplyStatus == 1
+                && (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true
+                || SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ImportLocation, ViewBag.my.Location) == true)
+                && (Model.ExportImport.ExportImportStatus == 4 || Model.ExportImport.ExportImportStatus == 9) //ExportImportStatus : 반출대기(4), 반입대기(9)
+
+                )
+                {
+                            <button type="button" class="btn-green" id="tab1-btn-add" onclick="changeImportExportStatus('fmEditRepairForm');">@Localizer["Export Import Processing"]</button>
+                }
+            }
+     
+        </div>
+    </div>
+
+</form>    
+</div>
+
+@* 노트북 *@
+<div id='tab3' style='display:@(Model.ExportImport.ExportImportType == 2 ? "inline" : "none");'>
+<form name="fmEditNotebookForm" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="exportImportID" value='@Model.ExportImport.ExportImportID' />  
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }else{
+                                        <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportLocation))' disabled><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="ExportType" asp-items='@(new SelectList(Model.CodeExportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportType))' disabled></select>
+                        }else{
+                                        <select class="select" name="ExportType" asp-items='@(new SelectList(Model.CodeExportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Export DateTime"]' name="ExportDate" value='@Model.ExportImport.ExportDate' disabled />
+                    <select class="select" name="ExportDateHour" disabled>
+                        <option value=''>@Model.ExportImport.ExportDateHour @Localizer["Hour"]</option>
+                    </select>
+                    <select class="select" name="ExportDateMinute" disabled>
+                        <option value=''>@Model.ExportImport.ExportDateMinute @Localizer["Minute"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]'  name="ImportDate" value='@Model.ExportImport.ImportDate' disabled />
+                    <select class="select" name="ImportDateHour" disabled>
+                        <option value=''>@Model.ExportImport.ImportDateHour @Localizer["Hour"]</option>
+                    </select>
+                    <select class="select" name="ImportDateMinute" disabled>
+                        <option value=''>@Model.ExportImport.ImportDateMinute @Localizer["Minute"]</option>
+                    </select>
+                </div>
+            </li>
+            <span id="spNotebookNumber" style='display:@(Model.ExportImport.ExportType == 4 ? "none" : "block")'>
+                <li style="padding-top:20px;">
+                    <div class="label s03">@Localizer["Notebook Management Number"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Notebook Management Number"]' name="ManagementNo" value='@Model.ExportImport.ManagementNo' readonly />
+                    </div>
+                </li>
+                <li style="padding-top:20px;">
+                    <div class="label s03">@Localizer["Notebook Serial Number"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Notebook Serial Number"]' name="SerialNo" value='@Model.ExportImport.SerialNo' readonly />
+                    </div>
+                </li>
+            </span>
+            <li class="full">
+                <div class="label s03">@Localizer["Self Payment Status"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="IsSelfApproval" @(Model.ExportImport.IsSelfApproval == "Y" ? "checked" : "") disabled/>
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <textarea class="textarea" id="textarea" name="Reason" placeholder='@Localizer["Export Import Reason"]'>@Model.ExportImport.Reason</textarea>
+                    @* <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" value='@Model.ExportImport.Reason' /> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" value='@Model.ExportImport.ApprovalName' readonly/>
+                    @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" /></button> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                    <input type="text" class="inp" name="ApprovalInfo" value="@Model.ExportImport.ApprovalOrgNameKor / @Model.ExportImport.ApprovalTel" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Payment Status"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        // if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }else{
+                        //     <select class="select" name="ExportImportApplyStatus" asp-items='@(new SelectList(Model.CodeExportImportApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.ExportImport.ExportImportApplyStatus))' ></select>
+                        // }
+                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                            );
+                        ReadOnly = "disabled";
+                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                    <select class="select" name="ExportImportApplyStatus" @ReadOnly>
+                                        @{
+
+                                foreach (var option in Opts)
+                                {
+                                                            <option value="@option.Id">@option.Text</option>
+                                }
+                                        }
+                                    </select>
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["CEO Approval history Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Attach"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        
+                        <a href="javascript:void(0)" onclick="dl(0)" class="link-co">
+                        @{
+                            if(Model.ExportImport.CeoApprovalFileData != null){
+                                FileDTO? ff = Utils._Dump<FileDTO>(Model.ExportImport.CeoApprovalFileData);
+                                            <text>@ff?.FileName</text>
+                            }
+                        }
+                        </a>
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["State Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["ExportImport Status"]</div>
+                <div class="form-item-wrap">
+                @{
+                                @* 
+                    상신 주기(상신 누르기 전 단계):
+                    신청 : 신청 - 비활성화
+                    반려: 반려- 비활성화
+                    반출대기 : 반출대기/반출확인/정문반송 비활성화
+
+                    1.리클레임, 2.판매, 7.반환
+                    반출완료-비활성화
+
+                    3.세정(재생), 4.교환-대체품반입요/대체품선입고, 5.이체(이동), 6.분석
+                    반입대기 : 반입대기/반입확인 비활성화
+                    반입완료 - 비활성화
+
+                    8.태블릿
+                    반입대기 : 반입대기/반입확인/정문반송 비활성화
+                    반입완료 - 비활성화
+                    *@
+                    // 1 리클레임, 2 판매, 3: 세정(재성), 4: 교환, 5. 이체 가로 이동, 7: 분석, 8: 데모, 10: 워런티, 11: 반환, 12: 태블릿
+                    // 0 신청, 1 반출상신, 2 결제완료, 3 반려, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 8 반입상신, 9 반입대기, 10 반입확인, 11 반입완료
+                    // 2 결제완료, 4 반출대기, 5 반출확인, 6 정문반송, 7 반출완료, 9 반입대기, 10 반입확인, 11 반입완료
+                                @* @Model.ExportImport.ExportImportStatus *@
+	                Opts = SelectItems.ExportImportOptions(CultureInfo.CurrentCulture.ToString(),
+	                    Model.CodeExportImportStatus,
+                           Model.ExportImport.ExportImportPurposeType,
+                            Model.ExportImport.ExportImportApplyStatus,
+	                    Model.ExportImport.ExportImportStatus,
+	                    Model.ExportImport.ExportType,
+	                    Model.ExportImport.ImportType
+	                    );
+	                ReadOnly = "";
+                    if (Opts.Count == 1 || (Model.ExportImport.ExportImportStatus != 4 
+                                            && Model.ExportImport.ExportImportStatus != 9 
+                                            && Model.ExportImport.ExportImportStatus != 10)) //반출대기(4), 반입대기(9), 반입확인(10)
+                    {
+    	        	    ReadOnly="disabled";
+                    }
+	                else if (ViewBag.IsMaster == false
+                            && (Model.ExportImport.ExportImportStatus == 10)
+                            && ViewBag.my.Sabun != Model.ExportImport.ContactSabun) //반입확인(10)
+                    {
+		                ReadOnly = "disabled";  //확인처리는 마스터와 담당자만
+	                }
+                 //    else if (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.Location, ViewBag.my.Location) == false
+                 //    && (Model.ExportImport.ExportImportStatus == 4 || Model.ExportImport.ExportImportStatus == 9)
+                 //    ) //반출대기(4), 반입대기(9)
+                 //    {
+		               //  ReadOnly = "disabled";  //반입/반출완료처리는 마스터(1),일반관리자(2)와 시큐리티(8)만
+	                // }
+                            <select class="select" name="ExportImportStatus" @ReadOnly frm="fmEditNotebookForm">
+                                    @{
+
+			                foreach (var option in Opts)
+			                {
+                                                        <option value="@option.Id">@option.Text</option>
+			                }
+                                    }
+                                </select>
+
+                }
+                </div>
+            </li>
+            <li class="full">
+                    <div class="label s03">@Localizer["Special Point"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                            <input type="text" class="inp" placeholder='@Localizer["Special Point"]' name="Opinion" />
+                    </div>                            
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="req-btn-wrap">
+        @* 2023.09.21 신인아 버튼정리 start~end
+        <div class="lt-item">
+            </div>*@
+        <div class="lt-item">
+            @{
+                if(ViewBag.IsReApproval)
+                {
+                            <button type="button" class="btn-green" onClick="reApproval();">재상신하기</button>
+                }
+            }
+            @{
+                //2023.09.26 dsyoo 출력하기 버튼은 승인된건이고 반출대기 상태인건만 담당자 또는 관리자인지 체크하고 가능
+                if (Model.ExportImport.ExportImportApplyStatus == 1
+                && (ViewBag.my.Sabun != Model.ExportImport.ContactSabun || SelectItems.IsLocalManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location) == true)
+                && (Model.ExportImport.ExportImportStatus == 4) //ExportImportStatus : 반출대기(4), 반입대기(9)
+                )
+                {
+                            <button type="button" class="btn-gray" onClick="printExportImport();">출력하기</button>
+                }
+            }          
+            @* 권한에 따라 출력 버튼 처리 *@
+            @{
+                if(Model.ExportImport.ExportImportApplyStatus==1
+                    && (SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ExportLocation, ViewBag.my.Location)==true
+                    || SelectItems.IsSecurityManager(ViewBag.my.LevelCodeID, Model.ExportImport.ImportLocation, ViewBag.my.Location) == true)
+                    && (Model.ExportImport.ExportImportStatus == 4 || Model.ExportImport.ExportImportStatus == 9) //ExportImportStatus : 반출대기(4), 반입대기(9)
+                    
+                ) 
+                {
+                            <button type="button" class="btn-green" id="tab1-btn-add" onclick="changeImportExportStatus('fmEditNotebookForm');">@Localizer["Export Import Processing"]</button>
+                }
+            }
+            @{
+                //2023.09.17 dsyoo 저장버튼은 상세보기에서 필요 없어보임
+                //<button type="button" class="btn-green" onclick="saveEditForm('fmEditNotebookForm');">@Localizer["Save"]</button>
+                
+            }
+        </div>
+    </div>
+</form>
+</div>
+
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" style="font-size:15px;color:#636D85;">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+
+<form name="fmDL" method="post" asp-action="DownloadExportImport" target="ifTemp">
+    <input type="hidden" name="ExportImportID" value="@Model.ExportImport.ExportImportID" />
+    @* <input type="hidden" name="CeoApprovalFileID" value="0" /> *@
+</form>
+<script>
+    function reApproval(){
+        @*2023.09.17 dsyoo 자산반출 재상신 eiType:1 반출상신, eiType:2: 반입상신*@
+        document.getElementById("ifTemp").setAttribute('src', '/approval/exportimport?ExportImportID=@ViewBag.ExportImportID&eiType=1');
+    }
+    function printExportImport(){
+        document.getElementById("ifTemp").src = "/exportimport/printexportimport?exportImportID=@ViewBag.ExportImportID";
+    }
+</script>
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+
+@*2023.09.26 dsyoo 수리업체 조회추가*@
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+<partial name="~/Views/_Popup/PopSelectRepairCompany.cshtml" />

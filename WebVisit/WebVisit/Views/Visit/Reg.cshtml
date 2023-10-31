@@ -1,0 +1,692 @@
+@model VisitRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Apply Visit"]; //"방문 신청";
+}
+<script>
+    window.onload = function (){
+        @* console.log("PREV_URL:"+PREV_URL); *@
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+        @* console.log("PREV_URL:"+PREV_URL); *@
+    }
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+            $( ".inpdate" ).datepicker({ regional:"@CultureInfo.CurrentCulture", dateFormat: 'yy-mm-dd' });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+
+    var cd = 24 * 60 * 60 * 1000;
+    function checkVisitor(obj){
+        var idx = findIndex(obj);
+        var myform = document.fmAddVisit;
+        var j = -1;
+        var name="";
+        var birth="";
+        var formGender = null;
+        var formMobile = null;
+        var formCarNo = null;
+        var formCompanyName = null;
+        var formCleanEdue = null;
+        var formVisitorEdu = null;        
+        if (idx > -1) {
+            for(var i =0 ;i<myform.length; i++) {
+                var el = myform[i];
+                if (el.name == "Name[]"){
+                    j++;
+                }
+                if (idx == j) {
+                    if (el.name == "Name[]") {
+                        if (el.value.trim().length < 1){
+                            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+                            el.focus();
+                            return;
+                        }
+                        name = el.value.trim();
+                    } else if (el.name == "BirthDate[]") {
+                        if(el.value.trim().length < 1) {
+                            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+                            el.focus();
+                            return;
+                        }
+                        let b = new Date(el.value.trim());
+                        if (isValidDate(b) == false){
+                            document.getElementById("errormsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+                            el.value = '';
+                            el.focus();
+                            return;
+                        }
+                        birth = el.value.trim();
+                    }else if (el.name == "ckVisitorEdu[]") {
+                        formVisitorEdu = el;
+                    }else if (el.name == "ckCleanEdu[]") {
+                        formCleanEdue = el;
+                    }else if(el.name == "Gender[]"){
+                        formGender = el;
+                    }else if(el.name == "Mobile[]"){
+                        formMobile = el;
+                    }else if(el.name == "CompanyName[]"){
+                        formCompanyName = el;
+                    }else if(el.name == "CarNo[]"){
+                        formCarNo = el;
+                    }
+                }
+            }
+        }
+        $.ajax({
+            url: "/visit/getvisitorinfo", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+            data: { name, birth },  // HTTP 요청과 함께 서버로 보낼 데이터
+            method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+            dataType: "JSON" // 서버에서 보내줄 데이터의 타입
+        }).done(function(json) {
+            @* console.log("[checkVisitor]", json); *@
+            if (json != null){
+                console.log("[checkVisitor]", json);
+                let t = new Date();
+                if(json.isBlackList != null && json.isBlackList =="Y"){
+                    alert("신청할 수 없는 사용자 입니다");
+                }else{
+                    @* if (json.gender != null && formGender != null)
+                        formGender.selectedIndex = json.gender; *@
+                    if (json.mobile != null)
+                        formMobile.value = json.mobile;
+                    if (json.carNo != null)
+                        formCarNo.value = json.carNo;
+                    if (json.companyName != null)
+                        formCompanyName.value = json.companyName;
+                    if (json.safetyEduLastDate != null && json.safetyEduLastDate != ""){
+                        let e = new Date(json.safetyEduLastDate);
+                        let d = Math.floor((t.getTime() - e.getTime())/cd);
+                        if (d < 365) {
+                            formVisitorEdu.checked = true;
+                        }
+                        @* console.log("d:"+d) *@
+                    }
+                    if (json.cleanEduLastDate != null && json.cleanEduLastDate != ""){
+                        let e = new Date(json.cleanEduLastDate);
+                        let d = Math.floor((t.getTime() - e.getTime())/cd);
+                        if (d < 365) {
+                            formCleanEdue.checked = true;
+                        }
+                    }
+                }
+            }
+        });
+        @* 
+        to-do: Name 과 BirthDate 를 이용하여 방문객회원(VisitPerson) 인지 비상주사원(Person) 인지 확인 
+        방문객회원이면 VisitorType=1, VisitPersonID, Name, OrgNameKor
+        임직원 이면 VisitorType=0, Sabun, Name, OrgID, OrgNameKor, OrgNameEng 
+        *@
+        @* myform.submit(); *@
+    }
+
+    function saveAddForm(){
+        var myform = document.fmAddVisit;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        @* if(myform.ContactOrgNameKor.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '접견인 부서를 선택해 주세요';
+            return;
+        } *@
+
+        if(myform.VisitStartDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the date of visit"]';
+            myform.VisitStartDate.focus();
+            @* alert('@Localizer["Please enter the date of visit"]'); *@
+            return;
+        }
+        if(myform.VisitEndDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the date of visit"]';
+            myform.VisitEndDate.focus();
+            return;
+        }
+        //방문신청: mode VisitorType VisitApplyType RegVisitorType Location VisitStartDate VisitEndDate ContactSabun ContactName	ContactOrgID	ContactOrgNameKor ContactOrgNameEng PlaceCodeID VisitPurposeCodeID
+        if(myform.ContactName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select contact person"]';
+            return;
+        }
+        if(myform.PlaceCodeID.value < 0 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select an access area"]';
+            return;
+        }
+        let s = new Date(myform.VisitStartDate.value.trim());
+        let e = new Date(myform.VisitEndDate.value.trim());
+        let t = new Date();
+        let d = e.getTime() - s.getTime();
+        @* console.log("date", isValidDate(s),s, "/", isValidDate(e), e,"/",d); *@
+        if (isValidDate(s) == false){ // s == "Invalid Date"
+            document.getElementById("errormsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            myform.VisitStartDate.value = '';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        if (isValidDate(e) == false){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+            myform.VisitEndDate.value = '';
+            myform.VisitEndDate.focus();
+            return;
+        }
+        if (d < 0){
+            document.getElementById("errormsg").innerHTML = '@Localizer["The visit end date is before the visit start date"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        var d2 = parseInt(ToYYMMDD(s)) - parseInt(ToYYMMDD(t));
+        @* console.log("s: "+parseInt(ToYYMMDD(s))+", t: "+parseInt(ToYYMMDD(t))); *@
+        if (d2 < 0){
+            @* console.log("date", s.getDate(), "/", t,"/",d2); *@
+            document.getElementById("errormsg").innerHTML = '@Localizer["The visit date is earlier than the current date"]';
+            myform.VisitStartDate.focus();
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select contact person"]';
+            myform.ContactName.focus();
+            return;
+        }
+        //방문신청회원 arr : Name BirthDate Gender Mobile CompanyName ckVisitorEdu ckCleanEdu CarNo, ckIsVIP, VipTypeCodeID
+        @* console.log("[saveAddForm] form", myform); *@
+        @* console.log("[saveAddForm] myform.length: "+myform.length); *@
+        var ckCleanEdu=[], ckVisitorEdu=[], ckCarryItem=[], ckIsVIP = [];
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+            if (el.name == "ckVisitorEdu[]") {
+                if (el.checked)
+                    ckVisitorEdu[j] = "Y"
+                else 
+                    ckVisitorEdu[j] = "N"
+            }
+            if (el.name == "ckCleanEdu[]") {
+                if (el.checked)
+                    ckCleanEdu[j] = "Y"
+                else 
+                    ckCleanEdu[j] = "N"
+            }
+            if (el.name == "ckCarryItem[]") {
+                if (el.checked)
+                    ckCarryItem[j] = "Y"
+                else 
+                    ckCarryItem[j] = "N"
+            }
+            if (el.name == "ckIsVIP[]") {
+                if (el.checked)
+                    ckIsVIP[j] = "Y"
+                else 
+                    ckIsVIP[j] = "N"
+            }
+            if (el.name == "Name[]" && el.value.trim().length < 1) {
+                @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+                document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "BirthDate[]") {
+                if(el.value.trim().length < 1) {
+                    document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+                    el.focus();
+                    return;
+                }
+                let b = new Date(el.value.trim());
+                if (isValidDate(b) == false){
+                    document.getElementById("errormsg").innerHTML = '@Localizer["Invalid date format"] (YYYY-MM-DD) ex) 2023-01-01';
+                    el.value = '';
+                    el.focus();
+                    return;
+                }
+
+            }
+            if (el.name == "Mobile[]") {
+                @* console.log("[saveAddForm]"+myform[i].name+" / "+myform[i].value); *@
+                if (el.value.trim().length < 1){
+                    document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number"]';
+                    el.focus();
+                    return;
+                }
+                if(!regPhone.test(el.value)) {
+                    document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number correctly"] ex)000-0000-0000';
+                    el.focus();
+                    return;
+                }
+            }
+            if (el.name == "CompanyName[]" && el.value.trim().length < 1) {
+                document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        
+        // ckVisitorEdu ckCleanEdu ckCarryItem ckIsVIP
+        var con = confirm('@Localizer["Would you like to request a visit"]');
+        if(con){
+            myform.ckVisitorEdus.value = ckVisitorEdu.toString();
+            myform.ckCleanEdus.value = ckCleanEdu.toString();
+            myform.ckCarryItems.value = ckCarryItem.toString();
+            myform.ckIsVIPs.value = ckIsVIP.toString();
+            @* console.log("ckCleanEdu",ckCleanEdu.toString());
+            return; *@
+            myform.submit();
+        }
+    }
+
+    function findIndex(obj) {
+        var myform = document.fmAddVisit;
+        var j = -1;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el == obj) {
+                console.log("[findIndex] idx: "+ j);
+                break;
+            }
+            if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        return j;
+    }
+
+    function goCarryItem(obj){
+        var myform = document.fmAddVisit;
+        var j = -1;
+        var cicontainer = null;
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            if (el == obj) {
+                console.log("[goCarryItem] idx: "+ j);
+                break;
+            }
+            if (el.name == "carryItems[]"){
+                cicontainer = el;
+            }else if (el.name == "Name[]"){
+                j++;
+            }
+        }
+        popCarryItem(j, cicontainer, popSelectPersonGetPersonObj());
+    }
+
+    function goSearchPerson(){
+        var myform = document.fmAddVisit;
+        var nameObj = myform.ContactName;
+        var sabunObj =  myform.ContactSabun;
+        var departIdObj =  myform.ContactOrgID;
+        var departKorObj =  myform.ContactOrgNameKor;
+        var departEngObj =  myform.ContactOrgNameEng;
+        // popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, departIdObj, departKorObj, departEngObj)
+        popSelectPerson(nameObj, sabunObj, null, null, null, departIdObj, departKorObj, departEngObj);
+    }
+</script>
+<form name="fmAddVisit" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="RegVisitorType" value="0" />@* 방문신청자구분(등록자):임직원(0)/방문자(1)  *@
+    <input type="hidden" name="VisitApplyType" value="0" />@* 방문신청구분: 방문신청(0)/공사출입인원신청(1)/안전교육(2)*@
+
+    @* 담당자/ 접견인 정보 *@
+    <input type="hidden" name="ContactSabun" value="" />
+    <input type="hidden" name="ContactOrgID" value="" />
+    
+    <input type="hidden" name="ckVisitorEdus" value="" />
+    <input type="hidden" name="ckCleanEdus" value="" />
+    <input type="hidden" name="ckCarryItems" value="" />
+    <input type="hidden" name="ckIsVIPs" value="" />
+    @* 방문신청 정보 *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Application Visit Information"]</div>
+    </div>
+    <div>
+        <div class="reg-form-wrap">
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Place Of Business"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Visit Date"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" name="VisitStartDate" class="inpdate" value='@DateTime.Now.ToString("yyyy-MM-dd")' onkeyup="generateDateString(this)" maxlength="10" />
+                            ~ 
+                        <input type="text" name="VisitEndDate" class="inpdate"value='@DateTime.Now.ToString("yyyy-MM-dd")' onkeyup="generateDateString(this)" maxlength="10" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Contact Person"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Contact Name"]' name="ContactName" readonly value="" onclick="goSearchPerson();" />
+                        <button type="button" class="btn-search" onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="접견인 검색 팝업" /></button>
+                        @* <button type="button" class="btn-search"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Visit Department"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameKor" readonly value="" style="visibility:hidden;" onclick="goSearchPerson();" />
+                                <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameEng" readonly value="" onclick="goSearchPerson();" />
+                            }else{
+                                <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameKor" readonly value="" onclick="goSearchPerson();" />
+                                <input type="text" class="inp" placeholder='@Localizer["Department Name"]' name="ContactOrgNameEng" readonly value="" style="visibility:hidden;" onclick="goSearchPerson();" />
+                            }
+                        }
+                        @* <button type="button" class="btn-search" onclick="goSearchPerson();"><img src="/images/ico/ico-search.svg" alt="방문부서 검색 팝업" /></button> *@
+                        @* <button type="button" class="btn-gray">@Localizer["Search"]</button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Access Area"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                                    <option value='-1'>@Localizer["Select"]</option> 
+                                </select>
+                            }else{
+                                <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                                    <option value='-1'>@Localizer["Select"]</option> 
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Visit Purpose"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="VisitPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                                </select>
+                            }else{
+                                <select class="select" name="VisitPurposeCodeID" asp-items='@(new SelectList(Model.CodeVisitPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    @* 방문객 정보 *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Visitor Information"]</div>
+        <input type="hidden" name="VisitorType[]" value="0" /> @*방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1)*@
+        <input type="hidden" name="VisitPersonID[]" value="0" /> @*방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 VisitPersonID*@
+        <input type="hidden" name="VisitorSabun[]" value="" /> @*회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun*@
+        <input type="hidden" name="Gender[]" value="0" />@*2023-08-04 수정: 성별 => 삭제함*@
+        <input type="hidden" name="GradeName[]" value="0" />
+        <input type="hidden" name="Tel[]" value="0" />
+
+
+    </div>
+    <div id="add-form-wrap">
+        <div class="reg-form-wrap">
+            <div class="reg-header-wrap">
+                <div class="num">01</div>
+                <textarea name="carryItems[]" style="visibility:hidden;" cols="80"></textarea>
+            </div>
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name[]" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Birth Date"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" pattern = "yyyy-MM-dd" name="BirthDate[]" onkeyup="generateDateString(this)" maxlength="10" />
+                        &nbsp;
+                        <button type="button" class="btn-gray" onclick="checkVisitor(this);">@Localizer["Confirm"]</button>
+                    </div>
+                </li>
+                @* 2023-08-04 수정: 성별 => 삭제함
+                <li>
+                    <div class="label s03">@Localizer["Gender"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>                        
+                            }else{
+                                <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>                        
+                            }
+                        }
+                    </div>
+                </li> *@
+                <li>
+                    <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile[]" onkeyup="generatePhoneString(this);" maxlength="13" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Company Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName[]" maxlength="30" />
+                    </div>
+                </li>
+                @* <li class="empty">&nbsp;</li> *@
+                <li>
+                    <div class="label s03">@Localizer["Introductory Visitor Training"]</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckVisitorEdu[]" value='Y' disabled />
+                        @* <button type="button" class="btn-green" onclick="popSafeEdu();">교육 시작</button>
+                        <div class="help-msg">
+                            <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                            <span>교육 시청 필요</span>
+                        </div> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["CleanRoom Education"]</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckCleanEdu[]" value='Y' disabled />
+                        @* <button type="button" class="btn-green" onclick="popCleanEdu();">교육 시작</button>
+                        <div class="help-msg">
+                            <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                            <span>교육 시청 필요</span>
+                        </div> 
+                        <div class="status01">
+                            <img src="/images/ico/ico-chk01.svg" alt="" />
+                            <span>완료</span>
+                        </div>*@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Car No"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo[]" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["CarryItem"]</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckCarryItem[]" value="Y" disabled /> &nbsp;&nbsp;
+                        <button type="button" name="btnCarryItem" class="btn-gray" onclick="goCarryItem(this);">@Localizer["CarryItem"]</button>
+                    </div>
+                </li>
+                <li style='@(ViewBag.IsPartner ? "visibility:hidden;":"visibility:visible;")'>
+                    <div class="label s03">VIP</div>
+                    <div class="form-item-wrap">
+                        <input type="checkbox" name="ckIsVIP[]" value='Y' /> &nbsp;&nbsp;
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                                    <option value="-1">@Localizer["Select"]</option>
+                                </select>
+                            }else{
+                                <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                                    <option value="-1">@Localizer["Select"]</option>
+                                </select>
+                            }
+                        }
+                        @* <button type="button" class="btn-green" onclick="popCleanEdu();">교육 시작</button>
+                        <div class="help-msg">
+                            <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                            <span>교육 시청 필요</span>
+                        </div> *@
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>
+
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>            
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼 정리 start ~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-gray" id="btn-add">@Localizer["Add Visitor"]</button>
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Application"]</button>
+    </div>
+</div>
+
+<template id="temp" class="template">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">01</div>
+            <textarea name="carryItems[]" style="visibility:hidden;" cols="80"></textarea>
+@* test data: {"idx":1,"items":[{"CarryItemCodeID":"1","ItemName":"1","ItemSN":"2","Quantity":"3","Unit":"4"},{"CarryItemCodeID":"2","ItemName":"5","ItemSN":"6","Quantity":"7","Unit":"8"},{"CarryItemCodeID":"3","ItemName":"9","ItemSN":"10","Quantity":"11","Unit":"12"}],"ContactPersonSabun":"B0000001","ContactPersonOrgID":"1","ContactPersonTel":"031-259-96996","ContactPersonOrgNameKor":"인사팀","ContactPersonOrgNameEng":"HR","ImportDate":"2023-07-20","ExportDate":"2023-07-21","Location":"2000","ImportPurposeCodeID":"1","PlaceCodeID":"1","ContactPersonName":"홍길동","ContactPersonMobile":"010-2159-96996","__RequestVerificationToken":"CfDJ8Ivh_KhxMgBDvTvaO8s9_twGYyUPL17JDlpykcgAi-UVaFA9YYDfNbuCn0aFCyaBTQXHCv6urXSOjacl8kG14sRtw9pe140Z1tfEcaGLoG61Llo4GN10r14trFJbSjIa85V47CGcWDqfFGEZqWxQPoc"}             *@
+            <input type="hidden" name="VisitorType[]" value="0" /> @*방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1)*@
+            <input type="hidden" name="VisitPersonID[]" value="0" /> @*방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 VisitPersonID*@
+            <input type="hidden" name="VisitorSabun[]" value="" /> @*회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun*@
+            <input type="hidden" name="Gender[]" value="0" />@*2023-08-04 수정: 성별 => 삭제함*@
+            <input type="hidden" name="GradeName[]" value="0" />
+            <input type="hidden" name="Tel[]" value="0" />
+             <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="방문객 삭제" /></a>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name[]" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate[]" onkeyup="generateDateString(this)" maxlength="10" />
+                    &nbsp;
+                    <button type="button" class="btn-gray" onclick="checkVisitor(this);">@Localizer["Confirm"]</button>
+                </div>
+            </li>
+            @* 2023-08-04 수정: 성별 => 삭제함
+            <li>
+                <div class="label s03">@Localizer["Gender"]<span></span></div>
+                <div class="form-item-wrap">
+            @{
+                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                    <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>                        
+                }else{
+                    <select class="select" name="Gender[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>                        
+                }
+            }
+                </div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile[]" onkeyup="generatePhoneString(this);" maxlength="13" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName[]" />
+                </div>
+            </li>
+            @* <li>
+                <div class="label s03"></div>
+                <div class="form-item-wrap"></div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["Introductory Visitor Training"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckVisitorEdu[]" value='Y' />
+                    @* <input type="checkbox" name="ckSafeEdu[]"/> *@
+                    @* <button type="button" class="btn-green" onclick="popSafeEdu();">교육 시작</button>
+                    <div class="help-msg">
+                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                        <span>교육 시청 필요</span>
+                    </div> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CleanRoom Education"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckCleanEdu[]" value="Y" />
+                    @* <button type="button" class="btn-green" onclick="popCleanEdu();">교육 시작</button>
+                    <div class="help-msg">
+                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                        <span>교육 시청 필요</span>
+                    </div> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Car No"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Car No"]' name="CarNo[]" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CarryItem"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckCarryItem[]" value="Y" disabled /> &nbsp;&nbsp;
+                    <button type="button" name="btnCarryItem" class="btn-gray" onclick="goCarryItem(this);">@Localizer["CarryItem"]</button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">VIP</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="ckIsVIP[]" value="Y" /> &nbsp;&nbsp;
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'>
+                            <option value="-1">@Localizer["Select"]</option>
+                        </select>
+                    }else{
+                        <select class="select" name="VipTypeCodeID[]" asp-items='@(new SelectList(Model.CodeVipType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'>
+                            <option value="-1">@Localizer["Select"]</option>
+                        </select>
+                    }
+                }
+                    @* <button type="button" class="btn-green" onclick="popCleanEdu();">교육 시작</button>
+                    <div class="help-msg">
+                        <img src="/images/ico/ico-help01.svg" alt="느낌표" />
+                        <span>교육 시청 필요</span>
+                    </div> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+<partial name="~/Views/_Popup/PopRegCarryItem.cshtml" />
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>

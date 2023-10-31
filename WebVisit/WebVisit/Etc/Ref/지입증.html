@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8,IE=EmulateIE9" />
+
+        <link rel="stylesheet" type="text/css" href="/gcms/ExtJS/gcms/css/ext-all.css">
+        <link rel="stylesheet" href="/gcms/css/default.css" type="text/css">
+
+        <!-- jQuery -->
+        <script type="text/javascript" src="/gcms/jsp/js/jquery.js"></script>
+        <script type="text/javascript" src="/gcms/jsp/js/jquery.validate.js"></script>
+        <script type="text/javascript" src="/gcms/jsp/js/utils.selector.js"></script>
+        <script type="text/javascript" src="/gcms/jsp/js/utils.utility.js"></script>
+
+        <!-- ExtJS -->
+        <script language="javascript" src="/gcms/ExtJS/gcms/ext-base.js"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/ext-all.js"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/ext-lang-ko.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/jsp/js/extjs-Object.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/jsp/js/extjs-function.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/jsp/js/util.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/DateField.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/DatePicker.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/EditorGrid.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/Checkbox.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/CheckboxGroup.js" charset="utf-8"></script>
+        <script language="javascript" src="/gcms/ExtJS/gcms/CheckColumn.js"></script>
+        <script>
+            var COMPANY_CLASS = "외부업체(대행등록)";
+            $(document).ready(function () {
+
+                if (COMPANY_CLASS == "자사(본인)") {
+                    $("#TR_MEMBER_IO").hide();
+                } else {
+                    $("#TR_MEMBER_IO").show();
+                }
+                doPrint();
+            });
+
+            function doPrint() {
+                window.print();
+                setTimeout(function () { window.close(); }, 1);
+            }
+        </script>
+    </head>
+
+    <body>
+
+        <form id="f_carry_request_print" name="_carry_request_print">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td height="30" align="center" style="font-size:25pt;font-weight:bold"> 지 입 증 </td>
+                </tr>
+                <tr>
+                    <td align="center" height="30" style="font-size:17pt;font-weight:bold"> (Declaration of Personal Asses)</td>
+                </tr>
+            </table>
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="height: 5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left" style="width:70px"><b>지입증 No : </b></td>
+                    <td align="left" style="width:490px"><b>B202308180038</b></td>
+                    <td align="right"><b>반출예정일 : </b></td>
+                    <td align="center"><b>2024-01-18</b></td>
+                </tr>
+                <tr>
+                    <td style="height: 5px" colspan=4><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left"><b>■ 담당자 정보</b></td>
+                </tr>
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+
+            <table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                <tr style="height:15px">
+                    <td class="pop-TableTitleL" rowspan=2 style="width:25%">부서 (Department)</td>
+                    <td class="pop-TableCon_l" rowspan=2 style="width:25%">제조기술4팀(Fab2)</td>
+                    <td class="pop-TableTitleL" style="width:25%">성명 (Name)</td>
+                    <td class="pop-TableCon_l" style="width:25%">이봉호</td>
+                </tr>
+                <tr>
+                    <td class="pop-TableTitleL">연락처 (Tel.)</td>
+                    <td class="pop-TableCon_l">043-879-5982</td>
+                </tr>
+            </table>
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left"><b>■ 반입자 정보</b></td>
+                </tr>
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+            <table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                <tr style="height:15px">
+                    <td class="pop-TableTitleL" rowspan=2 style="width:25%">업체 (Company)</td>
+                    <td class="pop-TableCon_l" rowspan=2 style="width:25%">어드밴스드파워인스트루먼트(주)</td>
+                    <td class="pop-TableTitleL" style="width:25%">성명 (Name)</td>
+                    <td class="pop-TableCon_l" style="width:25%">윤도훈</td>
+                </tr>
+                <tr>
+                    <td class="pop-TableTitleL">연락처 (Tel.)</td>
+                    <td class="pop-TableCon_l">010-3255-6434</td>
+                </tr>
+            </table>
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left"><b>■ 지입 물품 정보</b></td>
+                </tr>
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+            <table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                <tr>
+                    <td class="pop-TableTitleL_c" style="width:30px">No</td>
+                    <td class="pop-TableTitleL_c" style="width:70px">구분 (Division)</td>
+                    <td class="pop-TableTitleL_c" style="width:200px">품 명 (Item)</td>
+                    <td class="pop-TableTitleL_c" style="width:58px">반입수량(Quantity)</td>
+                    <td class="pop-TableTitleL_c" style="width:30px">단위(Unit)</td>
+                    <td class="pop-TableTitleL_c" style="width:80px">규칙(S/N)</td>
+                    <td class="pop-TableTitleL_c" style="width:125px">비고(Etc)</td>
+                </tr>
+                <tr>
+                    <td class="pop-TableCon" style="width:30px">1</td>
+                    <td class="pop-TableCon" style="width:200px">기타</td>
+                    <td class="pop-TableCon_l" style="width:200px">RFG-5500</td>
+                    <td class="pop-TableCon_r" style="width:58px">1</td>
+                    <td class="pop-TableCon_l" style="width:30px">EA</td>
+                    <td class="pop-TableCon_l" style="width:80px">295898</td>
+                    <td class="pop-TableCon_l" style="width:125px"></td>
+                </tr>
+            </table>
+
+
+            <table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" class="bigtitle_print">상기 물품의 지입 및 반출을 확인함.</td>
+                </tr>
+                <tr>
+                    <td align="center" class="bigtitle_print">(Confirmation of items listed above)</td>
+                </tr>
+                <tr>
+                    <td style="height:5px"><img src="/gcms/images/main/work/blank.gif" /></td>
+                </tr>
+            </table>
+
+            <table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                <tr style="height:30px">
+                    <td class="pop-TableTitleL_c" style="width:50%" align="center"> 반 입 일 시</td>
+                    <td class="pop-TableTitleL_c" style="width:50%" align="center"> 반 출 일 시</td>
+                </tr>
+                <tr style="height:60px">
+                    <td class="pop-TableCon" align="center"><b>2023 . 08 . 18 . <br>
+                            15 시
+                            49 분
+                        </b>
+                    </td>
+
+                    <td class="pop-TableCon" align="center"><b>2023 .
+                            &nbsp;&nbsp;&nbsp;&nbsp;. &nbsp;&nbsp;&nbsp;&nbsp;.
+                            <br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;시 &nbsp;&nbsp;&nbsp;&nbsp;분
+                        </b>
+                    </td>
+                </tr>
+                <tr style="height : 60px">
+                    <td class="pop-TableCon_l"> &nbsp;</td>
+                    <td class="pop-TableCon_l"> &nbsp;</td>
+                </tr>
+            </table>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="left" height="25" style="font-size:15pt;font-weight:bold"><b>※ 지입한 물품의 반출 시 본 지입증을 제출 바랍니다.</b></td>
+                </tr>
+                <tr>
+                    <td align="left" height="25" style="font-size:15pt;font-weight:bold"><b>&nbsp;&nbsp;(Please hand in the verification sheet you out)</b></td>
+                </tr>
+                <tr>
+                    <td align="left" height="25" style="font-size:15pt;font-weight:bold"><b>※ 작성된 지입증은 작성일에 한하여 사용 가능합니다.</b></td>
+                </tr>
+                <tr>
+                    <td align="left" height="25" style="font-size:15pt;font-weight:bold"><b>&nbsp;&nbsp;(Written certificate is available only to Date)</b></td>
+                </tr>
+            </table>
+
+
+
+
+
+        </form>
+    </body>
+
+</html>

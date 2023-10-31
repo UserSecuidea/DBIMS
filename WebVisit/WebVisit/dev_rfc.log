@@ -1,0 +1,20 @@
+
+**** Log file opened at 2023-10-30 19:53:09.620826 UTC+09:00 (´ëÇÑ¹Î±¹ Ç¥ÁØ½Ã), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 12
+Compilation date          : Jul  7 2023 22:54:54
+CPIC library              : 753.2023.07.06 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1216
+Current working directory : D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\통합출입관리\WebVisit\WebVisit
+Program                   : WebVisit
+Process ID                : 05512
+User                      : user
+Hardware                  : PC with Windows NT 8x AMD64 Level 6 (Mod 158 Step 13)
+Operating_system          : Windows NT 10.0
+Hostname                  : DESKTOP-E3PT4U9
+IP address                : 100.64.0.1
+IPv6 address              : fe80::3546:7d2f:45bc:36c3
+Global trace level        : 0
+
+2023-10-30 19:53:09.590283 [36968] >> Info entry
+	Did not find config file D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\통합출입관리\WebVisit\WebVisit\sapnwrfc.ini.

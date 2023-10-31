@@ -1,0 +1,310 @@
+@model CompanyListViewModel
+@{
+    @* ViewData["Title"] = "업체 정보 관리"; *@
+
+    CompanyGridData current = Model.CurrentRoute; // CompanyGridData
+    GridData routes = Model.CurrentRoute.Clone(); // GridData
+
+    CompanyGridData searchRoutes = Model.CurrentRoute.Clone();
+    searchRoutes.SearchCompanyName = "";
+    searchRoutes.SearchCompanyStatus = "";
+
+    @* Model.TotalPages = 10; *@
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+
+    function goReg(){
+        @* window.location = '/company/reg/?culture=@CultureInfo.CurrentCulture'; *@
+    }
+
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&CompanyID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function changeCompanyStatus(companyID){
+        var myform = document.fmListCompany;
+        var con = confirm('@Localizer["Would you like to change"]');
+        if(con){
+            if(companyID){
+                var companyStatus = eval("myform.CompanyStatus_"+companyID+".value");
+                myform.CompanyID.value = companyID;
+                myform.CompanyStatus.value = companyStatus;
+                myform.submit(); 
+            }
+        }
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field = myform.SearchCompanyStatus.options[myform.SearchCompanyStatus.selectedIndex].value;
+        var keyword = myform.SearchCompanyName.value.trim();
+        var url = myform.action + field;
+        console.log("[search] field", field);
+        @* console.log("[search] keyword", keyword); *@
+        console.log("[search] url", url);
+        if (keyword != null && keyword.length > 0) {
+            url += "/"+keyword;
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        @* console.log("[search] url", url); *@
+        window.location = url;
+    }
+</script>
+@if (TempData.Keys.Contains("DATA.CompanyID"))
+{
+    var id = @TempData["DATA.CompanyID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/company/?companyID='+@id);
+    }
+</script>
+    }
+}
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="열기" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+                @* asp-all-route-data="@searchRoutes.ToDictionary()" *@
+                @* {pagenumber?}/{pagesize?}/{sortfield?}/{sortdirection?}/{searchcompanystatus?}/{searchcompanyname?} *@
+<form method="get" name="fmSearch" asp-action="List" asp-route-pagenumber="1" 
+    asp-route-pagesize="@searchRoutes.PageSize" asp-route-sortfield="@searchRoutes.SortField" asp-route-sortdirection="@searchRoutes.SortDirection" 
+    asp-route-searchcompanystatus="" asp-route-searchcompanyname="">
+                <li>
+                    <div class="label">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" 
+                            placeholder='@Localizer["Company Name"]' name="SearchCompanyName" value="@current.SearchCompanyName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Approval Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="SearchCompanyStatus" 
+                                    asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), current.SearchCompanyStatus))'>
+                                    <option value="-1">ALL</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="SearchCompanyStatus" 
+                                    asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), current.SearchCompanyStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                        @* <select class="select full" name="seCompanyStatus">
+                            <option>전체</option>
+                            <option>승인대기</option>
+                            <option>승인</option>
+                        </select> *@
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    @* ViewBag.ExcelDownloadable = false; *@
+    if (ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+    if(ViewBag.Registable){
+            <a asp-action="Reg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green" onClick="goReg();">@Localizer["New registration"]</button>
+            </a>
+    }
+}
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+            @* <button type="button" class="btn-green" onClick="goDetail();">@Localizer["View details"]</button> *@
+        </div>
+    </div>
+    <div class="tbl-item-wrap t01">
+<form method="post" name="fmListCompany">
+    <input type="hidden" name="mode" value="ECompanyStatus" />
+    <input type="hidden" name="CompanyID" value="" />
+    <input type="hidden" name="CompanyStatus" value="" />
+        <table class="tbl01" aria-label='@ViewData["Company information management list"]'>
+            <colgroup>
+                <col width="25%"></col>
+                <col width="10%"></col>
+                <col width="10%"></col>
+                <col width="10%"></col>
+                <col width="35%"></col>
+                <col width="10%"></col>
+            </colgroup>
+            <tr>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Classify"]</th>
+                <th>@Localizer["Contact Name"]</th>
+                <th>@Localizer["Contact Tel"]</th>
+                <th>@Localizer["Company Address"]</th>
+                <th>@Localizer["Approval Classify"]</th>
+                <th></th>
+            </tr>
+@{
+    foreach(Company company in Model.Companies){
+        <tr onclick="selectRow(this, @company.CompanyID);" ondblclick="goDetail(@company.CompanyID)">
+            <td>@company.CompanyName</td>
+            <td>@Localizer["NonResident Partner"]</td>
+            <td>@company.ContactPersonName</td>
+            <td>@company.Tel</td>
+            <td>@company.Address</td>
+            <td>
+                @{
+                    if (ViewBag.IsManager) {
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CompanyStatus_@company.CompanyID" 
+                                asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @company.CompanyStatus))' disabled></select>
+                        }else{
+                            <select class="select" name="CompanyStatus_@company.CompanyID" 
+                                asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @company.CompanyStatus))' disabled></select>
+                        }
+                    } else if(Model.CodeCompanyStatus != null){
+                        foreach(var m in Model.CodeCompanyStatus) {
+                            if (m.SubCodeID == company.CompanyStatus) {
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <span>@m.CodeNameEng</span>
+                                }else {
+                                    <span>@m.CodeNameKor</span>
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            </td>
+            <td>
+                @{
+                    if (ViewBag.IsManager){
+                        @* 2023.09.11 결재 연동으로 주석처리 *@
+                        @* <button type="button" class="btn-gray" onclick="changeCompanyStatus(@company.CompanyID);">@Localizer["Modify"]</button> *@
+                    }else{
+                        @* 2023.08.26 변경 버튼 숨기기 *@
+                        @* <button type="button" class="btn-gray" onclick="changeCompanyStatus(@company.CompanyID);" disabled  >@Localizer["Modify"]</button> *@
+                    }
+                }
+            </td>
+        </tr>
+    }
+}            
+            @* <tr onclick="selectRow(this, 1);">
+                <td>시큐이데아</td>
+                <td>비상주업체</td>
+                <td>홍길동</td>
+                <td>010-9568-8954</td>
+                <td>부천시 원미구</td>
+                <td>
+                    <select class="select" name="CompanyStatus">
+                        <option>승인대기</option>
+                        <option>승인</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn-gray">@Localizer["Save"]</button>
+                </td>
+            </tr> *@
+            
+        </table>
+</form>        
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>

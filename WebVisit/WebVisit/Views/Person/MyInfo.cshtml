@@ -1,0 +1,229 @@
+@model PersonDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["My Information"]; //"내정보 관리 ";
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    // edit
+    function saveEditForm(){
+        var myform = document.fmEditPerson;
+        @* var regBizNo = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/; *@
+        var regEmail = /^[a-z0-9\.\_%+-]+@@[a-z0-9\.\-]+\.[a-z]{2,4}$/i;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        
+        @* if(myform.Name.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.Name.focus();
+            return;
+        }
+        if(myform.BirthDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        if(myform.OrgNameKor.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your department"]';
+            myform.OrgNameKor.focus();
+            return;
+        }
+        if(myform.GradeName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your position"]';
+            myform.GradeName.focus();
+            return;
+        }
+        if(myform.Mobile.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number"]';
+            myform.Mobile.focus();
+            return;
+        }
+        if(!regPhone.test(myform.Mobile.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number correctly"] ex)000-0000-0000';
+            myform.Mobile.focus();
+            return;
+        }
+        if(myform.Email.value.trim().length > 1 ){
+            if(!regEmail.test(myform.Email.value)) {
+                document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your email correctly"] ex)0000@0000.000';
+                myform.Email.focus();
+                return;
+            }
+        }
+        if(myform.HomeAddr.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your home address"]';
+            myform.HomeAddr.focus();
+            return;
+        }
+        *@
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    function selectForeigner(){
+        const myform = document.fmEditPerson;
+        const foreigner = myform.IsForeigner.value;
+        if(foreigner == 1){
+            $('#ForeignerArea1').css("display", "flex");
+            $('#ForeignerArea2').css("display", "flex");
+            $('#ForeignerArea3').css("display", "flex"); 
+        }else{
+            $('#ForeignerArea1').css("display", "none");
+            $('#ForeignerArea2').css("display", "none");
+            $('#ForeignerArea3').css("display", "none");
+        }
+    }
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["My Information"]</div>
+</div>
+<div class="reg-form-wrap">
+<form method="post" name="fmEditPerson" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="PersonID" value=@Model.Person.PersonID />
+    <input type="hidden" name="Sabun" value=@Model.Person.Sabun />
+    @* <div class="profile-item-wrap">
+        @if(ViewBag.img1 != null){
+            <div class="upic" id="upic" style="background:url(@ViewBag.img1) no-repeat center center;"></div>
+        } else {
+            <div class="upic" id="upic" style="background:no-repeat center center;"></div>
+        }
+        
+    </div> *@
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Company Name"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@((Model.Company == null) ? "DB HiTek" : @Model.Company.CompanyName??"DB HiTek")</div>
+            </div>
+        </li>
+        <li class="empty">&nbsp;</li>
+        <li>
+            <div class="label s03">@Localizer["Name"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.Name</div>
+            </div>
+        </li>
+
+        @* <li class="empty">&nbsp;</li>
+        <li>
+            <div class="label s03">@Localizer["Birth Date"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.BirthDate</div>
+            </div>
+        </li> *@
+
+        <li>
+            <div class="label s03">@Localizer["Department Name"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.OrgNameKor</div>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Sabun"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.Sabun</div>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["CellPhone"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value='@Model.Person.Mobile' readonly />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Gender"]</div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.Gender))' disabled></select>
+                    }else{
+                        <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.Gender))' disabled></select>
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Home Tel"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Home Tel"]' name="Tel" value='@Model.Person.Tel' readonly />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Position"]</div>
+            <div class="form-item-wrap">
+                <div class="value">@Model.Person.GradeName</div>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Email"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Email"]' name="Email" value='@Model.Person.Email' readonly />
+            </div>
+        </li>
+        <li class="full">
+            <div class="label s03">@Localizer["Home Address"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Home Address"]' name="HomeAddr" value='@Model.Person.HomeAddr' readonly />                            
+            </div>
+        </li>
+        <li class="empty02"></li>
+        <li>
+            <div class="label s03">@Localizer["Work Status"]</div>
+            <div class="form-item-wrap">
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Person.PersonStatusID))' disabled></select>
+                    }else{
+                        <select class="select" name="PersonStatusID" asp-items='@(new SelectList(Model.CodePersonStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Person.PersonStatusID))' disabled></select>
+                    }
+                }
+            </div>
+        </li>
+        @* <li>
+            <div class="label s03">@Localizer["Access Card Issue Status"]</div>
+            <div class="form-item-wrap">
+                <div class="value">발급</div>
+            </div>
+        </li> *@
+        <li>
+            <div class="label s03">@Localizer["Allow SMS Reception"]</div>
+            <div class="form-item-wrap">
+                @{
+                    if(Model.Person.IsAllowSMS != null && Model.Person.IsAllowSMS.Equals("Y")){
+                        <input type="checkbox" name="IsAllowSMS" value="Y" checked />
+                    } else {
+                        <input type="checkbox" name="IsAllowSMS" value="Y" />
+                    }
+                }
+            </div>
+        </li>
+    </ul>
+</form>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" style="font-size:15px;color:#636D85;">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    <div class="lt-item">
+        @* <button type="button" class="btn-gray">비밀번호 초기화</button> *@
+        @* 2023.09.21 신인아 버튼정리 start~end
+    </div>
+    <div class="lt-item">*@
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+    </div>
+</div>

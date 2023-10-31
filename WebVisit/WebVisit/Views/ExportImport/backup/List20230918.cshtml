@@ -1,0 +1,410 @@
+@model ExportImportListViewModel
+@{
+    @* ViewData["Title"] = "반출입 관리"; *@
+    ExportImportGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    ExportImportGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<span class='cg'>결재완료</span>";
+        }else if(cellvalue == "2"){
+            return "<span class='cb'>결재중</span>";
+        }
+
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+
+    function goReg(){
+        @* window.location = '/exportimport/reg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&exportImportID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchExportLocation.options[myform.searchExportLocation.selectedIndex].value;
+        var field2 = myform.searchImportLocation.options[myform.searchImportLocation.selectedIndex].value;
+        var field3 = myform.searchExportImportStatus.options[myform.searchExportImportStatus.selectedIndex].value;
+        var field4 = myform.searchExportType.options[myform.searchExportType.selectedIndex].value;
+        var keyword1 = myform.searchStartInsertDate.value.trim().replace("/","");
+        var keyword2 = myform.searchEndInsertDate.value.trim().replace("/","");
+        var keyword3 = myform.searchInsertName.value.trim().replace("/","");
+        var keyword4 = myform.searchName.value.trim().replace("/","");
+        var keyword5 = myform.searchExportImportID.value.trim().replace("/","");
+        var keyword6 = myform.searchInsertOrgNameKor.value.trim().replace("/","");
+        var url = myform.action + field1 + "/" + field2 + "/" + field3 + "/" + field4; 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        if (keyword5 != null && keyword5.length > 0) {
+            url += "/"+keyword5;
+        }else {
+            url +="/+"
+        }
+        if (keyword6 != null && keyword6.length > 0) {
+            url += "/"+keyword6;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+@if (TempData.Keys.Contains("DATA.ExportImportID"))
+{
+    var id = @TempData["DATA.ExportImportID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/exportimport?ExportImportID='+@id);
+    }
+</script>
+    }
+}
+@if (TempData.Keys.Contains("DATA.ImportID"))
+{
+    var id = @TempData["DATA.ImportID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/exportimport?ExportImportID='+@id+'&eiType=2');
+    }
+</script>
+    }
+}
+
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+            @* @current.PageNumber *@
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchexportlocation="" asp-route-searchimportlocation="" asp-route-searchexportimportstatus="" asp-route-searchexporttype=""
+    asp-route-searchstartinsertdate="" asp-route-searchendinsertdate="" asp-route-searchinsertname="" asp-route-searchname="" asp-route-searchexportimportid="" asp-route-searchinsertorgnamekor="">
+                <li>
+                    <div class="label ">@Localizer["Export Person Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Export Person Name"]' name="searchInsertName" value="@searchRoute.SearchInsertName"  />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Take Over Person Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Take Over Person Name"]' name="searchName" value="@searchRoute.SearchName"  />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Export Import No"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Export Import No"]' name="searchExportImportID" value="@searchRoute.SearchExportImportID"  />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Export Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), @searchRoute.SearchExportLocation))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), @searchRoute.SearchExportLocation))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label ">@Localizer["Import Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), @searchRoute.SearchImportLocation))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), @searchRoute.SearchImportLocation))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Export Department Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Export Department Name"]' name="searchInsertOrgNameKor" value="@searchRoute.SearchInsertOrgNameKor" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Payment Status"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchExportImportStatus" asp-items='@(new SelectList(Model.CodeExportImportStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchExportImportStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchExportImportStatus" asp-items='@(new SelectList(Model.CodeExportImportStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchExportImportStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Export Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchExportType" asp-items='@(new SelectList(Model.CodeExportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchExportType))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchExportType" asp-items='@(new SelectList(Model.CodeExportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchExportType))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label">@Localizer["Apply Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchStartInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchEndInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    if(ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+}
+@{
+    if(ViewBag.Registable){
+            <a asp-action="Reg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Apply ExportImport"]</button>
+            </a>
+    }
+}
+
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="반입반출 목록">
+            <tr>
+                <th>@Localizer["Export Import No"]</th>
+                <th>@Localizer["Export Person Name"]</th>
+                <th>@Localizer["Export Department Name"]</th>
+                <th>@Localizer["Apply Date"]</th>
+                <th>@Localizer["Export Classify"]</th>
+                <th>@Localizer["Export Import Purpose"]</th>
+                <th>@Localizer["Take Over Person Name"]</th>
+                <th>@Localizer["Take Over Person Department Name"]</th>
+                <th>@Localizer["Payment Status"]</th>
+            </tr>
+@{
+
+    var exportTypeName = "";
+    var exportImportPurposeTypeName = "";
+    var exportImportStatusName = "";
+    string insertDate="";
+    var takeOverPerson="";
+    var takeOverDepartment="";
+    foreach(ExportImport m in Model.ExportImports){ 
+        exportTypeName = "";
+        exportImportPurposeTypeName = "";
+        exportImportStatusName = "";
+        insertDate="";
+        takeOverPerson="";
+        takeOverDepartment="";
+        if (m.ExportType > -1 && Model.CodeExportType != null) {
+            foreach(var a in Model.CodeExportType) {
+                if (a.SubCodeID == m.ExportType) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        exportTypeName = a.CodeNameKor;
+                    }else {
+                        exportTypeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (m.ExportImportPurposeType > -1 && Model.CodeExportImportPurposeType != null) {
+            foreach(var a in Model.CodeExportImportPurposeType) {
+                if (a.SubCodeID == m.ExportImportPurposeType) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        exportImportPurposeTypeName = a.CodeNameKor;
+                    }else {
+                        exportImportPurposeTypeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (m.ExportImportStatus > -1 && Model.CodeExportImportStatus != null) {
+            foreach(var a in Model.CodeExportImportStatus) {
+                if (a.SubCodeID == m.ExportImportStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        exportImportStatusName = a.CodeNameKor;
+                    }else {
+                        exportImportStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        //인수자 
+        //ExportType - 0 외부업체 일때  CompanyContactName CompanyName 
+        //ExportType - 1 공장간이동 일때  Name 	OrgNameKor 
+        //ExportType - 2 외부업체경유공장간이동 일때  Name 	OrgNameKor 
+        if(m.ExportType == 0){
+            takeOverPerson=m.CompanyContactName;
+            takeOverDepartment=m.CompanyName;
+        }else{
+            takeOverPerson=m.Name;
+            takeOverDepartment=m.OrgNameKor;
+        }
+        insertDate=string.Format("{0:yyyy-MM-dd}", m.InsertDate);
+            <tr onclick="selectRow(this, @m.ExportImportID);" ondblclick="goDetail(@m.ExportImportID)">
+                <td>@m.ExportImportNo</td>
+                <td>@m.InsertName</td>
+                <td>@m.InsertOrgNameKor</td>
+                <td>@insertDate</td>
+                <td>@exportTypeName</td>
+                <td>@exportImportPurposeTypeName</td>
+                <td>@takeOverPerson</td>
+                <td>@takeOverDepartment</td>
+                <td>@exportImportStatusName</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap"> 
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>

@@ -1,0 +1,181 @@
+@model TempCardIssueApplyRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Issue Temporary Access Card"]; //"임시증 발급";
+}
+<script>
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+
+    function goList(){
+        window.location = '/card/applylist/?culture=@CultureInfo.CurrentCulture'
+    }
+
+    function goSearchPerson(sMode){
+        //sMode-1: 신청자(사원) 검색, 2: 담당자(사원) 검색 
+            @* Location CompanyName PersonTypeID  GradeName *@
+        // personObj, telObj, sabunObj, orgIdObj, orgKorObj, orgEngObj
+        var myform = document.fmAddTempCardIssueApply;
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        var locationObj = null;
+        var locationNameObj = null;
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = null;
+        var personTypeIdObj = null;
+        var personTypeIdNameObj = null;
+        var cardNoObj = null;
+
+        if(sMode == 2){
+            nameObj = myform.ContactName;
+            sabunObj =  myform.ContactSabun;
+            orgIdObj =  myform.ContactOrgID;
+            orgKorObj =  myform.ContactOrgNameKor;
+            orgEngObj =  myform.ContactOrgNameEng;
+        }else{
+            nameObj = myform.Name;
+            sabunObj =  myform.Sabun;
+            orgIdObj =  myform.OrgID;
+            orgKorObj =  myform.OrgNameKor;
+            orgEngObj =  myform.OrgNameEng;
+            telObj = myform.Tel;
+            mobileObj = myform.Mobile; 
+
+            locationObj = myform.Location;
+            locationNameObj = myform.LocationName;
+            companyIdObj = myform.CompanyID;
+            companyNameObj = myform.CompanyName;
+            gradeIdObj = myform.GradeID;
+            gradeNameObj = myform.GradeName;
+            personTypeIdObj = myform.PersonTypeID;
+            personTypeIdNameObj = myform.PersonTypeIDName;  
+            cardNoObj = myform.CardNo;
+
+        }
+        // ContactSabun ContactOrgID
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj);
+        
+        //popSelectPerson(personObj, null, sabunObj, orgIdObj, orgKorObj, orgEngObj);
+    } 
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddTempCardIssueApply;
+        if(myform.Sabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please inquire employee information"]';
+            myform.Sabun.focus();
+            return;
+        }
+        if(myform.CardNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter access cardNo"]';
+            myform.CardNo.focus();
+            return;
+        }
+        if (!isNumber(myform.CardNo.value.trim())){
+            alert('@Localizer["Please enter only numbers for the pass number"]');
+            return;
+        }
+        if(myform.CardNo.value.trim().length != 3 ){
+            alert('@Localizer["Please enter the pass number in 3 digits"]');
+            return;
+        }        
+        var con = confirm('@Localizer["Would you like to register for temporary certificate issuance"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+
+</script>
+<form name="fmAddTempCardIssueApply" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="Location" value="" />
+    <input type="hidden" name="CompanyID" value="" />
+    <input type="hidden" name="OrgID" value="" />
+    <input type="hidden" name="OrgNameEng" value="" />
+    <input type="hidden" name="PersonTypeID" value="" />
+    <input type="hidden" name="GradeID" value="" />
+    <input type="hidden" class="inp" name="PersonTypeIDName" value="" readonly />
+    <input type="hidden" class="inp" name="Sabun" value="" readonly />
+    <input type="hidden" class="inp" name="Tel" value="" readonly />
+    <input type="hidden" class="inp" name="CompanyName" value="" readonly />
+    <input type="hidden" class="inp" name="Mobile" value="" readonly />
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Person Information"]</div>
+        <div class="side-btn-wrap">
+            <button type="button" onclick="goSearchPerson(1);">@Localizer["Search"]</button>
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="LocationName" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Name" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="GradeName" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Access CardNo"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="CardNo" placeholder='@Localizer["Access CardNo"]' maxlength="3" />
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+        <!--
+        <button type="button" class="btn-gray">출입카드 회수처리</button>
+        <button type="button" class="btn-gray">비밀번호 초기화</button>
+        -->
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Register"]</button>
+        @* <button type="button" class="btn-gray" onclick="goList();">@Localizer["Cancel"]</button> *@
+    </div>
+</div>
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />

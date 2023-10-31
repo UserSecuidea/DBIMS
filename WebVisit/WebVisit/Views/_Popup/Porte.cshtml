@@ -1,0 +1,458 @@
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>통문관리시스템</title>
+    <style>
+        .custom-input {
+           width: 100%;
+		   height:30px;
+           max-height:400px;
+           max-width:100%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: auto;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: gray;
+            text-align: left;
+            width:200px;
+        }
+    </style>
+    <script>
+		var legacyXML	= "";
+		legacyXML		= "<XML_DATA>"
+						+ "<CHECK_INOUT_NO>1234</CHECK_INOUT_NO>"
+                        + "<CARRY_OUT_CLASS>2000</CARRY_OUT_CLASS>"
+						+ "<CHECK_INOUT_PURPOSE>1</CHECK_INOUT_PURPOSE>"
+						+ "<oneApproval>N</oneApproval>"
+						+ "</XML_DATA>";
+
+        window.onload = function () {
+            document.sendForm.bodies.value = document.all.bodiesDiv.value;
+            document.sendForm.legacyout.value = legacyXML;
+            document.sendForm.action = 'https://login.dbhitekdev.com/login_sso.aspx';
+//            alert("신청하시겠습니까");
+//			document.sendForm.submit();
+		
+        }
+		function onSubmit() {
+//            document.sendForm.bodies.value = document.all.bodiesDiv.value;
+//            document.sendForm.legacyout.value = legacyXML;
+//            document.sendForm.action = 'https://login.dbhitekdev.com/login_sso.aspx';
+            alert("신청하시겠습니까");
+			document.sendForm.submit();
+		}
+    </script>
+</head>
+<body style="margin-top:20px;width:100%;max-width:1200px;">
+    <form name="sendForm" id="sendForm" method="post" target="_blank" accept-charset="euc-kr">
+        <table style="width:100%">
+			<tr style="height:50px;background-color:orange;color:white;">
+				<td style="align:right;" colspan="4">
+					데이터 전송 테스트입니다
+					<button type="button" id="submitButton" onclick="onSubmit();" style="width:50px;height:30px;" >전송</button>
+				</td>
+			</td>
+            <tr>
+                <th>
+                    userid
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="userid" value="eunji86" />
+                </td>
+                <th>
+                    password
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="password" value="8l7Rc9KNTTJMd07DYycb8hPZVjC7U9AI9o66Op7fibg=" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    systemid
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="systemid" value="DM02_GCMS" />
+                </td>
+                <th>
+                    businessid
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="businessid" value="gcms_005" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    bodytype
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="bodytype" value="html" />
+                </td>
+                <th>
+                    title
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="title" value="신청 테스트입니다." /> <!-- 상신시 넘어온 타이틀 -->
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    legacy_apprlines
+                </th>
+                <td>
+					<!--
+						성명^부서코드^메일주소^결재역할^주관부서 상신부서 구분;
+						ex)홍길동^AAA000^hong@dongbu.com^2^1;홍길이^AAA100^hong@dongbu.com^2^1
+						1인결재	0,결재	2,참조	4,전결	6,결재안함(위임)	8,통보	10,순차합의	12,병렬합의	13,심사	15
+						상신부서	2, 주관부서	1
+						김동욱^51000504^donguk.kim1@dbhitekdev.com^2^1
+						98dee76cd19ba651dc5879d5ee75ed919bad54d8156137f49d189a7a259017d8762bac3789cb17b924b749a1d1225f1c3b44192799eee067
+					-->
+                    <input type="text" class="custom-input" name="legacy_apprlines" value="98dee76cd19ba651dc5879d5ee75ed919bad54d8156137f49d189a7a259017d8762bac3789cb17b924b749a1d1225f1c3b44192799eee067" /> <!-- 결재 경로 지정 -->
+                </td>
+                <th>
+                    legacyout
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="legacyout" value="Y" /> <!-- 결재 이후 리턴 받을 값 -->
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    bsavedocument
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="bsavedocument" value="N" /> <!-- 결재시 문서관리에 저장할 여부를 물음 -->
+                </td>
+                <th>
+                    bmodifylines
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="bmodifylines" value="N" /> <!-- 문서정보 변경가능 여부 -->
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    bfinalline
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="bfinalline" value="" />
+                </td>
+                <th>
+                    bfixapprover
+                </th>
+                <td>
+                    <input type="text" class="custom-input" name="bfixapprover" value="N" /> <!-- 문서정보 변경가능 여부 -->
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    bodies
+                </th>
+                <td colspan="3">
+                    <input type="text" class="custom-input" name="bodies" value="" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <textarea style="overflow-y: auto; height: 500px; width:100%;max-width:1200px;" id="bodiesDiv">
+			<html>
+			<head></head>
+				 <style>
+					.pop-TableTitleL
+					{
+						padding: 12px 20px; 
+						text-align: left; 
+						border-top: 1px solid #e1e5e6; 
+						background: #f1f7f7; 
+						font-size: 12px; 
+						color: #6F6F6F;
+					}
+					.pop-TableCon_l_Long
+					{
+						padding:5px 15px; 
+						border-top:1px solid #e1e5e6; 
+						background:#fff; 
+						font-size:12px;
+					}
+					.bigtitle_pop
+					{
+						font-weight:bold;
+						font-size:20px;
+						color:#555;
+						padding:20px 0;
+					}
+					.smalltitle_pop
+					{
+						height: 40px; 
+						line-height: 40px; 
+						background: #89919c; 
+						margin: 0px 0px; 
+						border-bottom: 1px solid #5b5c6c; 
+						font-size: 16px; 
+						color: #fff; 
+						font-family: '돋움'; 
+						text-indent: 20px;"
+					}
+					.tabletitle_pop
+					{
+						padding: 12px 20px; 
+						text-align: center; 
+						border-top: 1px solid #e1e5e6; 
+						background: #f1f7f7; 
+						font-size: 12px; 
+						color: #6F6F6F;"
+					}
+					.tabledata_pop
+					{
+						padding:5px 15px; 
+						text-align:center;
+						padding:10px;
+						border-top:1px solid #e1e5e6; 
+						background:#fff; 
+						font-size:12px;"		
+					}
+				 </style>
+					<body>
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+			   					<td>
+				   					<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+								    	<tr>
+								           	<td style="padding-top:10px;font-size: 13px; color: red; ">
+								           	%주의사항<br>
+								           	-반출 신청 시 팀장 결재를 필히 득해야 합니다.<br>
+								           	</td>
+								         </tr>
+								  	</table>
+									<!-- 제목 -->
+								  	<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+								    	<tr>
+								           	<td class="bigtitle_pop">반출입신청</td>
+								           	<td height="22" align="right">&nbsp;</td>
+								           	<td width=6></td>
+								         </tr>
+								  	</table>
+								  	<!-- header 정보 입력 -->
+									<div id="D_INOUT">
+								      	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								      		<!-- 반출입정보 -->
+								        	<tr>
+								        		<td>
+								            		<tr>
+										           		<td height="7" class="smalltitle_pop"><b>반출입 정보</b></td>
+										           	</tr>
+								        		</td>
+								        	</tr>
+								        	<tr>
+								          		<td height="4">
+									            	<table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+									            		<colgroup>
+															<col width="22%">
+															<col width="28%">
+															<col width="22%">
+															<col width="28%">
+														</colgroup>
+									            		<tr>
+											                <td class="pop-TableTitleL">반출입번호</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+											                <td class="pop-TableTitleL">반출구분</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+										               	</tr>
+										                <tr>
+											                <td class="pop-TableTitleL">반출소속사업장</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+											                <td class="pop-TableTitleL">반입소속사업장</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+										               	</tr>
+														<tr>
+															<td class="pop-TableTitleL">반출입목적</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+											                <td class="pop-TableTitleL">반입예정일</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+														</tr>
+														<tr>
+															<td class="pop-TableTitleL">반입구분</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+											                <td class="pop-TableTitleL">반출물 전달 방법</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+														</tr>
+														<tr>
+															<td class="pop-TableTitleL">VMI 요청</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+														</tr>
+														<tr>
+											        		<td class="pop-TableTitleL">반출입사유</td>
+											           		<td class="pop-TableCon_l_Long" colspan="3"><pre></pre></td>
+											   			</tr>
+												   	</table> 
+								        		</td>
+								   			</tr>
+								   			<!-- 인수자정보 -->
+											<tr>
+								        		<td>
+								            		<tr>
+										           		<td style="height: 40px;"></td>
+										           	</tr>
+								        		</td>
+								        	</tr>
+								   			<tr>
+								        		<td>
+								            		<tr>
+										           		<td class="smalltitle_pop"><b>인수자 정보</b></td>
+										           	</tr>
+								        		</td>
+								        	</tr>
+								        	<tr>
+								          		<td height="4">
+										            <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC" style="margin-top:-1px">
+										               	<colgroup>
+															<col width="22%">
+															<col width="28%">
+															<col width="22%">
+															<col width="28%">
+														</colgroup>
+										               	<tr>
+											                <td class="pop-TableTitleL">반입사업장 인수자</td>
+											                <td class="pop-TableCon_l_Long"><span></span></td>
+											                <td class="pop-TableTitleL">반입사업장 인수자 정보</td>
+											                <td class="pop-TableCon_l_Long">
+											                <span></span></td>
+										               	</tr>
+										            </table>
+										       	  
+								        		</td>
+								   			</tr>
+											<!-- 품목정보 -->
+											<tr>
+								        		<td>
+								            		<tr>
+										           		<td style="height: 40px;"></td>
+										           	</tr>
+								        		</td>
+								        	</tr>
+											<tr>
+								        		<td>
+								            		<tr>
+										           		<td style="height: 40px; line-height: 40px; background: #89919c; margin: 0px 0px; border-bottom: 1px solid #5b5c6c; font-size: 16px; color: #fff; font-family: '돋움'; text-indent: 20px;"><b>품목 정보</b></td>
+										           	</tr>
+								        		</td>
+								        	</tr>
+								        	<tr>
+								          		<td height="4">
+								          			<table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+											      		<tr>
+											      			<td class="tabletitle_pop" style="width: 10%">
+											      			자재코드
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 25%">
+											      			자재명
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 7%">
+											      			반출수량
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 6%">
+											      			기반입
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 7%">
+											      			신규반입
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 10%">
+											      			신규반입일
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 5%">
+											      			단위
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 10%">
+											      			규격
+											      			</td>
+											      			<td class="tabletitle_pop" style="width: 10%">
+											      			비고
+											      			</td>
+											      		</tr>
+											      		<tr>
+											      			<td class="tabledata_pop">012546
+											      			</td>
+											      			<td class="tabledata_pop">목재
+											      			</td>
+											      			<td class="tabledata_pop">133
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">kg
+											      			</td>
+											      			<td class="tabledata_pop">mm
+											      			</td>
+											      			<td class="tabledata_pop">-
+											      			</td>
+											      		</tr>
+														<tr>
+											      			<td class="tabledata_pop">012546
+											      			</td>
+											      			<td class="tabledata_pop">목재
+											      			</td>
+											      			<td class="tabledata_pop">133
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">kg
+											      			</td>
+											      			<td class="tabledata_pop">mm
+											      			</td>
+											      			<td class="tabledata_pop">-
+											      			</td>
+											      		</tr>
+														<tr>
+											      			<td class="tabledata_pop">012546
+											      			</td>
+											      			<td class="tabledata_pop">목재
+											      			</td>
+											      			<td class="tabledata_pop">133
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">2023-11-20
+											      			</td>
+											      			<td class="tabledata_pop">kg
+											      			</td>
+											      			<td class="tabledata_pop">mm
+											      			</td>
+											      			<td class="tabledata_pop">-
+											      			</td>
+											      		</tr>
+											      	</table>
+										       	   	<table border="0" cellspacing="0" cellpadding="0">
+										               	<tr>
+										                 	<td height="10" class="pop-TableCon_l_Long"></td>
+										               	</tr>
+										            </table>
+								        		</td>
+								   			</tr>
+								   		</table>
+							   		</div>
+						   		</td>
+						   	</tr>
+						</table>
+					</body>
+			</html>
+	</textarea>
+</body>
+</html>

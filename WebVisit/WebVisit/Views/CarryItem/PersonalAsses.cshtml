@@ -1,0 +1,190 @@
+@model CarryItemDetailViewModel
+@{
+    @* ViewData["Title"] = "Home Page"; *@
+    Layout = "_Iframe";
+}
+<script>
+    window.print();
+</script>
+<div>
+		<form id="f_carry_request_print" name="_carry_request_print">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td height="30" align ="center" style="font-size:25pt;font-weight:bold"> 지    입    증  </td>
+				 </tr>
+				 <tr>
+				 <td align ="center" height="30" style="font-size:17pt;font-weight:bold"> (Declaration of Personal Asses)</td>
+				 </tr>
+			</table>
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td style="height: 5px">&nbsp;</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td align ="left" style="width:70px"><b>지입증 No : </b></td>
+					<td align ="left" style="width:490px"><b>@Model.CarryItemApply.CarryItemApplyID</b></td>
+					<td align ="right" ><b>반출예정일 : </b></td>
+					<td align ="center"><b>@Model.CarryItemApply.ExportDate</b></td>
+				</tr>
+				<tr>
+					<td style="height: 5px" colspan = 4>&nbsp;</td>
+				</tr>
+			</table>
+			
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td align ="left"><b>■ 담당자 정보</b></td>
+				</tr>
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			
+			<table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+				<tr style="height:15px">
+					<td class="pop-TableTitleL" rowspan = 2 style="width:25%" >부서 (Department)</td>
+					<td rowspan = 2  style="width:25%" >@Model.CarryItemApply.ContactOrgNameKor</td>
+					<td class="pop-TableTitleL" style="width:25%" >성명 (Name)</td>
+					<td style="width:25%" >@Model.CarryItemApply.ContactName</td>
+				</tr>
+				<tr>
+					<td class="pop-TableTitleL">연락처 (Tel.)</td>
+					<td class="pop-TableCon_l">@Model.CarryItemApply.ContactMobile</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td align ="left"><b>■ 반입자 정보</b></td>
+				</tr>
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+				<tr style="height:15px">
+					<td class="pop-TableTitleL" rowspan = 2 style="width:25%" >업체 (Company)</td>
+					<td rowspan = 2  style="width:25%" >@Model.CarryItemApply.CompanyName</td>
+					<td class="pop-TableTitleL" style="width:25%" >성명 (Name)</td>
+					<td style="width:25%" >@Model.CarryItemApply.Name</td>
+				</tr>
+				<tr>
+					<td class="pop-TableTitleL">연락처 (Tel.)</td>
+					<td class="pop-TableCon_l">@Model.CarryItemApply.Mobile</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td align ="left"><b>■ 지입 물품 정보</b></td>
+				</tr>
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			<table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+	      		<tr>
+	      			<td style="text-align:center;width:30px">No</td>
+	      			<td style="text-align:center;width:70px">구분 (Division)</td>
+	      			<td style="text-align:center;width:200px">품 명 (Item)</td>
+	      			<td style="text-align:center;width:58px">반입수량(Quantity)</td>
+	      			<td style="text-align:center;width:30px">단위(Unit)</td>
+	      			<td style="text-align:center;width:80px">규칙(S/N)</td>
+	      			<td style="text-align:center;width:125px">비고(Etc)</td>
+	      		</tr>
+@{
+    var num=0;
+	foreach(var m in Model.CarryItemInfos){
+		num ++;
+		var Division = "";
+		foreach (var m2 in Model.CodeCarryItem){
+			if (m2.SubCodeID == m.CarryItemCodeID){
+				Division = m2.CodeNameKor;
+				break;				
+			}
+		}
+	      		<tr>
+	      			<td style="text-align:center;width:30px">@num</td>
+	      			<td style="text-align:center;width:200px">@Division</td>
+	      			<td style="text-align:left;width:200px">@m.ItemName</td>
+	      			<td style="text-align:right;width:58px">@m.Quantity</td>
+	      			<td style="text-align:left;width:30px">@m.Unit</td>
+	      			<td style="text-align:left;width:80px">@m.ItemSN</td>
+					<td style="text-align:left;width:125px"></td>
+	      		</tr>
+
+	}
+}				
+	      		@* <tr>
+	      			<td style="width:30px">1</td>
+	      			<td style="width:200px">기타</td>
+	      			<td style="width:200px">RFG-5500</td>
+	      			<td class="pop-TableCon_r" style="width:58px">1</td>
+	      			<td style="width:30px">EA</td>
+	      			<td style="width:80px">295898</td>
+					<td style="width:125px"></td>
+	      		</tr> *@
+	      	</table>
+			
+			
+			<table style="width:735px" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td align ="center" class="bigtitle_print">상기 물품의 지입 및 반출을 확인함.</td>
+				 </tr>
+				 <tr>
+					<td align ="center" class="bigtitle_print">(Confirmation of items listed above)</td>
+				 </tr>
+				 <tr>
+				<td style="height:5px">&nbsp;</td>
+				</tr>
+			</table>
+			
+			<table style="width:735px" border="1" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+				<tr style="height:30px">
+					<td style="width:50%" align ="center" > 반 입 일 시</td>
+					<td style="width:50%" align ="center" > 반 출 일 시</td>
+				</tr>
+				<tr style="height:60px">
+					<td align = "center"><b>@Model.CarryItemApply.EntryDate?.ToString("yyyy.MM.dd hh시 mm분")</b>
+					</td>
+					
+					<td align = "center"><b></b>
+					</td>
+				</tr>
+				<tr style="height : 60px">
+					<td class="pop-TableCon_l"> &nbsp;</td>
+					<td class="pop-TableCon_l">  &nbsp;</td>
+				</tr>
+			</table>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td align ="left"  height="25" style="font-size:15pt;font-weight:bold" ><b>※ 지입한 물품의 반출 시 본 지입증을 제출 바랍니다.</b></td>
+				 </tr>
+				 <tr>
+					<td align ="left"   height="25" style="font-size:15pt;font-weight:bold"><b>&nbsp;&nbsp;(Please hand in the verification sheet you out)</b></td>
+				 </tr>
+				<tr>
+					<td align ="left"  height="25" style="font-size:15pt;font-weight:bold" ><b>※ 작성된 지입증은 작성일에 한하여 사용 가능합니다.</b></td>
+				 </tr>
+				 <tr>
+					<td align ="left"   height="25" style="font-size:15pt;font-weight:bold"><b>&nbsp;&nbsp;(Written certificate is available only to Date)</b></td>
+				 </tr>
+			</table>
+	     </form>
+</div>

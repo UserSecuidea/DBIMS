@@ -1,0 +1,2282 @@
+###################################################################
+# 메뉴 타이틀 
+
+msgid "Register Person"
+msgstr "임직원 등록"
+
+msgid "Detail Person"
+msgstr "임직원 상세"
+
+msgid "My Information"
+msgstr "내 정보"
+
+# 메뉴 & 버튼 함께
+msgid "Apply Access Card"
+msgstr "출입증 신청"
+
+msgid "Detail Access Card"
+msgstr "출입증 정보상세"
+
+msgid "Apply Car Access Card"
+msgstr "차량출입증 신청"
+
+msgid "Detail Car"
+msgstr "차량 정보상세"
+
+msgid "Detail Car Access Card"
+msgstr "차량출입증 정보상세"
+
+msgid "Register New"
+msgstr "신규 등록"
+
+msgid "Detail Company"
+msgstr "업체 정보상세"
+
+msgid "Apply Visit"
+msgstr "방문 신청 "
+
+msgid "Detail Visit"
+msgstr "방문신청 상세보기 "
+
+msgid "Apply CarryItem"
+msgstr "휴대물품 신청"
+
+msgid "Detail CarryItem"
+msgstr "휴대물품 상세 "
+
+msgid "Register Visitor Manual"
+msgstr "방문객 수기 등록"
+
+msgid "Detail Visitor Manual"
+msgstr "수기등록 방문객 상세"
+
+msgid "Issue Temporary Access Card"
+msgstr "임시증 발급"
+
+msgid "Detail Temporary Access Card"
+msgstr "임시증 발급 상세정보"
+
+msgid "Apply ExportImport"
+msgstr "반출입 신청"
+
+msgid "Detail ExportImport"
+msgstr "반출입 상세 "
+
+# 메뉴 & 버튼 함께
+msgid "Register Work"
+msgstr "공사 등록"
+
+msgid "Detail Work"
+msgstr "공사 상세"
+
+# 메뉴 & 버튼 함께
+msgid "Apply Work Visit"
+msgstr "공사 출입 신청"
+
+msgid "Detail Work Visit"
+msgstr "공사 출입 상세 "
+
+msgid "Register Safety Education"
+msgstr "안전교육 등록"
+
+msgid "Complete Safety Education"
+msgstr "개별 안전교육 이수정보"
+
+msgid "Register Safety Violation"
+msgstr "안전위반 등록"
+
+msgid "Detail Safety Violation"
+msgstr "안전위반사항 정보"
+
+msgid "Register and Modify Safety Regulation"
+msgstr "안전 위규 등록 및 수정"
+
+msgid "Detail Meal Log"
+msgstr "식수현황-상세보기"
+
+msgid "Register Meal Menual"
+msgstr "식수 수기 등록"
+
+msgid "Detail Meal Menual"
+msgstr "식수 수기 상세"
+
+msgid "Menu List"
+msgstr "메뉴목록"
+
+msgid "Menu Settings"
+msgstr "메뉴설정"
+
+msgid "Approval Line"
+msgstr "결재라인"
+
+msgid "Notice"
+msgstr "공지사항"
+
+msgid "Register Notice"
+msgstr "공지사항 - 등록"
+
+msgid "Detail Notice"
+msgstr "공지사항 - 상세정보"
+
+msgid "Register Holiday"
+msgstr "공휴일 등록"
+
+msgid "Register Blacklist"
+msgstr "블랙리스트 등록"
+
+msgid "Detail Blacklist"
+msgstr "블랙리스트 상세정보"
+
+###################################################################
+# 상세 메뉴 타이틀 
+
+msgid "Registration Information"
+msgstr "등록 정보"
+
+msgid "Person Information"
+msgstr "사원 정보"
+
+msgid "Search Person"
+msgstr "임직원 검색"
+
+msgid "Search External Company Aceptor"
+msgstr "외부업체 인수자 검색"
+
+msgid "Search Material"
+msgstr "자재 조회"
+
+msgid "Search PR No"
+msgstr "PR No. 조회"
+
+msgid "Select Person"
+msgstr "사원 선택"
+
+msgid "Access Card Information"
+msgstr "출입증 정보"
+
+msgid "Applicant Information"
+msgstr "신청자 정보"
+
+msgid "Contact Information"
+msgstr "담당자 정보"
+
+msgid "Apply Information"
+msgstr "신청 정보"
+
+msgid "Owned Vehicle Information"
+msgstr "보유차량 정보"
+
+msgid "Vehicle Information"
+msgstr "차량 정보"
+
+msgid "Partner Information"
+msgstr "협력사 정보"
+
+msgid "Application Visit Information"
+msgstr "방문신청 정보"
+
+msgid "Visitor Information"
+msgstr "방문객 정보"
+
+msgid "Import Information"
+msgstr "반입 정보"
+
+msgid "Import Person Information"
+msgstr "반입자 정보"
+
+msgid "CarryItem Information"
+msgstr "휴대물품 정보"
+
+msgid "Approval Information"
+msgstr "승인 정보"
+
+msgid "Progress Information"
+msgstr "진행현황"
+
+msgid "IR Progress Information"
+msgstr "I/R 진행현황"
+
+msgid "IR Progress Status"
+msgstr "I/R 진행상태"
+
+msgid "ExportImport Information"
+msgstr "반출입 정보"
+
+msgid "Aceptor Information"
+msgstr "인수자 정보"
+
+msgid "Payment Information"
+msgstr "결재 정보"
+
+msgid "Item Information"
+msgstr "품목 정보"
+
+msgid "CEO Approval history Information"
+msgstr "CEO 승인이력"
+
+msgid "State Information"
+msgstr "상태 정보"
+
+msgid "Work Information"
+msgstr "공사 정보"
+
+msgid "Attachment Information"
+msgstr "첨부 파일"
+
+msgid "Basic Information"
+msgstr "기본 정보"
+
+msgid "Input Personnel Information"
+msgstr "인원 정보"
+
+msgid "Meal Information"
+msgstr "식수 정보"
+
+msgid "Company Information"
+msgstr "회사 정보"
+
+msgid "Educatee Information"
+msgstr "교육자 정보"
+
+msgid "Violation Issuer Information"
+msgstr "위반 확인서 발급자 정보"
+
+msgid "Work Order Information"
+msgstr "Work Order 정보"
+
+msgid "Violation Information"
+msgstr "위반사항"
+
+msgid "Safety Violator Information"
+msgstr "안전수칙 위반자 정보"
+
+msgid "Violation Regulation Information"
+msgstr "위반 규정 정보"
+
+msgid "Meal Term"
+msgstr "식수기간"
+
+msgid "Summer Season Term"
+msgstr "하계기간"
+
+msgid "Winter Season Term"
+msgstr "동계기간"
+
+msgid "Summer Season Meal Schedule"
+msgstr "하계식수시간"
+
+msgid "Winter Season Meal Schedule"
+msgstr "동계식수시간"
+
+msgid "Eat Person Information"
+msgstr "식사자 정보"
+
+msgid "Accessor Information"
+msgstr "출입자 정보"
+
+
+###################################################################
+# 탭 메뉴
+
+msgid "Repair"
+msgstr "수리"
+
+msgid "Property"
+msgstr "자산"
+
+msgid "Issue Status By Period"
+msgstr "기간별 발급현황"
+
+msgid "Issue Status By Type"
+msgstr "유형별  발급현황"
+
+msgid "By Daily"
+msgstr "일자별"
+
+msgid "By Individually"
+msgstr "개인별"
+
+msgid "By Company"
+msgstr "회사별"
+
+msgid "By Place Of Business"
+msgstr "사업장별"
+
+msgid "Meal Period Time Management"
+msgstr "식수기간/시간 관리"
+
+msgid "Meal Price Management"
+msgstr "식수단가 관리"
+
+msgid "Access Record Information"
+msgstr "출입기록 정보"
+
+msgid "Abnormal Access Record Information"
+msgstr "출입기록 정보(이상)"
+
+msgid "Abnormal Access Record Information"
+msgstr "출입기록 정보(이상)"
+
+msgid "Issue Status By Period"
+msgstr "기간별 발급현황"
+
+msgid "Issue Status By Type"
+msgstr "유형별 발급현황"
+
+###################################################################
+# 팝업 타이틀 
+
+msgid "Add Level"
+msgstr "레벨 추가"
+
+
+
+
+###################################################################
+# 검색 
+
+msgid "A total of {0} was viewed"
+msgstr "총 {0} 건이 조회되었습니다."
+
+msgid "Filter"
+msgstr "필터"
+
+msgid "Select Filter"
+msgstr "선택필터"
+
+msgid "Company Name"
+msgstr "회사명"
+
+msgid "Partner Name"
+msgstr "업체명"
+
+msgid "Department Name"
+msgstr "부서명"
+
+msgid "Visit Department"
+msgstr "방문부서"
+
+msgid "Department Charge"
+msgstr "담당부서"
+
+msgid "Name"
+msgstr "성명"
+
+msgid "Applicant Name"
+msgstr "신청자명"
+
+msgid "Visitor Name"
+msgstr "방문객명"
+
+msgid "Representative Name"
+msgstr "대표자명"
+
+msgid "Contact Person"
+msgstr "담당자"
+
+msgid "Contact Name"
+msgstr "담당자명"
+
+msgid "Contact Department"
+msgstr "담당자부서"
+
+msgid "Contact Tel"
+msgstr "담당자연락처"
+
+msgid "Sub Contact Name"
+msgstr "부담당자명"
+
+msgid "Sub Contact Information"
+msgstr "부담당자정보"
+
+msgid "Export Person Name"
+msgstr "반출자"
+
+msgid "Export Department Name"
+msgstr "반출자부서명"
+
+msgid "Import Person Name"
+msgstr "반입자명"
+
+msgid "Import Person Tel"
+msgstr "반입자연락처"
+
+msgid "Approver Name"
+msgstr "결재자명"
+
+msgid "Approver Tel"
+msgstr "결재자연락처"
+
+msgid "Take Over Person Name"
+msgstr "인수자"
+
+msgid "Take Over Person Department Name"
+msgstr "인수자부서명(업체명)"
+
+msgid "Issuer Name"
+msgstr "발급자명"
+
+msgid "Issuer Department Name"
+msgstr "발급자부서명"
+
+msgid "Violator Name"
+msgstr "위반자명"
+
+msgid "Violator Company Name"
+msgstr "위반자소속"
+
+msgid "Worker"
+msgstr "작업자"
+
+msgid "Approver"
+msgstr "결재자"
+
+msgid "Search Approver"
+msgstr "결재자조회"
+
+msgid "Approver Information"
+msgstr "결재자정보"
+
+msgid "Writer Name"
+msgstr "작성자"
+
+msgid "Sabun"
+msgstr "사번"
+
+msgid "Access CardNo"
+msgstr "출입증번호"
+
+msgid "Temporary Certificate Number"
+msgstr "임시증번호"
+
+msgid "Car No"
+msgstr "차량번호"
+
+msgid "Export Import No"
+msgstr "반출입번호"
+
+msgid "Work No"
+msgstr "공사번호"
+
+msgid "Place Of Business"
+msgstr "회사"
+
+msgid "Export Place Of Business"
+msgstr "반출사업장"
+
+msgid "Import Place Of Business"
+msgstr "반입사업장"
+
+msgid "Export Affiliation Place Of Business"
+msgstr "반출소속사업장"
+
+msgid "Import Affiliation Place Of Business"
+msgstr "반입소속사업장"
+
+msgid "Work Name"
+msgstr "공사명"
+
+msgid "Violation Reason"
+msgstr "위반사유"
+
+msgid "Registration Reason"
+msgstr "등록사유"
+
+msgid "Detailed Reason"
+msgstr "상세사유"
+
+msgid "Title"
+msgstr "제목"
+
+msgid "Contents"
+msgstr "내용"
+
+msgid "Access Area"
+msgstr "출입지역"
+
+msgid "Breakfast"
+msgstr "조식"
+
+msgid "Lunch"
+msgstr "중식"
+
+msgid "Dinner"
+msgstr "석식"
+
+msgid "LatenightMeal"
+msgstr "야식"
+
+
+
+
+# 날짜 
+msgid "Year"
+msgstr "년도"
+
+msgid "DateTime"
+msgstr "일시"
+
+msgid "Import DateTime"
+msgstr "반입일시"
+
+msgid "Export DateTime"
+msgstr "반출일시"
+
+msgid "Update DateTime"
+msgstr "업데이트일시"
+
+msgid "Issue DateTime"
+msgstr "발급일시"
+
+msgid "Collection DateTime"
+msgstr "회수일시"
+
+msgid "Apply Period"
+msgstr "신청기간"
+
+msgid "CarryIn Period"
+msgstr "반입기간"
+
+msgid "View Period"
+msgstr "조회기간"
+
+msgid "Visit Period"
+msgstr "방문기간"
+
+msgid "Work Period"
+msgstr "공사기간"
+
+msgid "Education Period"
+msgstr "교육기간"
+
+msgid "Valid Period"
+msgstr "유효기간"
+
+msgid "Restricted Period"
+msgstr "제한기간"
+
+msgid "Period"
+msgstr "기간"
+
+msgid "Registration Period"
+msgstr "등록기간"
+
+msgid "Apply Date"
+msgstr "신청일자"
+
+msgid "Application Date"
+msgstr "적용일"
+
+msgid "Violation Date"
+msgstr "위반일자"
+
+msgid "Search Date"
+msgstr "조회일자"
+
+msgid "Meal Date"
+msgstr "식사일자"
+
+msgid "Birth Date"
+msgstr "생년월일"
+
+msgid "Registration Date"
+msgstr "등록일"
+
+msgid "Visit Date"
+msgstr "방문일"
+
+msgid "Work Date"
+msgstr "공사일"
+
+msgid "Education Date"
+msgstr "교육일자"
+
+msgid "Creation Date"
+msgstr "작성일자"
+
+msgid "Access Date"
+msgstr "출입일자"
+
+msgid "Holiday Date"
+msgstr "공휴일자"
+
+msgid "Export Date"
+msgstr "반출일"
+
+msgid "Import Date"
+msgstr "반입일"
+
+msgid "Search Time"
+msgstr "조회시간"
+
+msgid "Access Time"
+msgstr "출입시간"
+
+# 구분 
+
+msgid "Classify"
+msgstr "구분"
+ 
+msgid "Person Classify"
+msgstr "회원구분"
+
+msgid "Employee Classify"
+msgstr "사원구분"
+
+msgid "Car Classify"
+msgstr "차량구분"
+
+msgid "Approval Classify"
+msgstr "승인구분"
+
+msgid "Apply Classify"
+msgstr "신청구분"
+
+msgid "Status Classify"
+msgstr "상태구분"
+
+msgid "Export Classify"
+msgstr "반출구분"
+
+msgid "Import Classify"
+msgstr "반입구분"
+
+msgid "Approval Type"
+msgstr "결재유형"
+
+msgid "Approver Type"
+msgstr "결재자유형"
+
+msgid "Issue Classify"
+msgstr "발급구분"
+
+msgid "Registration Classify"
+msgstr "등록구분"
+
+msgid "Meal Classify"
+msgstr "식사구분"
+
+msgid "Registration Reason Classify"
+msgstr "등록사유구분"
+
+msgid "Entrance Classify"
+msgstr "출입구분"
+
+# 상태 
+
+msgid "Status"
+msgstr "상태"
+
+msgid "Work Status"
+msgstr "재직상태"
+
+msgid "Issue Status"
+msgstr "발급상태"
+
+msgid "Access Card Issue Status"
+msgstr "카드발급상태"
+
+msgid "Payment Status"
+msgstr "결재상태"
+
+msgid "Complete Status"
+msgstr "이수상태"
+
+msgid "Progress Status"
+msgstr "진행상태(현황)"
+
+msgid "Apply Status"
+msgstr "신청상태"
+
+msgid "Approval Status"
+msgstr "승인상태"
+
+msgid "Visit Status"
+msgstr "방문상태"
+
+msgid "Access Status"
+msgstr "출입상태"
+
+msgid "ExportImport Status"
+msgstr "반출입상태"
+
+msgid "Education Complete"
+msgstr "교육이수"
+
+msgid "Waiting Visit"
+msgstr "방문대기"
+
+msgid "Waiting Bring"
+msgstr "반입대기"
+
+msgid "Waiting Take Out"
+msgstr "반출대기"
+
+msgid "Waiting Confirmation"
+msgstr "확인완료"
+
+msgid "Waiting Approval"
+msgstr "승인대기"
+
+msgid "Transfer Completed"
+msgstr "반출완료"
+
+msgid "Carry In Completed"
+msgstr "반입완료"
+
+msgid "Confirmation Completed"
+msgstr "확인완료"
+
+msgid "Visit Completed"
+msgstr "방문완료"
+
+msgid "Approved"
+msgstr "승인완료"
+
+msgid "Payment Completed"
+msgstr "결재완료"
+
+msgid "Collection Completed"
+msgstr "회수완료"
+
+msgid "Under Approval"
+msgstr "결재중"
+
+msgid "Companion"
+msgstr "반려"
+
+msgid "Collection"
+msgstr "회수"
+
+msgid "Not Returned"
+msgstr "미반납"
+
+msgid "Not Bring"
+msgstr "미반입"
+
+msgid "Not Submitted"
+msgstr "미반출 "
+
+msgid "End Visit"
+msgstr "방문종료"
+
+msgid "Not Complete"
+msgstr "미이수"
+
+msgid "Complete"
+msgstr "이수"
+
+msgid "Not Issued"
+msgstr "미발급"
+
+msgid "Issuance"
+msgstr "발급"
+
+###################################################################
+# 버튼 
+
+msgid "New registration"
+msgstr "신규 등록"
+
+msgid "Download"
+msgstr "다운로드"
+
+msgid "Download Excel"
+msgstr "엑셀 다운로드"
+
+msgid "Download Form"
+msgstr "양식다운로드"
+
+msgid "Download All"
+msgstr "전체다운로드"
+
+msgid "View details"
+msgstr "상세 보기"
+
+msgid "Register"
+msgstr "등록"
+
+msgid "Add"
+msgstr "추가"
+
+msgid "Save"
+msgstr "저장"
+
+msgid "Confirm"
+msgstr "확인"
+
+msgid "Delete"
+msgstr "삭제"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Close Popup"
+msgstr "팝업 닫기"
+
+msgid "Search"
+msgstr "조회"
+
+msgid "List"
+msgstr "목록"
+
+msgid "Update"
+msgstr "수정"
+
+msgid "Modify"
+msgstr "변경"
+
+msgid "Add Item"
+msgstr "품목추가"
+
+msgid "Add Educator"
+msgstr "교육자추가"
+
+msgid "Start Education"
+msgstr "교육시작"
+
+msgid "Add Violators"
+msgstr "위반자추가"
+
+msgid "Add Menu"
+msgstr "메뉴추가"
+
+msgid "Application"
+msgstr "신청"
+
+msgid "Attach"
+msgstr "첨부"
+
+msgid "Attach File"
+msgstr "파일첨부"
+
+msgid "File Name"
+msgstr "파일명"
+
+msgid "Add Visitor"
+msgstr "방문자추가"
+
+msgid "Return Access Card"
+msgstr "출입카드 회수처리"
+
+msgid "Export Import Processing"
+msgstr "반입/반출처리"
+
+msgid "Reset"
+msgstr "초기화"
+
+msgid "Reset Password"
+msgstr "비밀번호 초기화"
+
+# 버튼 & 항목 함께
+msgid "CarryItem"
+msgstr "휴대물품"
+
+msgid "Register IR"
+msgstr "IR 등록"
+
+msgid "Save Chart Image"
+msgstr "차트 이미지 저장"
+
+msgid "Modify Meal Permissions"
+msgstr "식수 권한 수정"
+
+msgid "Register Menual"
+msgstr "수기등록"
+
+msgid "Get Holiday Information"
+msgstr "공휴일정보가져오기"
+
+msgid "Add or Update"
+msgstr "추가 / 수정"
+
+msgid "To List"
+msgstr "목록으로"
+
+msgid "Add Car"
+msgstr "차량 추가"
+
+msgid "IR Registration"
+msgstr "I/R 등록"
+
+msgid "Consent to collection of personal information and confirmation of completion of on site education"
+msgstr "개인정보수집동의및 방문교육이수 확인"
+
+msgid "State Change"
+msgstr "상태변경"
+
+###################################################################
+# 공통 항목 
+
+msgid "Dear human resource"
+msgstr "소중한 인재, "
+
+msgid "Have a good day"
+msgstr "님 반갑습니다."
+
+msgid "Privacy Policy"
+msgstr "개인정보처리방침"
+
+msgid "Position"
+msgstr "직급"
+
+msgid "CellPhone"
+msgstr "휴대전화"
+
+msgid "Tel"
+msgstr "전화"
+
+msgid "Home Tel"
+msgstr "자택전화"
+
+msgid "Company Tel"
+msgstr "회사전화"
+
+msgid "Address"
+msgstr "주소"
+
+msgid "Home Address"
+msgstr "자택주소"
+
+msgid "Company Address"
+msgstr "사업장주소"
+
+msgid "Access Card"
+msgstr "출입증"
+
+msgid "Gender"
+msgstr "성별"
+
+msgid "Personal Vehicle"
+msgstr "개인차량"
+
+msgid "Enabled"
+msgstr "사용여부"
+
+msgid "Application Reason"
+msgstr "신청사유"
+
+msgid "Processing Reason"
+msgstr "처리사유"
+
+msgid "Issue"
+msgstr "발급"
+
+msgid "Registered person"
+msgstr "등록자"
+
+msgid "Password"
+msgstr "비밀번호"
+
+msgid "Visit Purpose"
+msgstr "방문목적"
+
+msgid "Import Purpose"
+msgstr "반입목적"
+
+msgid "Export Import Purpose"
+msgstr "반출입목적"
+
+msgid "Detailed Purpose"
+msgstr "상세목적"
+
+msgid "Import Place"
+msgstr "반입장소"
+
+msgid "Violation Place"
+msgstr "위반장소"
+
+msgid "Opinion"
+msgstr "의견"
+
+msgid "Special Point"
+msgstr "특이사항"
+
+msgid "Sort Order"
+msgstr "정렬순서"
+
+msgid "First Registered Person"
+msgstr "최초등록자"
+
+msgid "Final Modifier"
+msgstr "최종수정자"
+
+msgid "Level"
+msgstr "레벨"
+
+msgid "Unit Price"
+msgstr "단가"
+
+msgid "Won"
+msgstr "원"
+
+msgid "Hour"
+msgstr "시"
+
+msgid "Minute"
+msgstr "분"
+
+msgid "Hour2"
+msgstr "시간"
+
+msgid "Quantity"
+msgstr "수량"
+
+msgid "Export Quantity"
+msgstr "반출수량"
+
+msgid "Import Quantity"
+msgstr "반입수량"
+
+msgid "Remain Quantity"
+msgstr "남은수량"
+
+msgid "Warranty Period"
+msgstr "보증기간 유무"
+
+msgid "Unit"
+msgstr "단위"
+
+msgid "Day"
+msgstr "일"
+
+msgid "Date"
+msgstr "일자"
+
+msgid "Category"
+msgstr "항목"
+
+msgid "Approval"
+msgstr "승인"
+
+msgid "Menual"
+msgstr "수기"
+
+msgid "Number"
+msgstr "건수"
+
+msgid "Price"
+msgstr "금액"
+
+msgid "Etc"
+msgstr "기타"
+
+msgid "Report Circumstances"
+msgstr "경위서"
+
+msgid "Select"
+msgstr "선택"
+
+msgid "Entire"
+msgstr "전체"
+
+msgid "No Files Selected"
+msgstr "선택된 파일 없음"
+
+msgid "Description"
+msgstr "비고"
+
+msgid "This is a required field"
+msgstr "* 필수입력항목"
+
+msgid "Level Name"
+msgstr "레벨명"
+
+msgid "Select Level"
+msgstr "레벨선택"
+
+msgid "Menu Name"
+msgstr "메뉴명"
+
+msgid "Korean"
+msgstr "한국어"
+
+msgid "English"
+msgstr "영문"
+
+msgid "Korean Name"
+msgstr "한국어명칭"
+
+msgid "English Name"
+msgstr "영문명칭"
+
+msgid "Head Office"
+msgstr "본사"
+
+msgid "Resident Partner"
+msgstr "상주협력사"
+
+msgid "NonResident Partner"
+msgstr "비상주협력사"
+
+msgid "Visit"
+msgstr "방문"
+
+msgid "Electricity"
+msgstr "전기"
+
+msgid "Construction"
+msgstr "토건"
+
+msgid "Machine"
+msgstr "기계"
+
+msgid "Maintenance"
+msgstr "정비"
+
+msgid "Passenger Car"
+msgstr "승용"
+
+msgid "Business Car"
+msgstr "영업"
+
+msgid "Meeting"
+msgstr "업무회의"
+
+msgid "Demonstration"
+msgstr "제품시연"
+
+msgid "Development"
+msgstr "상주개발"
+
+msgid "Consulting Work"
+msgstr "컨설팅+공사"
+
+msgid "Delivery"
+msgstr "택배"
+
+msgid "Personal Notebook"
+msgstr "개인노트북"
+
+msgid "Rental Notebook"
+msgstr "대여노트북"
+
+msgid "Agency Registration"
+msgstr "대행등록"
+
+msgid "Self"
+msgstr "본인"
+
+msgid "Receipt Visit"
+msgstr "방문수령"
+
+msgid "Mail Delivery"
+msgstr "우편/택배"
+
+msgid "Receipt Agent"
+msgstr "대리인수령"
+
+msgid "Hand Carry"
+msgstr "핸드캐리"
+
+msgid "Logistics Vehicle"
+msgstr "물류차량"
+
+msgid "Notebook"
+msgstr "노트북"
+
+msgid "Camera"
+msgstr "카메라"
+
+msgid "New"
+msgstr "신규"
+
+msgid "Reissuance"
+msgstr "재발급"
+
+msgid "Application Visit"
+msgstr "방문신청"
+
+msgid "Application Work Visit"
+msgstr "공사출입인원신청"
+
+msgid "Visitor Manual"
+msgstr "방문객수기등록"
+
+msgid "New Issue"
+msgstr "신규발행"
+
+msgid "Prevention Measures Registration"
+msgstr "방지대책등록"
+
+msgid "Prevention Measures Approved"
+msgstr "방지대책승인"
+
+msgid "Request Reregistration Preventive Measures"
+msgstr "방지대책재등록요청"
+
+msgid "Registration Request"
+msgstr "등록요청"
+
+msgid "Unusual Meal"
+msgstr "이상식수"
+
+msgid "Reader"
+msgstr "식수리더"
+
+msgid "Domestic"
+msgstr "내국인"
+
+msgid "Foreigner"
+msgstr "외국인"
+
+msgid "Man"
+msgstr "남"
+
+msgid "Woman"
+msgstr "여"
+
+msgid "Employees"
+msgstr "임직원"
+
+msgid "Visitor"
+msgstr "방문자"
+
+msgid "Hold Office"
+msgstr "재직"
+
+msgid "Take time Off"
+msgstr "휴직"
+
+msgid "Rretirement"
+msgstr "퇴직"
+
+msgid "Add Person"
+msgstr "사원추가"
+
+msgid "Add Card"
+msgstr "카드추가"
+
+msgid "Apply Export Import"
+msgstr "반출입신청"
+
+msgid "Apply Work"
+msgstr "공사신청"
+
+msgid "Apply Safety Education"
+msgstr "안전교육신청"
+
+msgid "Add Person"
+msgstr "통문관리시스템"
+
+msgid "User Settings"
+msgstr "사용자설정"
+
+msgid "Play"
+msgstr "재생"
+
+msgid "Complete"
+msgstr "완료"
+
+msgid "Photo Registration"
+msgstr "사진등록"
+
+msgid "Card Number"
+msgstr "카드번호"
+
+msgid "Device Name"
+msgstr "기기명"
+
+msgid "Location"
+msgstr "위치"
+
+msgid "Access Location"
+msgstr "출입위치"
+
+msgid "Safety Education"
+msgstr "안전교육"
+
+msgid "Come In Time"
+msgstr "입문 시간"
+
+msgid "Go Out Time"
+msgstr "출문 시간"
+
+msgid "Entry"
+msgstr "입문"
+
+msgid "Exit"
+msgstr "출문"
+
+msgid "Entry Exit"
+msgstr "입문-출문"
+
+msgid "Previous Day"
+msgstr "전일"
+
+msgid "Day Before"
+msgstr "전전일"
+
+msgid "Bucheon"
+msgstr "DB HiTek 부천캠퍼스"
+
+msgid "Sangwoo"
+msgstr "DB HiTek 상우캠퍼스"
+
+msgid "Pangyo"
+msgstr "DB GlobalChip"
+
+msgid "Sum"
+msgstr "합계"
+
+msgid "Difference"
+msgstr "차이"
+
+msgid "No Information"
+msgstr "정보 없음"
+
+###################################################################
+# 팝업 
+
+
+###################################################################
+# 메인
+
+msgid "Integrated Management System"
+msgstr "통합관리시스템"
+
+msgid "Welcome to DB HiTek DB GlobalChip"
+msgstr "DB HiTek/DB GlobalChip 방문을 환영합니다."
+
+msgid "Agree Privacy Policy"
+msgstr "개인정보 처리방침 동의"
+
+msgid "DB HiTek Privacy Policy"
+msgstr "DB HiTek 개인정보처리방침"
+
+msgid "DB GlobalChip Privacy Policy"
+msgstr "DB GlobalChip 개인정보처리방침"
+
+###################################################################
+# 방문
+
+msgid "I have fully recognized the above information in advance and agree to the collection and use of personal information and unique identification information."
+msgstr "본인은 상기내용에 사전에 충분히 인지하였으며 개인정보 및 고유식별정보 수집 이용에 동의합니다."
+
+msgid "Audience"
+msgstr "접견인"
+
+msgid "Introductory Visitor Training"
+msgstr "방문객입문교육"
+
+msgid "Watch Introductory Visitor Training"
+msgstr "방문객입문교육시청"
+
+msgid "CleanRoom Education"
+msgstr "클린룸교육"
+
+msgid "Watch CleanRoom Education"
+msgstr "클린룸교육시청"
+
+msgid "Required Watching Education"
+msgstr "교육 시청 필요"
+
+###################################################################
+# Login
+
+msgid "Login"
+msgstr "로그인"
+
+msgid "Logout"
+msgstr "로그아웃"
+
+msgid "Id"
+msgstr "아이디"
+
+msgid "Forgot ID/PW?"
+msgstr "ID/PW 찾기"
+
+###################################################################
+# 임직원
+
+msgid "Email"
+msgstr "이메일"
+
+msgid "Domestic Foreigner"
+msgstr "내/외국인"
+
+msgid "Vehicles Allowed Number"
+msgstr "차량허용대수"
+
+msgid "Nationality"
+msgstr "국적"
+
+msgid "Period Stay"
+msgstr "체류기간"
+
+msgid "Status Residence"
+msgstr "체류자격"
+
+msgid "Privacy Policy Doc"
+msgstr "개인정보활용동의서"
+ 
+msgid "Work Type"
+msgstr "공종"
+
+msgid "Allow SMS Reception"
+msgstr "SMS수신허용"
+
+###################################################################
+# 출입증 관리
+
+msgid "Access Card Classify"
+msgstr "출입증구분"
+
+msgid "Access Card Name"
+msgstr "출입증이름"
+
+msgid "Reissue Number"
+msgstr "재발행차수"
+
+msgid "Vehicle Registration Card"
+msgstr "차량등록증"
+
+msgid "Vehicle Model"
+msgstr "차량모델"
+
+msgid "Access Card Application Reason"
+msgstr "출입증신청사유"
+
+msgid "Collect"
+msgstr "회수하기"
+
+###################################################################
+# 업체 관리
+
+msgid "Company information management list"
+msgstr "업체정보관리 리스트"
+
+msgid "Business Registration Number"
+msgstr "사업자등록번호"
+
+msgid "Business License"
+msgstr "사업자등록증"
+
+###################################################################
+# 방문객 관리
+
+###################################################################
+# 휴대물품 관리
+
+msgid "Product Name"
+msgstr "물품명"
+
+msgid "Serial Number"
+msgstr "S/N"
+
+msgid "Staff"
+msgstr "근무자"
+
+###################################################################
+# 반출입 관리
+
+msgid "External Company"
+msgstr "외부업체"
+
+msgid "Inter Factory Movement"
+msgstr "공장간이동"
+
+msgid "External Company Passage"
+msgstr "외부업체경유공장간이동"
+
+msgid "External Company Aceptor"
+msgstr "외부업체인수자"
+
+msgid "External Company Aceptor Information"
+msgstr "외부업체 인수자 정보 (업체명 / 사업자번호 / 전화번호)"
+
+msgid "Import Place Of Business Aceptor"
+msgstr "반입사업장인수자"
+
+msgid "Import Place Of Business Aceptor Information"
+msgstr "반입사업장인수자정보"
+
+msgid "Delivery Method"
+msgstr "반출입전달방법"
+
+msgid "Export Import Reason"
+msgstr "반출입사유"
+
+msgid "Direct Transfer"
+msgstr "본인직접반출"
+
+msgid "PR No"
+msgstr "PR번호"
+
+msgid "Material"
+msgstr "자재"
+
+msgid "Material Code"
+msgstr "자재코드 "
+
+msgid "Material Name"
+msgstr "자재이름"
+
+msgid "Standard"
+msgstr "규격(S/N)"
+
+msgid "Notebook Management Number"
+msgstr "노트북관리번호"
+
+msgid "Notebook Serial Number"
+msgstr "노트북시리얼번호"
+
+msgid "Self Payment Status"
+msgstr "자기결재여부"
+
+msgid "Request VMI"
+msgstr "VMI 요청"
+
+msgid "General Repair"
+msgstr "일반수리진행"
+
+msgid "Reclaim"
+msgstr "리클레임"
+
+msgid "Sale"
+msgstr "판매"
+
+msgid "Cleaning"
+msgstr "세정(재생)"
+
+msgid "Exchange"
+msgstr "교환"
+
+msgid "Transfer"
+msgstr "이체(이동)"
+
+msgid "Analysis"
+msgstr "분석"
+
+msgid "Return"
+msgstr "반환"
+
+msgid "Tablets"
+msgstr "태블릿"
+
+msgid "Bring"
+msgstr "반입요"
+
+msgid "Do Not Bring"
+msgstr "반입불요"
+
+msgid "Replacement Item Return"
+msgstr "대체품반입요"
+
+msgid "Replacement Item Prereceiving"
+msgstr "대체품선입고"
+
+msgid "Payment Route"
+msgstr "결재 경로"
+
+msgid "Review of the security officer of the requesting department"
+msgstr "요청부서 보안 담당자 심사 -> 요청 부서장 결재 -> 요청 부서 실본부장 결재 – itsecurity, 전산기기실, 전상환 프로, 주용국 프로 통보"
+
+msgid "Caution"
+msgstr "유의 사항"
+
+msgid "It must be used only for customer response and business processing purposes, and data download and camera photography are not permitted"
+msgstr "고객 대응 및 업무 처리 목적으로만 사용해야 하며, 자료 다운로드 및 카메라 촬영은 불허 합니다"
+
+msgid "Documents taken out for business and all confidential data and information must be deleted after the purpose is completed"
+msgstr "업무 수행을 위하여 반출한 문서 및 모든 비밀자료, 정보는 목적이 완료된 후 반드시 삭제바랍니다."
+
+msgid "If you need to use the system and take out data from outside, please contact itsecurity in advance"
+msgstr "외부에서 시스템 사용 및 자료 반출이 필요한 경우 itsecurity로 사전 문의바랍니다"
+
+msgid "Purpose of rental"
+msgstr "1. 대여 목적 : 긴급 대응용 / 출장용 中 택 1 \n\n2. 반출 문서 리스트(문서명 기재) \n - 없음\n3. 접속 허용 IT 시스템 리스트 \n- 없음\n4. 기타 협조 요청 사항 :  "
+
+
+
+###################################################################
+# 공사/안전 관리
+
+msgid "Work Contract"
+msgstr "공사계약서"
+
+msgid "Work Description"
+msgstr "공사설명"
+
+msgid "Limited Days"
+msgstr "제한일수"
+
+msgid "No Work Order Information"
+msgstr "Work Order 정보 없음"
+
+msgid "Safety Rules Violation Issuance Standard"
+msgstr "안전수칙위반확인서발급기준"
+
+msgid "First"
+msgstr "1차"
+
+msgid "Secondary"
+msgstr "2차"
+
+msgid "Third"
+msgstr "3차"
+
+msgid "Risk Level"
+msgstr "위험레벨"
+
+msgid "First Prohibition Period"
+msgstr "1차금지기간"
+
+msgid "Second Prohibition Period"
+msgstr "2차금지기간"
+
+msgid "Third Prohibition Period"
+msgstr "3차금지기간"
+
+msgid "Issuance Standard"
+msgstr "발급기준"
+
+msgid "Measures Prevent Recurrence"
+msgstr "재발방지대책"
+
+###################################################################
+# 출입기록 관리
+
+msgid "First Main Gate"
+msgstr "1정문"
+
+msgid "Second Main Gate"
+msgstr "2정문"
+
+msgid "Third Main Gate"
+msgstr "3정문"
+
+msgid "First Side Gate"
+msgstr "1측문"
+
+msgid "Second Side Gate"
+msgstr "2측문"
+
+msgid "Third Side Gate"
+msgstr "3측문"
+
+msgid "Total Entrance"
+msgstr "출입인원계"
+
+msgid "Total Entrance"
+msgstr "출입인원계"
+
+###################################################################
+# 공휴일 등록관리
+
+msgid "Holiday Name"
+msgstr "공휴일명"
+
+msgid "Please select the holidays to be deleted"
+msgstr "삭제할 공휴일을 선택해 주세요"
+
+msgid "Please select a holiday date"
+msgstr "공휴일자를 선택해 주세요"
+
+msgid "Please enter the name of the holiday"
+msgstr "공휴일명을 입력해 주세요"
+
+msgid "Would you like to register a holiday"
+msgstr "공휴일을 등록하시겠습니까?"
+
+###################################################################
+# 공통코드관리
+
+msgid "Common Code"
+msgstr "공통코드"
+
+msgid "Korean Common Code"
+msgstr "공통코드명(한글)"
+
+msgid "English Common Code"
+msgstr "공통코드명(영문)"
+
+msgid "Sub Common Code Title"
+msgstr "상세코드"
+
+msgid "Sub Common Code"
+msgstr "상세코드"
+
+msgid "Korean Sub Common Code"
+msgstr "상세코드(한글)"
+
+msgid "English Sub Common Code"
+msgstr "상세코드(영문)"
+
+###################################################################
+# 메시지 
+
+
+
+
+# 메시지-공통
+msgid "Please select a list to view details"
+msgstr "상세보기를 위해 리스트를 선택해 주세요."
+
+msgid "Would you like to change"
+msgstr "변경하시겠습니까?"
+
+msgid "Would you like to save"
+msgstr "저장하시겠습니까?"
+
+msgid "Please enter Korean"
+msgstr "한국어명칭을 입력해 주세요."
+
+msgid "Please enter English"
+msgstr "한국어명칭을 입력해 주세요."
+
+msgid "Go to first page"
+msgstr "첫 페이지로 이동"
+
+msgid "Go to previous page"
+msgstr "이전 페이지로 이동"
+
+msgid "Go to next page"
+msgstr "다음 페이지로 이동"
+
+msgid "Go to last page"
+msgstr "마지막 페이지로 이동"
+
+msgid "Please select a place of business"
+msgstr "사업장을 선택해 주세요"
+
+msgid "Please select contact person"
+msgstr "담당자를 선택해 주세요"
+
+msgid "Please select a sub contact person"
+msgstr "부담당자를 선택해 주세요"
+
+msgid "Would you like to edit your status"
+msgstr "상태를 수정하시겠습니까?"
+
+msgid "Please enter the reason for processing"
+msgstr "처리사유를 입력해 주세요"
+
+msgid "Invalid date format"
+msgstr "올바르지 않은 날짜 형식입니다."
+
+
+
+# 방문신청 
+
+msgid "Please select a audience"
+msgstr "접견인을 선택해 주세요"
+
+msgid "Please select an access area"
+msgstr "출입지역을 선택해주세요"
+
+msgid "Please enter the date of visit"
+msgstr "방문일을 입력해 주세요"
+
+msgid "Please agree to the Terms of Use"
+msgstr "이용 약관에 동의해 주세요"
+
+msgid "Please agree to the Terms of Use about Car"     
+msgstr "선택 이용 약관에 동의하셔야 차량을 등록할 수 있습니다."   
+
+msgid "Please watch the visitor introductory training"
+msgstr "방문객입문교육을 시청해 주세요"
+
+msgid "Please watch the clean room training"
+msgstr "클린룸교육을 시청해 주세요"
+
+msgid "Please confirm the visit application information by clicking the Confirm button"
+msgstr "확인버튼으로 방문신청정보를 확인해 주세요"
+
+msgid "You have already watched Visiting Teaching"
+msgstr "이미 방문교육을 시청하였습니다"
+
+msgid "There is no visit request information"
+msgstr "방문신청정보가 없습니다"
+
+msgid "Would you like to request a visit"
+msgstr "방문신청하시겠습니까?"
+
+msgid "Clean room visitors must complete online training"
+msgstr "클린룸방문객은 온라인교육을 필수적으로 이수해야합니다"
+
+msgid "Visitor training is compulsory"
+msgstr "방문객교육을 필수적으로 이수해야합니다"
+
+msgid "Your application is complete"
+msgstr "신청이 완료되었습니다"
+
+# 로그인
+
+msgid "please enter username."
+msgstr "아이디를 입력해주세요."
+
+msgid "please enter password."
+msgstr "비밀번호를 입력해주세요."
+
+msgid "Ask administrator"
+msgstr "관리자에게 요청하세요."
+
+msgid "Incorrect username or password."
+msgstr "아이디 또는 비밀번호가 틀립니다."
+
+msgid "Please enter at least 8 characters for your username."
+msgstr "아이디는 4자 이상 이어야 합니다."
+
+msgid "Please enter at least 4 characters for your password."
+msgstr "비밀번호는 4자 이상 이어야 합니다."
+
+
+
+
+# 업체등록
+
+msgid "Please enter your company name"
+msgstr "회사명을 입력해 주세요"
+
+msgid "Please enter the name of the representative"
+msgstr "대표자명을 입력해 주세요"
+
+msgid "Please enter your business registration number"
+msgstr "사업자등록번호를 입력해 주세요"
+
+msgid "Please enter your business registration number correctly"
+msgstr "사업자등록번호를 올바르게 입력해 주세요"
+
+msgid "Please attach business registration certificate"
+msgstr "사업자등록증을 첨부해 주세요"
+
+msgid "Please enter your business address"
+msgstr "사업장주소를 입력해 주세요"
+
+msgid "Please enter the contact person name"
+msgstr "담당자명을 입력해 주세요"
+
+msgid "Please enter your e-mail"
+msgstr "이메일을 입력해 주세요"
+
+msgid "Please enter your email correctly"
+msgstr "이메일을 올바르게 입력해 주세요"
+
+msgid "Please enter your company phone number"
+msgstr "회사전화를 입력해 주세요"
+
+msgid "Please enter the correct company phone number"
+msgstr "회사전화번호를 올바르게 입력해 주세요"
+
+msgid "Please enter the contact information of the person in charge"
+msgstr "담당자연락처를 입력해 주세요"
+
+msgid "Please enter the contact information correctly"
+msgstr "담당자연락처를 올바르게 입력해 주세요"
+
+msgid "There is already a registered business registration number"
+msgstr "이미 등록된 사업자등록번호가 있습니다"
+
+msgid "Are you sure you want to reset your password"
+msgstr "비밀번호를 초기화 하시겠습니까?"
+
+# 임직원 관리
+
+msgid "Please select a company"
+msgstr "회사를 선택해 주세요"
+
+msgid "Please enter your name"
+msgstr "성명을 입력해 주세요"
+
+msgid "Please enter your birth date"
+msgstr "생년월일을 입력해 주세요"
+
+msgid "Please enter your department"
+msgstr "부서를 입력해 주세요"
+
+msgid "Please enter your position"
+msgstr "직급을 입력해 주세요"
+
+msgid "Please enter your mobile phone number"
+msgstr "휴대전화를 입력해 주세요"
+
+msgid "Please enter your mobile phone number correctly"
+msgstr "휴대전화를 올바르게 입력해 주세요
+
+msgid "Please enter your home phone number"
+msgstr "자택전화를 입력해 주세요"
+
+msgid "Please enter your home phone number correctly"
+msgstr "자택전화를 올바르게 입력해 주세요"
+
+msgid "Please enter your home address"
+msgstr "자택주소를 입력해 주세요"
+
+msgid "Please enter the personal information usage agreement"
+msgstr "개인정보 활용동의서를 입력해주세요"
+
+# 방문객 관리
+
+msgid "Would you like to register your pass"
+msgstr "출입증을 등록하시겠습니까?"
+
+msgid "Would you like to save the state"
+msgstr "상태를 저장하시겠습니까?"
+
+msgid "Please select visit status"
+msgstr "방문상태를 선택해 주세요"
+
+msgid "Please select an approval status"
+msgstr "승인상태를 선택해 주세요"
+
+msgid "Please enter your pass card number"
+msgstr "출입증 카드 번호를 입력해주세요"
+
+msgid "Please enter only numbers for the pass number"
+msgstr "출입증번호는 숫자만 입력해 주세요"
+
+msgid "Please enter the pass number in 4 digits"
+msgstr "출입증번호는 숫자 4자리로 입력해 주세요"
+
+msgid "Please enter the visitor name"
+msgstr "방문객명을 입력해 주세요"
+
+msgid "The visit date is earlier than the current date"
+msgstr "방문일이 현재 보다 이전입니다"
+
+msgid "The visit end date is before the visit start date"
+msgstr "방문 종료일이 방문 시작일보다 이전입니다"
+
+msgid "You cannot enter your pass number while waiting for a visit"
+msgstr "방문 대기 상태에서는 출입증 번호를 입력할 수 없습니다"
+
+
+# 휴대물품 관리 
+
+msgid "Please enter the scheduled delivery date"
+msgstr "반입예정일을 입력해 주세요"
+
+msgid "Please enter the scheduled return date"
+msgstr "반출예정일을 입력해 주세요"
+
+msgid "Please select a import person"
+msgstr "반입자를 선택해 주세요"
+
+msgid "Please enter product name"
+msgstr "물품명을 입력해 주세요"
+
+msgid "Please enter a value greater than 1 for quantity"
+msgstr "수량은 1보다 큰 값을 입력해 주세요"
+
+msgid "The quantity taken out cannot exceed the quantity taken in"
+msgstr "반출 수량은 반입 수량을 초과할 수 없습니다"
+
+
+# 공사/안전관리 
+
+msgid "Please enter the construction name"
+msgstr "공사명을 입력해 주세요"
+
+msgid "Please select a construction period"
+msgstr "공사기간을 선택해 주세요"
+
+msgid "Would you like to register a project"
+msgstr "공사를 등록하시겠습니까?"
+
+msgid "Please enter construction number"
+msgstr "공사번호를 입력해 주세요"
+
+msgid "Please enter the construction number to search"
+msgstr "공사번호를 입력하여 검색해 주세요"
+
+msgid "Please select a construction date"
+msgstr "공사일을 선택해 주세요"
+
+msgid "Would you like to apply for construction access"
+msgstr "공사출입을 신청하시겠습니까?"
+
+msgid "Please select a training date"
+msgstr "교육일자를 선택해주세요"
+
+msgid "Would you like to apply for safety training"
+msgstr "안전교육을 신청하시겠습니까?"
+
+msgid "Please enter issuance criteria"
+msgstr "발급기준을 입력해 주세요"
+
+msgid "Please enter the 1st prohibition period"
+msgstr "1차 금지기간을 입력해 주세요"
+
+msgid "Please enter the 2nd prohibition period"
+msgstr "2차 금지기간을 입력해 주세요"
+
+msgid "Please enter the 3rd prohibition period"
+msgstr "3차 금지기간을 입력해 주세요"
+
+msgid "Please enter your risk level"
+msgstr "위험레벨을 입력해 주세요"
+
+msgid "Please enter sort order"
+msgstr "정렬순서를 입력해 주세요"
+
+msgid "Do you want to save the safety violation"
+msgstr "안전 위규를 저장하시겠습니까?"
+
+msgid "Please select a violation date"
+msgstr "위반일자를 선택해 주세요"
+
+msgid "Please add safety rule violators"
+msgstr "안전수칙 위반자를 추가해 주세요"
+
+msgid "Please enter the violation location"
+msgstr "위반장소를 입력해 주세요"
+
+msgid "Would you like to register a safety violation"
+msgstr "안전위반을 등록하시겠습니까?"
+
+msgid "Do you want to save the safety violation"
+msgstr "안전 위반을 저장하시겠습니까?"
+
+msgid "No construction information"
+msgstr "공사 정보가 없습니다"
+
+msgid "Please add person information"
+msgstr "인원 정보를 추가해 주세요"
+
+msgid "Construction date must be within the construction period"
+msgstr "공사일은 공사 기간안 이어야 합니다"
+
+msgid "Please enter the search start date"
+msgstr "조회 시작일을 입력해 주세요"
+
+msgid "Please enter the search end date"
+msgstr "조회 종료일을 입력해 주세요"
+
+msgid "Lookup end date is earlier than start date"
+msgstr "조회 종료일이 시작일보다 이전입니다"
+
+msgid "Lookup start date is after now"
+msgstr "조회 시작일은 현재 이후입니다"
+
+msgid "Lookup end date is after now"
+msgstr "조회 종료일은 현재 이후입니다"
+
+# 반입반출
+
+msgid "Please select the scheduled pickup date"
+msgstr "반입예정일을 선택해 주세요"
+
+msgid "Would you like to apply for importexport"
+msgstr "반출입 신청하시겠습니까?"
+
+msgid "Please select the scheduled return date"
+msgstr "반출예정일을 선택해 주세요"
+
+msgid "Please enter your laptop management number"
+msgstr "노트북관리번호를 입력해 주세요"
+
+msgid "Please enter your laptop serial number"
+msgstr "노트북시리얼번호를 입력해 주세요"
+
+msgid "Please select a approver"
+msgstr "결재자를 선택해 주세요"
+
+msgid "Do you want to handle import export"
+msgstr "반입/반출 처리하시겠습니까?"
+
+msgid "Select the list you want to delete"
+msgstr "삭제하려는 목록을 선택하세요"
+
+msgid "Are you sure you want to delete"
+msgstr "삭제하시겠습니까?"
+
+msgid "Please select the purpose of exportimport"
+msgstr "반출입목적을 선택해 주세요"
+
+msgid "Please select the import classify"
+msgstr "반입구분을 선택해 주세요"
+
+msgid "Please select the delivery method"
+msgstr "반출입전달방법을 선택해 주세요"
+
+msgid "Please select an outside vendor"
+msgstr "외부업체인수자를 선택해 주세요"
+
+msgid "Please select the recipient of the import business"
+msgstr "반입사업장인수자를 선택해 주세요"
+
+msgid "Please select a import date"
+msgstr "반입일자를 선택해 주세요"
+
+msgid "Please attach CEO approval history"
+msgstr "CEO 승인이력을 첨부해 주세요"
+
+msgid "Please enter the material name"
+msgstr "자재이름을 입력해주세요"
+
+msgid "Please enter quantity"
+msgstr "수량을 입력해주세요"
+
+msgid "Please enter a number for quantity"
+msgstr "수량은 숫자를 입력해주세요"
+
+msgid "Please enter material code"
+msgstr "자재 코드를 입력해 주세요"
+
+msgid "Please enter PR No correctly"
+msgstr "PR No를 정확하게 입력해 주세요"
+
+msgid "Please enter the material name or material code"
+msgstr "자재 이름 또는 자재 코드를 입력해 주세요"
+
+msgid "You cannot be the burden yourself"
+msgstr "자기자신은 부담당자가 될 수 없습니다"
+
+# 공통코드 
+
+msgid "Please enter Korean Common Code Name"
+msgstr "공통코드명(한글) 을 입력해 주세요."
+
+msgid "Please enter English Common Code Name"
+msgstr "공통코드명(영문) 을 입력해 주세요."
+
+msgid "Please select Common Code to delete"
+msgstr "삭제할 공통코드를 선택해 주세요."
+
+msgid "Please enter Level Name"
+msgstr "레벨명을 입력해 주세요."
+
+# 결재경로관리  
+
+msgid "Please select Approval Path to delete"
+msgstr "삭제할 결재경로를 선택해 주세요."
+
+# 블랙리스트 
+
+msgid "Please enter the reason for registration"
+msgstr "등록사유를 입력해 주세요"
+
+msgid "Please attach the affidavit"
+msgstr "경위서를 첨부해 주세요"
+
+
+# 출입증발급관리 
+
+msgid "Please enter the reason for applying for a pass"
+msgstr "출입증신청사유를 입력해 주세요"
+
+msgid "Please search the applicant"
+msgstr "신청자를 조회해 주세요"
+
+msgid "Please search the person in charge"
+msgstr "담당자를 조회해 주세요"
+
+msgid "Please enter vehicle number"
+msgstr "차량번호를 입력해 주세요"
+
+msgid "Please attach your vehicle registration certificate"
+msgstr "차량등록증을 첨부해 주세요"
+
+msgid "Would you like to apply for a pass"
+msgstr "출입증을 신청하시겠습니까?"
+
+msgid "You have exceeded the number of vehicles allowed"
+msgstr "차량 허용 대수를 초과하였습니다."
+
+# 식수관리  
+
+msgid "Please enter the summer period"
+msgstr "하계기간을 입력해 주세요"
+
+msgid "Please enter winter period"
+msgstr "동계기간을 입력해 주세요"
+
+msgid "Please enter breakfast time"
+msgstr "조식시간을 입력해 주세요"
+
+msgid "Please enter lunch time"
+msgstr "중식시간을 입력해 주세요"
+
+msgid "Please enter dinner time"
+msgstr "석식시간을 입력해 주세요"
+
+msgid "Please enter the midnight snack time"
+msgstr "야식시간을 입력해 주세요"
+
+msgid "Please enter numbers only"
+msgstr "숫자만 입력해 주세요"
+
+msgid "Please enter the unit price"
+msgstr "단가를 입력해 주세요"
+
+msgid "Save meal permissions"
+msgstr "식사 권한 저장"
+
+# 공지사항  
+
+msgid "Please select a start date"
+msgstr "시작일을 선택해 주세요"
+
+msgid "Please select an end date"
+msgstr "종료일을 선택해 주세요"
+
+msgid "Please enter the subject"
+msgstr "제목을 입력해 주세요"
+
+msgid "Please enter contents"
+msgstr "내용을 입력해 주세요"
+
+# 임시증관리  
+
+msgid "Please enter access cardNo"
+msgstr "출입증 번호를 입력해 주세요"
+
+msgid "Please inquire employee information"
+msgstr "사원정보를 조회해 주세요"
+
+msgid "Would you like to register for temporary certificate issuance"
+msgstr "임시증 발급을 등록하시겠습니까?"
+
+msgid "Do you want to modify the temporary certificate issuance status"
+msgstr "임시증 발급 상태를 수정하시겠습니까?"
+
+msgid "Would you like to retrieve the temporary certificate"
+msgstr "임시증을 회수하시겠습니까?"
+
+msgid "Please enter the pass number in 3 digits"
+msgstr "출입증번호는 숫자 3자리로 입력해 주세요"
+
+# 기타  
+
+msgid "You cannot view the page in mobile environment. Please check it in the PC environment."
+msgstr "모바일 환경에서는 해당 페이지를 보실 수 없습니다. PC 환경에서 확인해보시기 바랍니다."
+
+msgid "Set the value over 0."
+msgstr "0 이상의 수량을 입력하세요."
+
+
+msgid "Please check approval or carryitem status."
+msgstr "변경된 승인또는 휴대물품 상태값이 없습니다."
+
+#수리업체관련
+
+msgid "Repair company"
+msgstr "수리업체"
+
+msgid "Repair acceptor"
+msgstr "수리업체인수자"
+
+msgid "Repair company Info."
+msgstr "수리업체정보(업체명 / 사업자번호 / 전화번호)"
+
+msgid "Search Repair Company"
+msgstr "수리업체 검색"
+
+#노트북 보안관련
+
+msgid "Is Vaccine Updated"
+msgstr "바이러스백신업데이트여부"
+
+msgid "Is Virus Scanned"
+msgstr "바이러스검색여부"
+
+msgid "Quarantine confirmation(Gate)"
+msgstr "방역확인(정문)"
+
+msgid "Quarantine confirmation(Contact)"
+msgstr "방역확인(담당자)"
+
+msgid "Please check the laptop (PC) quarantine."
+msgstr "노트북(PC) 방역 확인해주세요."
+

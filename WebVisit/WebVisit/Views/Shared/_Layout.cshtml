@@ -1,0 +1,328 @@
+@using System.Text.Json;
+@{
+    string c = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string a = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // 상세페이지 처리
+    bool isDetail = false;
+    string styleClassBody = "";
+    string[] detailPages = {"Reg","Detail"};
+    if(detailPages.Any(a.Contains)){
+        styleClassBody = "sub-type"; // 상단 회색
+        isDetail = true;
+    }
+    @* Console.WriteLine("sharedMenuList:"+JsonSerializer.Serialize(ViewBag.sharedMenuList)); *@
+    @* Console.WriteLine("sharedMenuList:"+ViewBag.sharedMenuList); *@
+}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <title>@ViewData["Title"] - DB하이텍 출입관리시스템</title>
+
+    <link rel="stylesheet" href="~/lib/Swiper/swiper-bundle.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/billboard.js/billboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/jqgrid/css/ui.jqgrid.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/jqgrid/css/ui.jqgrid-bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+   @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+   @* <link rel="stylesheet" href="~/WebVisit.styles.css" asp-append-version="true" /> *@
+ 
+    @* Usage RenderSection:
+     @section scripts {
+        <script src="~/lib/..."></script>
+        ...
+    } *@
+    @* <script src="~/lib/jquery/jquery.min.js"></script> *@
+    <script src="~/lib/jquery/jquery-3.6.1.min.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+    <script src="~/lib/jqgrid/js/i18n/grid.locale-ko.js"></script>
+    @* <script src="~/lib/jqgrid/js/i18n/grid.locale-en.js"></script> *@
+    <script src="~/lib/jqgrid/js/minified/jquery.jqGrid.min.js"></script>
+    <script src="~/lib/Swiper/swiper-bundle.min.js"></script>
+    <script src="~/lib/d3/d3.min.js"></script>
+    <script src="~/lib/billboard.js/billboard.js"></script>
+    <script src="~/js/site.js"></script>
+    @RenderSection("scripts", required:false)
+    <script type="text/javascript" charset="utf-8">
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["Error"]?.Errors.Count > 0)
+        {
+            <text>
+            $(document).ready(function() {
+                alert('@ViewData.ModelState["Error"]?.Errors.First().ErrorMessage');
+                window.history.go(-1);
+            });
+            </text>
+        }
+        $( function() {
+            $.datepicker.setDefaults($.datepicker.regional['@CultureInfo.CurrentCulture']);
+            $( ".inpdate" ).datepicker({ regional:"@CultureInfo.CurrentCulture", dateFormat: 'yy-mm-dd' });
+        } );
+        function goBack()
+        {
+            console.log("[goBack]..");
+            console.log("[goBack]",PREV_URL);
+            if (PREV_URL == null || PREV_URL == undefined) {
+                console.log("[goBack] window.go");
+                window.history.go(-1);
+            } else {
+                window.location = PREV_URL;
+            }
+        }
+        function logout(){
+            var myform = document.fmLogout;
+            myform.submit();
+        }
+        function goLogo(){
+            window.location = '/person/myinfo?culture=ko';
+        }
+    </script>
+</head>
+<body>
+    <div class="wrapper @styleClassBody"><!-- start : wrapper -->
+    <header><!-- start : header -->
+        <div class="rela">
+            <h1>
+                <a href="#" onClick="goLogo();"><img src="/images/etc/etc-logo.svg" alt="로고" /></a>
+            </h1>
+            <div class="header-item">
+                <ul class="gnb-list">
+                    <li>
+                        <div>
+                            <ul>
+                @{
+                    if (ViewBag.sharedMenuList != null)
+                    {
+                        // a Menu b MenuLevel
+                        @* bool isOpen = false; *@
+                        foreach(var m in ViewBag.sharedMenuList ?? new List<String>()){
+                            var MenuName = m.a.MenuNameKor;
+                            if (CultureInfo.CurrentCulture.ToString().Equals("en")) {
+                                MenuName= m.a.MenuNameEng;
+                            }
+                            if(m.b.Count > 0){
+                                MenuName = m.b[0].MenuNameKor;
+                                if (CultureInfo.CurrentCulture.ToString().Equals("en")) {
+                                    MenuName= m.b[0].MenuNameEng;
+                                }
+                            }
+                            var className = "off";
+                            if (ViewBag.CurrentMenuGroupNo == m.a.GroupNo) {
+                                className = "on";
+                            }
+                            var titleColor = "#fff";
+                            if (ViewBag.CurrentMenuID == m.a.MenuID) {
+                                titleColor = "#F15A22";
+                            }
+                            @* if(m.b.Count > 0) { // MenuLevel
+                                @m.b[0].IsAccess
+                            } *@
+                            var link = m.a.URL+"?culture="+@CultureInfo.CurrentCulture;
+
+                            if (m.a.Depth == 0) {
+                                @* isOpen = true; *@
+                                WriteLiteral("</ul>");
+                                WriteLiteral("</div>");
+                                WriteLiteral("</li>");
+                                WriteLiteral("<li>");
+                                    <a href="javascript:void(0)" class="@className">
+                                        <img src="@m.a.IconImg" alt="아이콘" />
+                                        <span>@MenuName </span>
+                                    </a>
+                                WriteLiteral("<div class='submenu-item-wrap'>");
+                                WriteLiteral("<ul>");
+                            }else{
+                                <li>
+                                    <a href="@link" style="color:@titleColor">@MenuName</a>
+                                    <a href="@link" target="_blank" class="btn-ico">새창</a>
+                                </li>
+                            }
+                        }
+                    }
+                }
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="mem-link-wrap">
+                    <div class="welcome-msg">@Localizer["Dear human resource"] <strong>@ViewBag.UserName</strong> @Localizer["Have a good day"]</div>
+                    <button type="button" class="btn-login" onclick="logout()">@Localizer["Logout"]</button>
+                </div>
+                <form method="post" name="fmLogout" asp-controller="Home" asp-action="Logout"><input type="hidden" name="mode" value="0" /></form>
+                <center><div class="mob-logout"><button type="button" onclick="logout()">로그아웃</button></div></center>
+            </div>
+
+            <a href="javascript:void(0)" class="btn-total-nav">
+                <span></span>
+            </a>
+        </div>
+    </header><!-- end : header -->
+    <div class="container" id="contents"><!-- start : container -->
+        <section class="page-header-wrap">
+            @{
+                if (isDetail) {
+            <a href="#" onclick="goBack();" class="btn-back">
+                <img src="/images/ico/ico-back.svg"  alt="뒤로" />
+                <span>@Localizer["To List"]</span>
+            </a>
+                }
+            }
+            <h2>@ViewData["Title"]</h2>
+        </section>
+        <div class="container-scrolls-wrap">
+            <environment include="Development">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </environment>
+            @RenderBody()
+        </div>
+    </div>
+</div>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
+@*
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list01.svg" alt="아이콘" />
+                            <span>임직원 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+
+                                <li><a href="/person/list/?culture=@CultureInfo.CurrentCulture">임직원 관리</a></li>
+                                <li><a href="/card/list/?culture=@CultureInfo.CurrentCulture">출입증 관리</a></li>
+                                <li><a href="/card/carlist/?culture=@CultureInfo.CurrentCulture">차량관리</a></li>
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="/company/list/?culture=@CultureInfo.CurrentCulture" class="off none">
+                            <img src="/images/ico/ico-gnb-list02.svg" alt="아이콘" />
+                            <span>업체 정보 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list03.svg" alt="아이콘" />
+                            <span>방문객 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/visit/list/?culture=@CultureInfo.CurrentCulture">방문객 관리</a></li>
+                                <li><a href="/carryItem/list/?culture=@CultureInfo.CurrentCulture">휴대물품 관리</a></li>
+                                <li><a href="/visit/manuallist/?culture=@CultureInfo.CurrentCulture">방문객 수기입력 </a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="/card/templist/?culture=@CultureInfo.CurrentCulture" class="none">
+                            <img src="/images/ico/ico-gnb-list04.svg" alt="아이콘" />
+                            <span>임시증 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list05.svg" alt="아이콘" />
+                            <span>반출입 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/exportimport/list/?culture=@CultureInfo.CurrentCulture">반출입신청</a></li>
+                                <li><a href="/exportimport/selfapproval/?culture=@CultureInfo.CurrentCulture">노트북자가결재</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list06.svg" alt="아이콘" />
+                            <span>공사/안전 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/work/list/?culture=@CultureInfo.CurrentCulture">공사 등록 현황</a></li>
+                                <li><a href="/work/visitlist/?culture=@CultureInfo.CurrentCulture">공사신청현황</a></li>
+                                <li><a href="/work/safetyedulist/?culture=@CultureInfo.CurrentCulture">안전교육 현황</a></li>
+                                <li><a href="/work/safetyviolationreasonlist/?culture=@CultureInfo.CurrentCulture">I/R발행</a></li>
+                                <li><a href="/work/statisticslist/?culture=@CultureInfo.CurrentCulture">통계 관리</a></li>
+                                <li><a href="/work/safetyviolationlist/?culture=@CultureInfo.CurrentCulture">안전 위규 관리</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list07.svg" alt="아이콘" />
+                            <span>식수집계 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/meal/list/?culture=@CultureInfo.CurrentCulture">식수 현황 조회</a></li>
+                                <li><a href="/meal/invalidlist/?culture=@CultureInfo.CurrentCulture">이상 식수 조회</a></li>
+                                <li><a href="/meal/permissionlist/?culture=@CultureInfo.CurrentCulture">식수 권한 관리</a></li>
+                                <li><a href="/meal/infolist/?culture=@CultureInfo.CurrentCulture">식수 정보 관리</a></li>
+                                <li><a href="/meal/manuallist/?culture=@CultureInfo.CurrentCulture">식수 수기 등록</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="/person/myinfo/?culture=@CultureInfo.CurrentCulture" class="none">
+                            <img src="/images/ico/ico-gnb-list08.svg" alt="아이콘" />
+                            <span>내 정보 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/notice/list/?culture=@CultureInfo.CurrentCulture"  class="none">
+                            <img src="/images/ico/ico-gnb-list09.svg" alt="아이콘" />
+                            <span>공지사항</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list10.svg" alt="아이콘" />
+                            <span>시스템 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/sys/menulist/?culture=@CultureInfo.CurrentCulture">메뉴 관리</a></li>
+                                <li><a href="/sys/levellist/?culture=@CultureInfo.CurrentCulture">레벨 관리</a></li>
+                                <li><a href="/sys/approval/?culture=@CultureInfo.CurrentCulture">결재 경로 관리</a></li>
+                                <li><a href="/sys/commoncode/?culture=@CultureInfo.CurrentCulture">공통 코드 관리</a></li>
+                                <li><a href="javascript:void(0)">장비 관리</a></li>
+                                <li><a href="/sys/holidaylist/?culture=@CultureInfo.CurrentCulture">공휴일 등록 관리</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list11.svg" alt="아이콘" />
+                            <span>출입기록 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/accessrecord/personlist/?culture=@CultureInfo.CurrentCulture">인원출입기록조회</a></li>
+                                <li><a href="/accessrecord/carlist/?culture=@CultureInfo.CurrentCulture">차량출입기록조회</a></li>
+                                <li><a href="/accessrecord/statisticslist/?culture=@CultureInfo.CurrentCulture">인원차량출입현황</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            <img src="/images/ico/ico-gnb-list12.svg" alt="아이콘" />
+                            <span>출입증 발급 관리</span>
+                        </a>
+                        <div class="submenu-item-wrap">
+                            <ul>
+                                <li><a href="/card/applylist/?culture=@CultureInfo.CurrentCulture">인원 출입증 신청현황</a></li>
+                                <li><a href="/card/carapplylist/?culture=@CultureInfo.CurrentCulture">차량 출입증 승인현황</a></li>
+                                <li><a href="/person/blacklist/?culture=@CultureInfo.CurrentCulture">블랙리스트 관리</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                     *@

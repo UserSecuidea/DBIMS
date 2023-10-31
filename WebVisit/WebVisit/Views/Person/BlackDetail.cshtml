@@ -1,0 +1,232 @@
+@model BlackListDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Blacklist"]; //"블랙리스트 상세정보";
+}
+<script>
+
+    function goList(){
+        window.location = '/person/blacklist/?culture=@CultureInfo.CurrentCulture'
+    }
+
+    // edit - 처리사유 입력 
+    function saveEditForm(){
+        const myform = document.fmEditBlackList;
+        if(myform.Memo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for processing"]';
+            myform.Memo.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+    
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Accessor Information"]</div>
+</div>
+<div id="add-form-wrap">
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" value='@Model.BlackList.Name' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate" value='@Model.BlackList.BirthDate' disabled />
+                    @* &nbsp;
+                    <button type="button" class="btn-gray">확인</button> *@
+                </div>
+            </li>
+            @* <li>
+                <div class="label s03">@Localizer["Gender"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.BlackList.Gender))' disabled></select>
+                        }else{
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.BlackList.Gender))' disabled></select>
+                        }
+                    }
+                </div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value='@Model.BlackList.Mobile' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value='@Model.BlackList.CompanyName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Tel"]' name="Tel" value='@Model.BlackList.Tel' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Registration Reason Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="BlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.BlackList.BlackListType))' disabled></select>
+                        }else{
+                            <select class="select" name="BlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.BlackList.BlackListType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Report Circumstances"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(Model.BlackList.StatementFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(0)">@Localizer["Report Circumstances"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+                    @* <div class="value"><a href="javascript:void(0)" class="link-co">@Localizer["Report Circumstances"]</a></div> *@
+                    @* <input type="file" class="hidden" accept=".pdf" name="StatementFile"  />
+                    <button type="button" class="btn-func btn-upload">첨부</button>
+                    <div class="value"></div> *@
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Registration Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Registration Reason"]' name="Reason" value='@Model.BlackList.Reason' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="tit-header-wrap">
+    <div class="rtit">        
+    </div>
+</div>
+
+<form name="fmEditBlackList" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="blackListID" value='@Model.BlackList.BlackListID' />
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approval Status"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="BlackListStatus" asp-items='@(new SelectList(Model.CodeBlackListStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.BlackList.BlackListStatus))'></select>
+                        }else{
+                            <select class="select" name="BlackListStatus" asp-items='@(new SelectList(Model.CodeBlackListStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.BlackList.BlackListStatus))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Processing Reason"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Processing Reason"]' name="Memo" />
+                    </div>                            
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</form>
+<div class="tit-header-wrap">
+    <div class="rtit">
+        @* 승인현황 *@
+    </div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li class="full">
+            <div class="form-item-wrap" style="flex-direction: column;">
+                <table aria-label="승인현황">
+                    <tr>
+                        <th>@Localizer["DateTime"]</th>
+                        <th>@Localizer["Registered person"]</th>
+                        <th>@Localizer["Approval Status"]</th>
+                        <th>@Localizer["Processing Reason"]</th>
+                    </tr>
+                </table>
+                <table aria-label="승인현황">
+
+
+@{
+    var num9=0;
+    var blackListStatusName = "";
+    string insertUpdateDate="";
+    foreach(BlackListHistory m in Model.BlackListHistory){
+        num9++; 
+        blackListStatusName = "";
+        insertUpdateDate = "";
+        if (m.BlackListStatus > -1 && Model.CodeBlackListStatus != null) {
+            foreach(var a in Model.CodeBlackListStatus) {
+                if (a.SubCodeID == m.BlackListStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        blackListStatusName = a.CodeNameKor;
+                    }else {
+                        blackListStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        @* if(m.InsertUpdateDate != null){ *@
+        insertUpdateDate=string.Format("{0:yyyy-MM-dd}", m.InsertUpdateDate);
+        @* } *@
+                    <tr>
+                        <td>@insertUpdateDate</td>
+                        <td>@m.UpdateName (@m.UpdateOrgNameKor)</td>
+                        <td>@blackListStatusName</td>
+                        <td>@m.Memo</td>
+                    </tr>
+    }
+}
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveEditForm()">@Localizer["Save"]</button>
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["Cancel"]</button>
+    </div>
+</div>
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="DownloadBlackList" target="ifTemp">
+    <input type="hidden" name="BlackListID" value="@Model.BlackList.BlackListID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

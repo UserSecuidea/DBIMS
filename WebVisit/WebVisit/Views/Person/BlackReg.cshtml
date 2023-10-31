@@ -1,0 +1,227 @@
+@model BlackListRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Register Blacklist"]; // "블랙리스트 등록";
+}
+<script>
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    function goList(){
+        window.history.go(-1);
+    }
+
+    function checkVisitor(obj){
+        var myform = document.fmAddBlackList;
+        var name = myform.Name.value.trim();
+        var birth = myform.BirthDate.value.trim();
+        @* var formGender = myform.Gender; *@
+        var BlackListType = myform.BlackListType.options[myform.BlackListType.selectedIndex].value;
+        @* alert(BlackListType); *@
+        if (name.length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.Name.focus();
+            return;
+        }
+        if (birth.length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        if(BlackListType == 0) {
+            var birthday = birth;
+            $.ajax({
+                url: "/person/getsearchperson",
+                data: { name, birthday },
+                method: "GET",
+                dataType: "JSON" 
+            }).done(function(json) {
+                console.log("[checkVisitor] 임직원:", json);
+                var rows= "";
+                // name, sabun, tel, mobile, email, orgID, orgNameKor, orgNameEng location, locationName, companyID, companyName, personTypeID, personTypeIDName  
+                if(json.length > 0){
+                    if (json[0].mobile != null)
+                        myform.Mobile.value = json[0].mobile;
+                    if (json[0].companyName != null)
+                        myform.CompanyName.value = "DB HiTek";
+                }
+            });
+        }else{
+            $.ajax({
+                url: "/visit/getvisitorinfo", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+                data: { name, birth },  // HTTP 요청과 함께 서버로 보낼 데이터
+                method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+                dataType: "JSON" // 서버에서 보내줄 데이터의 타입
+            }).done(function(json) {
+                console.log("[checkVisitor] 방문객:", json);
+                if (json != null){
+                    console.log("[checkVisitor]", json);
+                    let t = new Date();
+                    if (json.gender != null)
+                        myform.Gender.selectedIndex = json.gender;
+                    if (json.mobile != null)
+                        myform.Mobile.value = json.mobile;
+                    if (json.companyName != null)
+                        myform.CompanyName.value = json.companyName;
+                }
+            });
+        }
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddBlackList;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        //블랙리스트 등록: mode VisitorType  VisitPersonID Sabun Name OrgID OrgNameKor OrgNameEng BirthDate Gender
+        //Mobile CompanyName Tel BlackListType Reason
+        if(myform.Name.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your name"]';
+            myform.Name.focus();
+            return;
+        }
+        if(myform.BirthDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your birth date"]';
+            myform.BirthDate.focus();
+            return;
+        }
+        if(myform.Mobile.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number"]';
+            myform.Mobile.focus();
+            return;
+        }
+        if(!regPhone.test(myform.Mobile.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your mobile phone number correctly"] ex)000-0000-0000';
+            myform.Mobile.focus();
+            return;
+        }
+        if(myform.Reason.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for registration"]';
+            myform.Reason.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+
+  </script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Accessor Information"]</div>
+</div>
+<form name="fmAddBlackList" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="A" /> 
+    <input type="hidden" name="VisitorType" value=0 /><!-- 방문자구분 (출입자) 회원(0)/방문자(1) -->
+    <input type="hidden" name="VisitPersonID" value=1 /> <!-- 방문객회원ID (출입자): 방문자구분 이 방문자(1) 일 경우 방문객회원ID 입력  --> 
+    <input type="hidden" name="Sabun" value="" /> <!-- 회원사번(출입자): 방문자구분 회원(0) 일 경우 사번, 이름, 부서번호, 부서명 입력  -->
+    <input type="hidden" name="OrgID" value="" />    
+    <input type="hidden" name="OrgNameKor" value="" />
+    <input type="hidden" name="OrgNameEng" value="" />
+    <input type="hidden" name="Gender" value="0" />
+    <div id="add-form-wrap">
+        <div class="reg-form-wrap">
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Birth Date"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="BirthDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        &nbsp;
+                        <button type="button" class="btn-gray" onclick="checkVisitor(this);">@Localizer["Confirm"]</button>
+                    </div>
+                </li>
+                @* <li>
+                    <div class="label s03">@Localizer["Gender"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                    </div>
+                </li> *@
+                <li>
+                    <div class="label s03">@Localizer["CellPhone"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" onkeyup="generatePhoneString(this);" maxlength="13" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Tel"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Tel"]' name="Tel" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Registration Reason Classify"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="BlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="BlackListType" asp-items='@(new SelectList(Model.CodeBlackListType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Report Circumstances"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <label asp-for="BlackList.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                        <input asp-for="BlackList.FormFile" name = "FormFile" id="file1" accept=".pdf" style="display:none;" type="file">
+                        <span asp-validation-for="BlackList.FormFile"></span>
+                        <div class="value">@Localizer["No Files Selected"]</div>
+                        @* <input type="file" class="hidden" accept=".pdf" name="StatementFile"  />
+                        <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>
+                        <div class="value">@Localizer["No Files Selected"]</div> *@
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["Registration Reason"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Registration Reason"]' name="Reason" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>
+
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+     @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Save"]</button>
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["Cancel"]</button>
+    </div>
+</div>

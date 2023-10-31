@@ -1,0 +1,393 @@
+@model MealManualListViewModel
+@{
+    @* ViewData["Title"] = "식수 수기 등록"; *@
+    MealManualGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    MealManualGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+
+    function goReg(){
+        @* window.location = '/meal/manualreg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&mealLogID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+    @* function goDetail(){
+        window.location = '/meal/manualdetail/?culture=@CultureInfo.CurrentCulture'
+    } *@
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchLocation.options[myform.searchLocation.selectedIndex].value;
+        var field2 = myform.searchIsVisitor.options[myform.searchIsVisitor.selectedIndex].value;
+        var keyword1 = myform.searchStartMealYMD.value.trim().replace("/","");
+        var keyword2 = myform.searchEndMealYMD.value.trim().replace("/","");
+        var keyword3 = myform.searchVisitantCompany.value.trim().replace("/","");
+        var keyword4 = myform.searchOrgNameKor.value.trim().replace("/","");
+        var keyword5 = myform.searchVisitantName.value.trim().replace("/","");
+        var keyword6 = myform.searchMealGB1.value.trim().replace("/","");
+        var keyword7 = myform.searchMealGB2.value.trim().replace("/","");
+        var keyword8 = myform.searchMealGB3.value.trim().replace("/","");
+        var keyword9 = myform.searchMealGB4.value.trim().replace("/","");
+        var url = myform.action + field1 + "/" + field2; 
+        @* console.log("[search] field", field1); *@
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        if (keyword5 != null && keyword5.length > 0) {
+            url += "/"+keyword5;
+        }else {
+            url +="/+"
+        }
+        if (keyword6 != null && keyword6.length > 0) {
+            url += "/"+keyword6;
+        }else {
+            url +="/+"
+        }
+        if (keyword7 != null && keyword7.length > 0) {
+            url += "/"+keyword7;
+        }else {
+            url +="/+"
+        }
+        if (keyword8 != null && keyword8.length > 0) {
+            url += "/"+keyword8;
+        }else {
+            url +="/+"
+        }
+        if (keyword9 != null && keyword9.length > 0) {
+            url += "/"+keyword9;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>            
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchlocation="" asp-route-searchisvisitor="" asp-route-searchstartmealymd="" asp-route-searchendmealymd="" asp-route-searchvisitantcompany="" asp-route-searchorgnamekor="" asp-route-searchvisitantname=""
+    asp-route-searchmealgb1="" asp-route-searchmealgb2="" asp-route-searchmealgb3="" asp-route-searchmealgb4="">
+                <li>
+                    <div class="label ">@Localizer["Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Registration Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchIsVisitor" asp-items='@(new SelectList(Model.CodeVisitorType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchIsVisitor))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchIsVisitor" asp-items='@(new SelectList(Model.CodeVisitorType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchIsVisitor))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Company Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Company Name"]' name="searchVisitantCompany" value="@searchRoute.SearchVisitantCompany" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Department Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Department Name"]' name="searchOrgNameKor" value="@searchRoute.SearchOrgNameKor" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label ">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchVisitantName" value="@searchRoute.SearchVisitantName" />
+                    </div>
+                </li>
+                <li>
+                 @* class="per02" *@
+                    <div class="label t01">@Localizer["Meal Classify"]</div>
+                    <div class="form-item-wrap">
+                        <label>
+                            @{
+                                if (@searchRoute.SearchMealGB1.Equals("1")){
+                                    <input type="checkbox" name="searchMealGB1" value="1" checked />
+                                } else {
+                                    <input type="checkbox" name="searchMealGB1" value="1" />
+                                }
+                            }
+                            <span class="co">@Localizer["Breakfast"]</span>
+                        </label>
+                        <label>
+                            @{
+                                if (@searchRoute.SearchMealGB2.Equals("1")){
+                                    <input type="checkbox" name="searchMealGB2" value="1" checked />
+                                } else {
+                                    <input type="checkbox" name="searchMealGB2" value="1" />
+                                }
+                            }
+                            <span class="co">@Localizer["Lunch"]</span>
+                        </label>
+                        <label>
+                            @{
+                                if (@searchRoute.SearchMealGB3.Equals("1")){
+                                    <input type="checkbox" name="searchMealGB3" value="1" checked />
+                                } else {
+                                    <input type="checkbox" name="searchMealGB3" value="1" />
+                                }
+                            }
+                            <span class="co">@Localizer["Dinner"]</span>
+                        </label>
+                        <label>
+                            @{
+                                if (@searchRoute.SearchMealGB4.Equals("1")){
+                                    <input type="checkbox" name="searchMealGB4" value="1" checked />
+                                } else {
+                                    <input type="checkbox" name="searchMealGB4" value="1" />
+                                }
+                            }
+                            <span class="co">@Localizer["LatenightMeal"]</span>
+                        </label>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label t01">@Localizer["Meal Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartMealYMD" value="@searchRoute.SearchStartMealYMD" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndMealYMD" value="@searchRoute.SearchEndMealYMD" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+            <form name="fmDlExcel" method="post" asp-action="ManualExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+            @* <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button> *@
+            <a asp-action="ManualReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Register Menual"]</button>
+            </a>
+            @* <button type="button" class="btn-green" onClick="goReg();">@Localizer["Register Menual"]</button> *@
+            <a asp-action="ManualDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="ManualDetail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="식수 수기등록 목록">
+            <tr>
+                <th>@Localizer["Meal Date"]</th>
+                <th>@Localizer["Registration Date"]</th>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Department Name"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Sabun"]</th>
+                <th>@Localizer["Registration Classify"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Position"]</th>
+                <th>@Localizer["Meal Classify"]</th>
+            </tr>
+@{
+    var location = "";
+    var visitorTypeName = "";
+    string mealYMD="";
+    var mealTypeName = "";
+    @* var Name = ""; *@
+    @* var OrgName = ""; *@
+    foreach(MealLog m in Model.MealLog){ 
+        location = "";
+        visitorTypeName = "";
+        mealYMD="";
+        mealTypeName = "";
+        if (m.Location != null && Model.CodeLocation != null) {
+            foreach(var a in Model.CodeLocation) {
+                if (a.SubCodeDesc != null && a.SubCodeDesc.Equals(m.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = a.CodeNameKor;
+                    }else {
+                        location = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (m.IsVisitor != null && Model.CodeVisitorType != null) {
+            foreach(var a in Model.CodeVisitorType) {
+                if (a.SubCodeID != null && a.SubCodeID.Equals(m.IsVisitor)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        visitorTypeName = a.CodeNameKor;
+                    }else {
+                        visitorTypeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (m.MealGB != null && Model.CodeMealType != null) {
+            foreach(var a in Model.CodeMealType) {
+                if (a.SubCodeID != null && a.SubCodeID.Equals(m.MealGB)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        mealTypeName = a.CodeNameKor;
+                    }else {
+                        mealTypeName = a.CodeNameEng;
+                    }
+                }
+            }
+        }        
+        if(m.InsertDate != null){
+            mealYMD=string.Format("{0:yyyy-MM-dd}", m.MealYMD);
+        }
+        //@m.InsertName @m.InsertOrgNameKor  
+            <tr onclick="selectRow(this, @m.MealLogID);" ondblclick="goDetail(@m.MealLogID)">
+                <td>@mealYMD</td>
+                <td>@m.InsertDate</td>
+                <td>@location</td>
+                <td>@m.OrgNameKor</td>
+                <td>@m.Name</td>
+                <td>@m.Sabun</td>
+                <td>@visitorTypeName</td>
+                <td>@m.VisitantCompany</td>
+                <td>@m.VisitantGrade</td>
+                <td>@mealTypeName</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap"> 
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="ManualList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

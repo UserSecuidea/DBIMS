@@ -1,0 +1,323 @@
+
+@using WebVisit.Models.DomainModels.Passport;
+@model CardListViewModel
+@{
+    @* ViewData["Title"] = "출입증 관리"; *@
+    CardGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    CardGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+
+    @* function goDetail(){
+        window.location = "/card/detail/?culture=@CultureInfo.CurrentCulture"
+    } *@
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&cardIssueApplyID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchLocation.options[myform.searchLocation.selectedIndex].value;
+        var field2 = myform.searchCardTypeID.options[myform.searchCardTypeID.selectedIndex].value;
+        var field3 = myform.searchCardIssueStatus.options[myform.searchCardIssueStatus.selectedIndex].value;
+        var keyword1 = myform.searchCardNo.value.trim().replace("/","");
+        var keyword2 = myform.searchName.value.trim().replace("/","");
+        var keyword3 = myform.searchSabun.value.trim().replace("/","");
+        var url = myform.action + field1 + "/" + field2 + "/" + field3; 
+        @* console.log("[search] field", field1); *@
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="@current.PageNumber" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchlocation="" asp-route-searchcardtypeid="" asp-route-searchcardissuestatus="" asp-route-searchcardno="" asp-route-searchname="" asp-route-searchsabun="">
+                <li class="per02">
+                    <div class="label">@Localizer["Place Of Business"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), @searchRoute.SearchLocation))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label t01">@Localizer["Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchCardTypeID" asp-items='@(new SelectList(Model.CodeCardType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchCardTypeID))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchCardTypeID" asp-items='@(new SelectList(Model.CodeCardType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchCardTypeID))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label ">@Localizer["Issue Status"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchCardIssueStatus" asp-items='@(new SelectList(Model.CodeCardIssueStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchCardIssueStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchCardIssueStatus" asp-items='@(new SelectList(Model.CodeCardIssueStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchCardIssueStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Access CardNo"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Access CardNo"]' name="searchCardNo" value="@searchRoute.SearchCardNo" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchName" value="@searchRoute.SearchName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Sabun"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Sabun"]' name="searchSabun" value="@searchRoute.SearchSabun" />
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+            @* <button type="button" class="btn-green">@Localizer["Download Excel"]</button> *@
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="출입증 목록">
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Access CardNo"]</th>
+                <th>@Localizer["Classify"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Sabun"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Reissue Number"]</th>
+                <th>@Localizer["Issue"]</th>
+                <th>@Localizer["Valid Period"]</th>
+            </tr>
+
+@{
+    var location = "";
+    var cardTypeName = "";
+    var cardIssueStatusName = "";
+    var cardValidDate = "";
+
+    // ViewCardPeople
+    
+    foreach(CardIssueApply cardIssueApply in Model.CardIssueApplys){
+        location = "";
+        cardTypeName = "";
+        cardIssueStatusName ="";
+        cardValidDate = "";
+
+        if (cardIssueApply.Location != null && Model.CodeLocation != null) {
+            foreach(var m in Model.CodeLocation) {
+                if (m.SubCodeDesc != null && m.SubCodeDesc.Equals(cardIssueApply.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = m.CodeNameKor;
+                    }else {
+                        location = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+
+        if (cardIssueApply.CardTypeID >=0 && Model.CodeCardType != null) {
+            foreach(var m in Model.CodeCardType) {
+                if (m.SubCodeID != null && m.SubCodeID.Equals(cardIssueApply.CardTypeID)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        cardTypeName = m.CodeNameKor;
+                    }else {
+                        cardTypeName = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+
+        if (cardIssueApply.CardIssueStatus != null && Model.CodeCardIssueStatus != null) {
+            foreach(var m in Model.CodeCardIssueStatus) {
+                if (m.SubCodeID != null && m.SubCodeID.Equals(cardIssueApply.CardIssueStatus)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        cardIssueStatusName = m.CodeNameKor;
+                    }else {
+                        cardIssueStatusName = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+        
+        if(cardIssueApply.CardValidDate != null){
+            cardValidDate=string.Format("{0:yyyy-MM-dd}", cardIssueApply.CardValidDate);
+        }
+             <tr onclick="selectRow(this, @cardIssueApply.CardIssueApplyID);" ondblclick="goDetail(@cardIssueApply.CardIssueApplyID)"> 
+                <td>@location</td>
+                <td>@cardIssueApply.CardNo</td>
+                <td>@cardTypeName</td>
+                <td>@cardIssueApply.CompanyName</td>
+                <td>@cardIssueApply.Sabun</td>
+                <td>@cardIssueApply.Name</td>
+                <td>@cardIssueApply.ReissueNo</td>
+                <td>@cardIssueStatusName</td>
+                <td>@cardValidDate</td>
+            </tr>
+    }
+}
+            @* <tr onclick="selectRow(this, 2);">
+                <td>부천</td>
+                <td>5656632556</td>
+                <td>일반</td>
+                <td>DBHiTek</td>
+                <td>B56522112</td>
+                <td>홍길동</td>
+                <td>00</td>
+                <td>정상</td>
+                <td>2099-12-31</td>
+            </tr> *@
+        </table>
+    </div>
+    <div class="paging-item-wrap"> 
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>

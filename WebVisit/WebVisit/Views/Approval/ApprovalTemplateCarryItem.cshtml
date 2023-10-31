@@ -1,0 +1,213 @@
+@model CarryItemDetailViewModel
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>DB 하이텍 - 결재</title>
+        <style>
+        .pop-TableTitleL
+        {
+            padding: 12px 20px; 
+            text-align: left; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;
+        }
+        .pop-TableCon_l_Long
+        {
+            padding:5px 15px; 
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;
+        }
+        .bigtitle_pop
+        {
+            font-weight:bold;
+            font-size:20px;
+            color:#555;
+            padding:20px 0;
+        }
+        .smalltitle_pop
+        {
+            height: 40px; 
+            line-height: 40px; 
+            background: #89919c; 
+            margin: 0px 0px; 
+            border-bottom: 1px solid #5b5c6c; 
+            font-size: 16px; 
+            color: #fff; 
+            font-family: '돋움'; 
+            text-indent: 20px;"
+        }
+        .tabletitle_pop
+        {
+            padding: 12px 20px; 
+            text-align: center; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;"
+        }
+        .tabledata_pop
+        {
+            padding:5px 15px; 
+            text-align:center;
+            padding:10px;
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;"		
+        }
+        </style>
+    </head>
+    <body>
+        @* data: @Model.ExportImportID *@
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td style="padding-top:10px;font-size: 13px; color: red; ">
+                            %주의사항<br>
+                            -반출 신청 시 팀장 결재를 필히 득해야 합니다.<br>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 제목 -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td class="bigtitle_pop">휴대물품 반입 신청</td><td>&nbsp;</td><td></td>
+                        </tr>
+                    </table>
+                    <!-- header 정보 입력 -->
+                    <div id="D_INOUT">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <!-- 반출입정보 -->
+                            <tr><td height="7" class="smalltitle_pop"><b>반입 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >반입일</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.CarryItemApply.ImportDate</span></td>
+                                            <td class="pop-TableTitleL">반출일</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.CarryItemApply.ExportDate</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">회사</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.CarryItemApply.Location != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.CarryItemApply.Location) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL">반입목적</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.CarryItemApply.ImportPurposeCodeID > -1 && Model.CodeImportPurpose != null) {
+                                                        foreach(var a in Model.CodeImportPurpose) {
+                                                            if (a.SubCodeID == Model.CarryItemApply.ImportPurposeCodeID) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반입장소</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.CarryItemApply.PlaceCodeID != null && Model.CodePlace != null) {
+                                                        foreach(var a in Model.CodePlace) {
+                                                            if (a.SubCodeID == Model.CarryItemApply.PlaceCodeID) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL"></td>
+                                            <td class="pop-TableCon_l_Long">
+                                            </td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                            <!-- 반입자정보 -->
+                            <tr><td style="height: 40px;"></td></tr>
+                            <tr><td class="smalltitle_pop"><b>반입자 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >반입자명</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.CarryItemApply.Name (@Model.CarryItemApply.CompanyName)</span></td>
+                                            <td class="pop-TableTitleL">반입자연락처</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.CarryItemApply.Mobile</span></td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                            <!-- 품목정보 -->
+                            <tr><td style="height: 40px;"></td> </tr>
+                            <tr><td style="height: 40px; line-height: 40px; background: #89919c; margin: 0px 0px; border-bottom: 1px solid #5b5c6c; font-size: 16px; color: #fff; font-family: '돋움'; text-indent: 20px;"><b>품목 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <tr>
+                                            @* <td class="tabletitle_pop" style="width: 10%">PR_No.</td> *@
+                                            <td class="pop-TableTitleL" style="width: 10%">구분</td>
+                                            <td class="pop-TableTitleL" style="width: 45%">물품명</td>
+                                            <td class="pop-TableTitleL" style="width: 25%">S/N</td>
+                                            <td class="pop-TableTitleL" style="width: 10%">단위</td>
+                                            <td class="pop-TableTitleL" style="width: 10%">수량</td>
+                                        </tr>
+@{
+    var num=0;
+    var carryItemCodeName = "";
+    foreach(CarryItemInfo m in Model.CarryItemInfos){  
+        num++;
+        if (m.CarryItemCodeID != null && Model.CodeCarryItem != null) {
+            foreach(var a in Model.CodeCarryItem) {
+                if (a.SubCodeID == m.CarryItemCodeID) {
+                    carryItemCodeName=a.CodeNameKor+"";
+                }
+            }
+        } 
+
+                                        <tr>
+                                            <td class="pop-TableCon_l_Long">@carryItemCodeName</td>
+                                            <td class="pop-TableCon_l_Long">@m.ItemName</td>
+                                            <td class="pop-TableCon_l_Long">@m.ItemSN</td>
+                                            <td class="pop-TableCon_l_Long">@m.Unit</td>
+                                            <td class="pop-TableCon_l_Long">@m.Quantity</td>
+                                        </tr>
+    }
+}                                        
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>                      
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

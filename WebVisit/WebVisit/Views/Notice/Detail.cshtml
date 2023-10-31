@@ -1,0 +1,221 @@
+@model NoticeViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Notice"]; //"공지사항 - 상세정보";
+    NoticeGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+}
+<script>
+    function onChangeFile(fullPath){
+        @* var fullPath = document.getElementById('upload').value; *@
+        if (fullPath) {
+            var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+            var filename = fullPath.substring(startIndex);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+            alert(filename);
+        }        
+    }
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    $("body").on("change", "#file2", function (ev) {
+      console.log("[body>change file2]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload2", function (ev) {
+      console.log("[body>click btn-upload2]");
+      $("#file2").trigger("click");
+      @* $(this).prev("#file2").trigger("click"); *@
+    });
+
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+
+    function goList(){
+        @* window.history.go(-1); *@
+        @* var uri = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture'; *@
+        console.log("[goList] uri:"+PREV_URL);
+        if (PREV_URL != null){
+            window.location = PREV_URL;
+        }
+    }
+
+    // saveForm deleteForm goList
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+
+    function saveForm(){
+        var myform = document.fmSave;
+        myform.mode.value="E";
+        if (myform.StartDate.value == null || myform.StartDate.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a start date"]';
+            myform.StartDate.focus();
+            return;
+        }
+        if (myform.EndDate.value == null || myform.EndDate.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select an end date"]';
+            myform.EndDate.focus();
+            return;
+        }
+        if (myform.Title.value == null || myform.Title.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the subject"]';
+            myform.Title.focus();
+            return;
+        }
+        if (myform.Contents.value == null || myform.Contents.value.trim() == '') {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter contents"]';
+            myform.Contents.focus();
+            return;
+        }
+        myform.submit();
+    }
+
+    function deleteForm(){
+        if(confirm("삭제하시겠습니까?")) {
+            var myform = document.fmSave;
+            myform.mode.value="D";
+            myform.submit();
+        } else {
+            console.log("cancel....");
+        }
+    }
+
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Registration Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+<form name="fmSave" method="post" enctype="multipart/form-data">
+<input type="hidden" name="mode" value="E" />
+<input type="hidden" name="NoticeID" value="@Model.Notice.NoticeID" />
+        <li>
+            <div class="label s03">@Localizer["Writer Name"]</div>
+            <div class="form-item-wrap">
+                <input type="text" name="InsertName" asp-for="Notice.InsertName" class="inp" placeholder='@Localizer["Writer Name"]' value="@Model.Notice.InsertName" readonly />
+                @* <input type="text" class="inp" placeholder='@Localizer["Writer Name"]' value="@Model.Notice.InsertName" readonly/> *@
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Period"]</div>
+            <div class="form-item-wrap">
+                <input type="text" name="StartDate" asp-for="Notice.StartDate" value='@Model.Notice.StartDate.ToString("yyyy-MM-dd")' placeholder="YYYY-MM-DD" class="inpdate" />                
+                <span class="e01">~</span>
+                <input type="text" name="EndDate" asp-for="Notice.EndDate" value='@Model.Notice.EndDate.ToString("yyyy-MM-dd")' placeholder="YYYY-MM-DD" class="inpdate" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Attach File"]</div>
+            <div class="form-item-wrap">
+                <div class="value"><a href="javascript:void(0)" onclick="dl(0)" class="link-co">@(ViewBag.file1Name??"")</a></div>
+                <label asp-for="Notice.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                <input name="FormFile1" asp-for="Notice.FormFile" id="file1"  style="display:none;" type="file" value="" multiple="multiple">
+                <span asp-validation-for="Notice.FormFile"></span>
+
+                @* <input type="file" class="hidden" accept=".pdf" name="FilePath1" />
+                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>
+                <div class="value">@Localizer["No Files Selected"]</div> *@
+            </div>
+        </li>
+        @* <li>
+            <div class="label s03">@Localizer["Attach File"]</div>
+            <div class="form-item-wrap">
+                <div class="value"><a href="javascript:void(0)" onclick="dl(1)" class="link-co">@(ViewBag.file2Name??"")</a></div>
+                <label asp-for="Notice.FormFile" id="btn-upload2" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                <input name="FormFile2" asp-for="Notice.FormFile" id="file2"  style="display:none;" type="file"  value="" multiple="multiple">
+                <span asp-validation-for="Notice.FormFile"></span>
+            </div>
+        </li> *@
+        <li class="full">
+            <div class="label s03">@Localizer["Title"]</div>
+            <div class="form-item-wrap">
+                <input type="text" name="Title" class="inp" asp-for="Notice.Title" placeholder='@Localizer["Title"]' />
+                @* <input type="text" class="inp" placeholder='@Localizer["Title"]' name="Title" value="@Model.Notice.Title" /> *@
+            </div>
+        </li>
+        <li class="empty02"></li>
+        <li class="full">
+            <div class="label s03">@Localizer["Contents"]</div>
+            <div class="form-item-wrap">
+                <textarea class="textarea" name="Contents" asp-for="Notice.Contents" placeholder='@Localizer["Contents"]'></textarea>
+                @* <textarea class="textarea" name="Contents" placeholder='@Localizer["Contents"]'>@Model.Notice.Contents</textarea> *@
+            </div>
+        </li>
+</form>        
+    </ul>
+</div>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.22 신인아 버튼정리 start
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        @{
+            if(Model.IsMaster) {
+                <button type="button" class="btn-green" onclick="saveForm();">@Localizer["Save"]</button>
+                <button type="button" class="btn-org" onclick="deleteForm();">@Localizer["Delete"]</button>
+            }
+        }
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["Confirm"]</button>
+    </div>
+</div>
+<a asp-action="List" asp-all-route-data="@routes.ToDictionary()" id="aList" style="visibility:invisible;"></a>
+<form name="fmDL" method="post" asp-action="Download" target="ifTemp">
+    <input type="hidden" name="NoticeID" value="@Model.Notice.NoticeID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+
+@* <div class="view-item-wrap">
+    <div class="view-header-wrap">
+        <div class="vtit">일일 차량출입증 발급장소 변경 안내</div>
+        <ul>
+            <li>김길동</li>
+            <li>23-04-16</li>
+        </ul>
+    </div>
+    <div class="view-cont-wrap">일일 차량출입증 발급장소가 아래와 같이 변경되오니 업무에 참고하시기 바랍니다.
+        <br /><br />-  아     래  -
+        <br /><br />1. 대상 : 직업/공사차랑 (방문객, 납품차량은 각 공장에서 출입증 발급 가능)
+        <br /><br />2. 발급장소 : 5공장 후문 > 3공장 정문 경비실
+        <br /><br />3. 주소 : 경기도 부천시 원미구 수도로 90</div>
+    <div class="view-file-wrap">
+        <div class="key">첨부파일</div>
+        <ul>
+            <li><a href="javascript:void(0)">출입증발급기준.pdf</a></li>
+            <li><a href="javascript:void(0)">출입증발급기준.pdf</a></li>
+        </ul>
+    </div>
+</div>
+<div class="req-btn-wrap ac">
+    <div class="lt-item">
+        <button type="button" class="btn-gray" onClick="goList();">목록 보기</button>
+    </div>
+</div> *@

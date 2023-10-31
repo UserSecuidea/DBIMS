@@ -1,0 +1,647 @@
+@model CarryItemListViewModel
+@{
+    @* ViewData["Title"] = "휴대물품 관리"; *@
+    CarryItemGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    CarryItemGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<span class='cg'>결재완료</span>";
+        }else if(cellvalue == "2"){
+            return "<span class='cb'>결재중</span>";
+        }
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/carryItem/reg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&carryItemApplyID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    // edit - 경비원이 휴대물품반입 상태 수정 
+    function changeCarryItemStatus(carryItemApplyID){
+        var myform = document.fmListCarryItem;
+        if(carryItemApplyID){
+            var carryItemStatus = eval("myform.CarryItemStatus_"+carryItemApplyID+".value");
+            if(carryItemStatus.trim().length < 1 ){
+                return;
+            }
+
+            var con = confirm('@Localizer["Would you like to edit your status"]');        
+            if(con){
+                myform.mode.value="ECarryItemStatus";
+                myform.CarryItemApplyID.value = carryItemApplyID;
+                myform.CarryItemStatus.value = carryItemStatus;
+                myform.submit(); 
+            }
+        }
+    }
+   function search() {
+        var myform = document.fmSearch; 
+        var field1 = myform.searchCarryItemApplyStatus.options[myform.searchCarryItemApplyStatus.selectedIndex].value;
+        var field2 = myform.searchCarryItemStatus.options[myform.searchCarryItemStatus.selectedIndex].value;
+        var field3 = myform.searchCarryItemImportType.options[myform.searchCarryItemImportType.selectedIndex].value;
+        var keyword1 = myform.searchName.value.trim().replace("/","");
+        var keyword2 = myform.searchStartInsertDate.value.trim().replace("/","");
+        var keyword3 = myform.searchEndInsertDate.value.trim().replace("/","");
+        var keyword4 = myform.searchContactName.value.trim().replace("/","");
+        // {searchcarryitemapplystatus?}/{searchcarryitemstatus?}/{searchcarryitemimporttype?}/{searchname?}/{searchstartinsertdate?}/{searchendinsertdate?}/{searchcontactname?}
+        var url = myform.action + field1 + "/" + field2 + "/" + field3; 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }    
+</script>
+@if (TempData.Keys.Contains("DATA.CarryItemApplyID"))
+{
+    var id = @TempData["DATA.CarryItemApplyID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/carryitem/?carryitemapplyid='+@id);
+    }
+</script>
+    }
+}
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="검색 필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchcarryitemapplystatus="" asp-route-searchcarryitemstatus="" asp-route-searchcarryitemimporttype="" asp-route-searchname="" asp-route-searchstartinsertdate="" asp-route-searchendinsertdate=""
+    asp-route-searchcontactname="">
+                <li>
+                    <div class="label">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchName" value="@searchRoute.SearchName" />
+                    </div>
+                </li>
+                @* <li>
+                    <div class="label t01">@Localizer["Access CardNo"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Access CardNo"]' name="searchCardNo" />
+                    </div>
+                </li> *@
+                <li>
+                    <div class="label t01">@Localizer["Contact Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Contact Name"]' name="searchContactName" value="@searchRoute.SearchContactName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Approval Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchCarryItemApplyStatus" asp-items='@(new SelectList(Model.CodeCarryItemApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchCarryItemApplyStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchCarryItemApplyStatus" asp-items='@(new SelectList(Model.CodeCarryItemApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchCarryItemApplyStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Status Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchCarryItemStatus" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchCarryItemStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchCarryItemStatus" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchCarryItemStatus))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label ">@Localizer["Import Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchCarryItemImportType" asp-items='@(new SelectList(Model.CodeCarryItemImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchCarryItemImportType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchCarryItemImportType" asp-items='@(new SelectList(Model.CodeCarryItemImportType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchCarryItemImportType))'>
+                                    <option value="-1">@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label t01">@Localizer["CarryIn Period"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchStartInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndInsertDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchEndInsertDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>                
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    if(ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+}            
+@{
+    if(ViewBag.Registable){
+            <a asp-action="Reg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Apply CarryItem"]</button>
+            </a>
+    }
+}
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+<form method="post" name="fmListCarryItem">
+    <input type="hidden" name="mode" value="ECarryItemStatus" />
+    <input type="hidden" name="CarryItemApplyID" value="" />
+    <input type="hidden" name="CarryItemStatus" value="" />
+        <table class="tbl01" aria-label="휴대물품 목록">
+            <colgroup>
+                <col width="*">
+                <col width="*">
+                <col width="155px">
+                <col width="*">
+                <col width="*">
+                <col width="*">
+                <col width="*">
+                <col width="*">
+                <col width="*">
+                <col width="*">
+@{
+    if(ViewBag.IsModStatus){                
+                <col width="*">
+    }
+}
+            </colgroup>
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                @* <th>@Localizer["CarryItem"]</th> *@
+                <th>@Localizer["Approval Classify"]</th>
+                <th>@Localizer["CarryIn Period"]</th>
+                <th>@Localizer["Import Date"]</th>
+                <th>@Localizer["Export Date"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Import Purpose"]</th>
+                <th>@Localizer["Contact Name"]</th>
+                <th>@Localizer["Status Classify"]</th>
+@{
+    if(ViewBag.IsModStatus){
+                <th></th>
+    }
+}
+            </tr>
+@{
+
+    var location = "";
+    var carryItemApplyStatus = "";
+    var importPurpose = "";
+    foreach(CarryItemApply carryItem in Model.CarryItemApplys){ 
+        location = "";
+        carryItemApplyStatus = "";
+        importPurpose = "";
+        if (carryItem.Location != null && Model.CodeLocation != null) {
+            foreach(var m in Model.CodeLocation) {
+                if (m.SubCodeDesc != null && m.SubCodeDesc.Equals(carryItem.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = m.CodeNameKor;
+                    }else {
+                        location = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (carryItem.ImportPurposeCodeID > -1 && Model.CodeImportPurpose != null) {
+            foreach(var m in Model.CodeImportPurpose) {
+                if (m.SubCodeID == carryItem.ImportPurposeCodeID) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        importPurpose = m.CodeNameKor;
+                    }else {
+                        importPurpose = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+        if (carryItem.CarryItemApplyStatus > -1 && Model.CodeCarryItemApplyStatus != null) {
+            foreach(var m in Model.CodeCarryItemApplyStatus) {
+                if (m.SubCodeID == carryItem.CarryItemApplyStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        carryItemApplyStatus = m.CodeNameKor;
+                    }else {
+                        carryItemApplyStatus = m.CodeNameEng;
+                    }
+                }
+            }
+        }
+        var EntryDate = "";
+        if(carryItem.EntryDate != null){
+            EntryDate = carryItem.EntryDate.Value.ToString("yyyy-MM-dd"); //  HH:mm:ss
+        }
+        var ExitDate = "";
+        if(carryItem.ExitDate != null){
+            ExitDate = carryItem.ExitDate.Value.ToString("yyyy-MM-dd"); //  HH:mm:ss
+        }
+            <tr onclick="selectRow(this, @carryItem.CarryItemApplyID);" ondblclick="goDetail(@carryItem.CarryItemApplyID)">
+                <td>@location</td>
+                @* <td>노트북</td> *@
+                <td>@carryItemApplyStatus</td>
+                <td>@carryItem.ImportDate ~ @carryItem.ExportDate </td>
+                <td>@EntryDate</td>
+                <td>@ExitDate</td>
+                <td>@carryItem.CompanyName</td>
+                <td>@carryItem.Name</td>
+                <td>@importPurpose</td>
+                <td>@carryItem.ContactName</td>
+                <td>
+                    @{
+                        if (ViewBag.IsModStatus){
+                            //승인상태(CarryItemApplyStatus): 승인대기(0) / 승인완료(1) / 반려(2) / 결재중(3) / 결재완료(4)
+                            //if(Model.CarryItemApply.ImportPurposeCodeID == 4
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                // 선입고 일때 결재완료 상태에만 반입가능 
+                                if(carryItem.ImportPurposeCodeID == 4){ // 선입고 carryItem.CarryItemApplyStatus == 1 || 
+                                    if(carryItem.CarryItemApplyStatus == 4){
+                                    @* 
+                                    승인>반입 완료(선입고 6): 확인대기(2)/반출요(3)/반출불필요(유상 4)/반출불필요(무상 5)/선입고(6)
+                                    승인>확인대기: 
+                                    승인>반출요: 반출대기(7)/반출완료(8)
+                                    승인>반출불필요(유상 4): 반출불필요(유상 4) -비활성화
+                                    승인>반출불필요(무상 5): 반출불필요(무상 5) - 비활성화
+                                    승인>선입고: 선입고 비활성화
+                                     *@
+                                    if(carryItem.CarryItemApplyStatus == 4){ // 결재완료
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID">
+                                            @foreach(var m2 in Model.CodeCarryItemStatus){
+                                                if(m2.SubCodeID != 2){
+                                                    if(m2.SubCodeID == carryItem.CarryItemStatus){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                        <option value="@m2.SubCodeID" selected>Waiting for Confirmation</option>
+                                                        }else{
+                                                        <option value="@m2.SubCodeID" selected>@m2.CodeNameEng</option>
+                                                        }
+                                                    } else if(ViewBag.IsSecurity ==false){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                            if(m2.SubCodeID == 2 || m2.SubCodeID == 3 || m2.SubCodeID == 4 || m2.SubCodeID == 5 || m2.SubCodeID == 6){
+                                                        <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                            }
+                                                        }else if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                            if(m2.SubCodeID == 1){ // 반입 완료
+                                                        <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                            }
+                                                        }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                            if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                        <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @* <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))'></select> *@
+                                    }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))' disabled></select>
+                                    }
+                                    }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))' disabled></select>
+                                    }
+                                }else{
+                                    //선입고 외일때 승인완료일때 반입가능 
+                                    if(carryItem.CarryItemApplyStatus == 1){
+                                        @* 
+                                        승인>반입대기(0) : 반입대기(0)/반입완료(1)
+                                        승인>반입완료(1) : 확인대기(2)/반출요(3)/반출불필요(유상 4)/반출불필요(무상 5)
+                                        승인>반출요(3) : 반출대기(7)/반출완료(8)
+                                        승인>반출불필요(유상 4) : 반출불필요(유상 4) -비활성화
+                                        승인>반출불필요(무상 5) : 반출불필요(무상 5) - 비활성화
+                                        승인>반출완료(8) : 반출완료 - 비활성화                                        
+                                         *@
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID">
+                                            @foreach(var m2 in Model.CodeCarryItemStatus){
+                                                if(m2.SubCodeID != 2){
+                                                    if(m2.SubCodeID == carryItem.CarryItemStatus){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                        <option value="@m2.SubCodeID" selected>Waiting for Confirmation</option>
+                                                        }else{
+                                                        <option value="@m2.SubCodeID" selected>@m2.CodeNameEng</option>
+                                                        }
+                                                    } else{
+                                                        if(ViewBag.IsSecurity){
+                                                            if(carryItem.CarryItemApplyStatus == 1){ // 승인구분: 승인
+                                                                if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                                    if(m2.SubCodeID == 1){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                                    if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }else if(ViewBag.IsMaster || (carryItem.ContactSabun != null && carryItem.ContactSabun.Equals(ViewBag.my.Sabun) && carryItem.CarryItemStatus != 0)){
+                                                            if(carryItem.CarryItemApplyStatus == 1){ // 승인구분: 승인
+                                                                if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                                    if(m2.SubCodeID == 2 || m2.SubCodeID == 3 || m2.SubCodeID == 4 || m2.SubCodeID == 5){
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                                    if(m2.SubCodeID == 1){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                                    if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameEng</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @* <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))'></select> *@
+                                    }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))' disabled></select>
+                                    }
+                                }
+                            }else{
+                                if(carryItem.ImportPurposeCodeID == 4){  // 선입고
+                                    @* 
+                                    승인>반입 완료(선입고 6): 확인대기(2)/반출요(3)/반출불필요(유상 4)/반출불필요(무상 5)/선입고(6)
+                                    승인>확인대기: 
+                                    승인>반출요: 반출대기(7)/반출완료(8)
+                                    승인>반출불필요(유상 4): 반출불필요(유상 4) -비활성화
+                                    승인>반출불필요(무상 5): 반출불필요(무상 5) - 비활성화
+                                    승인>선입고: 선입고 비활성화
+                                    보안실: 반입대기(0) / 반출 요(3) 에서만 수정 가능.
+                                     *@
+                                    if(carryItem.CarryItemApplyStatus == 4){ // 결재완료
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID">
+                                            @foreach(var m2 in Model.CodeCarryItemStatus){
+                                                if(m2.SubCodeID != 2){
+                                                    if(m2.SubCodeID == carryItem.CarryItemStatus){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                        <option value="@m2.SubCodeID" selected>확인대기</option>
+                                                        }else{
+                                                        <option value="@m2.SubCodeID" selected>@m2.CodeNameKor</option>
+                                                        }
+                                                    } else if(ViewBag.IsSecurity ==false){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                            if(m2.SubCodeID == 2 || m2.SubCodeID == 3 || m2.SubCodeID == 4 || m2.SubCodeID == 5 || m2.SubCodeID == 6){
+                                                        <option value="@m2.SubCodeID" >@m2.CodeNameKor</option>
+                                                            }
+                                                        }else if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                            if(m2.SubCodeID == 1){ // 반입 완료
+                                                        <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                            }
+                                                        }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                            if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                        <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @* <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @carryItem.CarryItemStatus))'></select> *@
+                                    }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @carryItem.CarryItemStatus))' disabled></select>
+                                    }
+                                }else{ //선입고 외
+                                    if(carryItem.CarryItemApplyStatus == 1){ // 승인
+                                        @* 
+                                        승인>반입대기(0) : 반입대기(0)/반입완료(1)
+                                        승인>반입완료(1) : 확인대기(2)/반출요(3)/반출불필요(유상 4)/반출불필요(무상 5)
+                                        승인>반출요(3) : 반출대기(7)/반출완료(8)
+                                        승인>반출불필요(유상 4) : 반출불필요(유상 4) -비활성화
+                                        승인>반출불필요(무상 5) : 반출불필요(무상 5) - 비활성화
+                                        승인>반출완료(8) : 반출완료 - 비활성화                                        
+                                         *@
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID">
+                                            @foreach(var m2 in Model.CodeCarryItemStatus){
+                                                if(m2.SubCodeID != 2){
+                                                    if(m2.SubCodeID == carryItem.CarryItemStatus){
+                                                        if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                        <option value="@m2.SubCodeID" selected>확인대기</option>
+                                                        }else{
+                                                        <option value="@m2.SubCodeID" selected>@m2.CodeNameKor</option>
+                                                        }
+                                                    } else{
+                                                        if(ViewBag.IsSecurity){
+                                                            if(carryItem.CarryItemApplyStatus == 1){ // 승인구분: 승인
+                                                                if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                                    if(m2.SubCodeID == 1){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                                    if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }else if(ViewBag.IsMaster || (carryItem.ContactSabun != null && carryItem.ContactSabun.Equals(ViewBag.my.Sabun) && carryItem.CarryItemStatus != 0)){
+                                                            if(carryItem.CarryItemApplyStatus == 1){ // 승인구분: 승인
+                                                                if(carryItem.CarryItemStatus == 1){ // 상태: 반입 완료 (1)
+                                                                    if(m2.SubCodeID == 2 || m2.SubCodeID == 3 || m2.SubCodeID == 4 || m2.SubCodeID == 5){
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 0){ // 상태: 반입 대기
+                                                                    if(m2.SubCodeID == 1){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                                    }
+                                                                }else if(carryItem.CarryItemStatus == 3){ // 상태: 반출요
+                                                                    if(m2.SubCodeID == 7 || m2.SubCodeID == 8){ // 반입 완료
+                                                                <option value="@m2.SubCodeID">@m2.CodeNameKor</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @* <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @carryItem.CarryItemStatus))'></select> *@
+                                    }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @carryItem.CarryItemStatus))' disabled></select>
+                                    }
+
+                                }
+                            }
+                        }else{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @carryItem.CarryItemStatus))' disabled></select>
+                            }else{
+                                        <select class="select" name="CarryItemStatus_@carryItem.CarryItemApplyID" asp-items='@(new SelectList(Model.CodeCarryItemStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @carryItem.CarryItemStatus))' disabled></select>
+                            }
+                        }
+
+                    }
+                </td>
+@{
+    if(ViewBag.IsModStatus){
+                <td>
+                    @* status @carryItem.CarryItemStatus  | apply status @carryItem.CarryItemApplyStatus *@
+                    @{
+                        if(ViewBag.IsMaster || (ViewBag.IsSecurity && (carryItem.CarryItemStatus == 0 || carryItem.CarryItemStatus == 3))){
+                    <button type="button" class="btn-gray" onclick="changeCarryItemStatus(@carryItem.CarryItemApplyID)" @((carryItem.ImportPurposeCodeID == 4 && carryItem.CarryItemApplyStatus == 4) || (carryItem.ImportPurposeCodeID != 4 && carryItem.CarryItemApplyStatus == 1) ? "" : "disabled")>@Localizer["Save"]</button>
+                        } else{
+                            if(carryItem.ContactSabun != null && carryItem.ContactSabun.Equals(ViewBag.my.Sabun) && carryItem.CarryItemStatus == 1){
+                    <button type="button" class="btn-gray" onclick="changeCarryItemStatus(@carryItem.CarryItemApplyID)" @((carryItem.ImportPurposeCodeID == 4 && carryItem.CarryItemApplyStatus == 4) || (carryItem.ImportPurposeCodeID != 4 && carryItem.CarryItemApplyStatus == 1) ? "" : "disabled")>@Localizer["Save"]</button>
+                            } else{
+                    <button type="button" class="btn-gray" disabled>@Localizer["Save"]</button>
+                            }
+                        }
+                    }
+                </td>
+    }
+}                
+            </tr>
+    }
+}
+        </table>
+</form>
+    </div>
+    <div class="paging-item-wrap">   
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+@if (TempData.Keys.Contains("PrintAsses")){
+    var msg = TempData["PrintAsses"]?.ToString();
+    @* http://localhost:5010/carryitem/personalasses?carryItemApplyID=1 *@
+    <script>
+        window.onload=function(){
+            document.getElementById("ifTemp").src = "/carryitem/personalasses?carryItemApplyID=@msg";
+        }
+    </script>
+}
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+

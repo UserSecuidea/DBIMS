@@ -1,0 +1,180 @@
+@model HolidayListViewModel
+@{
+    @* ViewData["Title"] = "공휴일 등록"; *@
+    HolidayGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    HolidayGridData searchRoute = Model.SearchRoute;
+}
+<script>
+
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+    };
+
+    var clickID = -1;
+    function goDelete(){
+        if (clickID == -1) {
+            alert('@Localizer["Please select the holidays to be deleted"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&mode=D&holidayID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchYear.options[myform.searchYear.selectedIndex].value;
+
+        var url = myform.action + field1;
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()&mode=H";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+
+    function goReg(){
+        window.location = '/sys/holidayreg/?culture=@CultureInfo.CurrentCulture';
+    }
+    function runDelete(){
+
+    }
+</script>
+
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchyear="" >
+<input type="hidden" name="mode" value="H" />
+@* H: 공휴일 가져오기 *@
+                <li class="per02">
+                    <div class="label">@Localizer["Year"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <select class="select" name="searchYear" onchange="search()">
+                                @{
+                                    for(int i=2023; i<=DateTime.Now.Year+3; i++){
+                                        if(i == @searchRoute.SearchYear){
+                                            <option value='@i' selected>@i</option>
+                                        }else{
+                                            <option value='@i'>@i</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" style="width:180px;" onclick="search();">@Localizer["Get Holiday Information"]</button>
+            &nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords"></div>
+        </div>
+        <div class="side-btn-wrap">
+            @* <button type="button" class="btn-org" onClick="runDelete();">@Localizer["Delete"]</button> *@
+            <a asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDelete();" asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()">@Localizer["Delete"]</button>
+        
+            @* <button type="button" class="btn-green" onClick="goReg();">@Localizer["Register"]</button> *@
+            <a asp-action="HolidayReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Register"]</button>
+            </a>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="공휴일 목록">
+            <tr>
+                @* <th style="width:100px;"><input type="checkbox" /></th> *@
+                <th style="width:100px;">NO</th>
+                <th>@Localizer["Holiday Date"]</th>
+                <th>@Localizer["Holiday Name"]</th>
+            </tr>
+@{
+    foreach(Holiday m in Model.Holiday){ 
+            <tr onclick="selectRow(this, @m.HolidayID);">
+                @* <td style="width:100px;"><input type="checkbox" /></td> *@
+                <td style="width:100px;">@m.HolidayID</td>
+                <td>@m.HolidayDate</td>
+                <td>@m.HolidayName</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap"> 
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="HolidayList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>

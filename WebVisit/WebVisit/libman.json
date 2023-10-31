@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery@3.7.0",
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "jquery.min.js"
+      ]
+    },
+    {
+      "library": "jqueryui@1.13.2",
+      "destination": "wwwroot/lib/jqueryui/",
+      "files": [
+        "jquery-ui.min.js"
+      ]
+    },
+    {
+      "library": "Swiper@9.3.2",
+      "destination": "wwwroot/lib/Swiper/",
+      "files": [
+        "swiper-bundle.min.js",
+        "swiper-bundle.min.css"
+      ]
+    },
+    {
+      "library": "billboard.js@3.8.2",
+      "destination": "wwwroot/lib/billboard.js/",
+      "files": [
+        "billboard.css",
+        "billboard.js"
+      ]
+    },
+    {
+      "library": "d3@7.8.4",
+      "destination": "wwwroot/lib/d3/"
+    },
+    {
+      "library": "jqgrid@5.8.2",
+      "destination": "wwwroot/lib/jqgrid/",
+      "files": [
+        "js/jquery.jqGrid.min.js",
+        "js/i18n/grid.locale-en.js",
+        "js/i18n/grid.locale-kr.js",
+        "css/ui.jqgrid-bootstrap.css",
+        "css/ui.jqgrid.css"
+      ]
+    },
+    {
+      "library": "jquery-validate@1.19.5",
+      "destination": "wwwroot/lib/jquery-validate/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@4.0.0",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+@using WebVisit.Models.DomainModels.Passport
+@model List<ApprovalPerson>
+
+<script>
+    /**
+    popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj)
+
+    ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel
+    */
+    var searchApprovalNameObj;
+    var searchApprovalSabunObj;
+    var searchApprovalTelObj;
+    var searchApprovalMobileObj;
+    var searchApprovalOrgIDObj;
+    var searchApprovalOrgNameKorObj;
+    var searchApprovalOrgNameEngObj;
+
+    function popSelectApprovalPerson(nameObj, sabunObj, telObj, mobileObj, orgIdObj, orgKorObj, orgEngObj, callbackObj){
+        console.log("[selectSearchPerson]", nameObj, telObj, orgKorObj);
+
+        searchApprovalNameObj = nameObj;
+        searchApprovalTelObj = telObj;
+        searchApprovalMobileObj = mobileObj;
+        searchApprovalOrgNameKorObj = orgKorObj;
+        searchApprovalOrgNameEngObj = orgEngObj;
+        searchApprovalOrgIDObj = orgIdObj;
+        searchApprovalSabunObj = sabunObj;
+
+        common.popOpen(document.getElementById('popSelectApprovalPerson'));
+    }
+
+/*
+        nameObj = myform.ApprovalName;
+        sabunObj =  myform.ApprovalSabun;
+        orgIdObj =  myform.ApprovalOrgID;
+        orgKorObj =  myform.ApprovalOrgNameKor;
+        orgEngObj =  myform.ApprovalOrgNameEng;
+        telObj = myform.ApprovalTel;
+*/
+    function selectSearchApprovalPerson(name, sabun, orgId, orgKor, orgEng, tel, mobile){
+        if(searchApprovalNameObj != null) {
+            searchApprovalNameObj.value=name;
+        }
+        if(searchApprovalSabunObj != null) {
+            searchApprovalSabunObj.value=sabun;
+        }        
+        if(searchApprovalTelObj != null) {
+            searchApprovalTelObj.value=tel;
+        }
+        if(searchApprovalMobileObj != null) {
+            searchApprovalMobileObj.value=mobile;
+        }
+        if(searchApprovalOrgIDObj != null) {
+            searchApprovalOrgIDObj.value=orgId;
+        }
+        if(searchApprovalOrgNameKorObj != null) {
+            searchApprovalOrgNameKorObj.value=orgKor;
+        }
+        if(searchApprovalOrgNameEngObj != null) {
+            searchApprovalOrgNameEngObj.value=orgEng;
+        }
+        common.popClose(document.getElementById('popSelectApprovalPerson'));
+    }
+</script>
+
+<div id="popSelectApprovalPerson" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search Approver"]</div>
+            @* @Localizer["Search Person"] *@
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" aria-label="결재자 리스트">
+                        <tr>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["Department Name"]</th>
+                            <th>@Localizer["Position"]</th>
+                            @* <th>@Localizer["Sabun"]</th>
+                            <th>@Localizer["Tel"]</th>
+                            <th>@Localizer["CellPhone"]</th>
+                            <th>@Localizer["Email"]</th> *@
+                            
+                        </tr>
+                    </table>
+                </div>
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchApprovalPersonList" aria-label="결재자 리스트">
+                        @{
+                            foreach(var m in Model){
+                                <tr onclick="selectSearchApprovalPerson('@m.MemberName', '@m.ConfirmStaffNo', '@m.DeptCode', '@m.DeptName', '', '@m.TelNo');">
+                                    <td>@m.MemberName</td>
+                                    <td>@m.DeptName</td>
+                                    <td>@m.Position</td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

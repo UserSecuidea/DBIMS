@@ -1,0 +1,132 @@
+@model SafetyEduDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Complete Safety Education"]; //"개별 안전교육 이수정보 ";
+}
+<script>
+     window.onload = function (){
+        @* console.log("PREV_URL:"+PREV_URL); *@
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+        @* console.log("PREV_URL:"+PREV_URL); *@
+    }
+
+    function goList(){
+        window.location = '/work/safetyedulist/?culture=@CultureInfo.CurrentCulture'
+    }
+
+    // edit - 담당자가 교육이수 상태 변경
+    function saveEditForm(){
+        var myform = document.fmEditSafetyEdu;
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    } 
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Educatee Information"]</div>
+</div>
+
+<form name="fmEditSafetyEdu" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="safetyEduApplyID" value='@Model.SafetyEduApply.SafetyEduApplyID' />
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Education Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="EduDate" value='@Model.SafetyEduApply.EduDate' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value="@ViewBag.safetyEduApplyInfo.CompanyName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" value="@ViewBag.safetyEduApplyInfo.Name" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="BirthDate" value="@ViewBag.safetyEduApplyInfo.BirthDate" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Gender"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), ViewBag.safetyEduApplyInfo.Gender))' disabled></select>
+                        }else{
+                            <select class="select" name="Gender" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), ViewBag.safetyEduApplyInfo.Gender))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value="@ViewBag.safetyEduApplyInfo.Mobile" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Name"]' name="WorkName" value="@Model.WorkApply.WorkName" readonly />                
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Work Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Description"]' name="WorkMemo" value="@Model.WorkApply.WorkMemo" readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+@{
+    if(ViewBag.IsEditable){
+    <div class="tit-header-wrap">
+        <div class="rtit"></div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Education Complete"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select full" name="EduCompleteStatus" asp-items='@(new SelectList(Model.CodeEducationCompleteStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.SafetyEduApply.EduCompleteStatus))'></select>
+                        }else{
+                            <select class="select full" name="EduCompleteStatus" asp-items='@(new SelectList(Model.CodeEducationCompleteStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.SafetyEduApply.EduCompleteStatus))'></select>
+                        }
+                    }
+                </div>
+            </li>
+        </ul>
+    </div>
+    }
+}
+
+</form>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+@{
+    if(ViewBag.IsEditable){
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+    }
+}
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+
+@* for Prev Link *@
+<a asp-action="SafetyEduList" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>

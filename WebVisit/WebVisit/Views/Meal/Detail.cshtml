@@ -1,0 +1,320 @@
+@model MealLogDTO
+@{
+    ViewData["Title"] = @Localizer["Detail Meal Log"]; //"식수현황-상세보기";
+    var locationName = "";
+    var mealYMD = "";
+    var companyName = "";
+    if (Model.MealLog.Location != null && Model.CodeLocation != null) {
+        foreach(var m1 in Model.CodeLocation) {
+            if (m1.SubCodeDesc != null && m1.SubCodeDesc.Equals(Model.MealLog.Location)) {
+                if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                    locationName = m1.CodeNameKor;
+                }else {
+                    locationName = m1.CodeNameEng;
+                }
+            }
+        }
+        mealYMD=string.Format("{0:yyyy-MM-dd}", Model.MealLog.MealYMD);
+        if(string.IsNullOrEmpty(Model.MealLog.CompanyName)){
+            companyName = "DBHiTek";
+        } else {
+            companyName = Model.MealLog.CompanyName;
+        }
+    }
+}
+@* 식수현황-상세보기 (일자별)
+식수현황-상세보기 (개인별)
+식수현황-상세보기 (회사별)
+식수현황-상세보기 (사업장별) *@
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    function goList(){
+        @* window.location = '/meal/list/?culture=@CultureInfo.CurrentCulture' *@
+        window.history.go(-1);
+    }
+</script>
+@{
+    if(Model.TabIdx == 1){
+<div id='tab1' style='display:inline;'>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Input Personnel Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">@Model.MealLog.Name (@Model.MealLog.OrgNameKor)</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["Meal Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @locationName
+                    </div>                
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Meal Term"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @mealYMD
+                    </div>
+                </div>
+            </li>
+            <li class="full">
+                <div class="form-item-wrap">
+                    <table aria-label="식수 정보">
+                        <tr>
+                            <th>@Localizer["Breakfast"]</th>
+                            <th>@Localizer["Lunch"]</th>
+                            <th>@Localizer["Dinner"]</th>
+                            <th>@Localizer["LatenightMeal"]</th>
+                            <th>@Localizer["Number"]</th>
+                            <th>@Localizer["Price"]</th>
+                        </tr>
+                        <tr>
+                            <td>@Model.Count1</td>
+                            <td>@Model.Count2</td>
+                            <td>@Model.Count3</td>
+                            <td>@Model.Count4</td>
+                            <td>@Model.CountTotal</td>
+                            <td>@Model.PriceTotal.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    }
+}
+
+@{
+    if(Model.TabIdx == 2){
+<div id='tab1' style='display:inline;'>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Input Personnel Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">@Model.MealLog.Name (@Model.MealLog.OrgNameKor)</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["Meal Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @locationName
+                    </div>                
+                </div>
+            </li>
+            @* <li>
+                <div class="label s03">@Localizer["Meal Term"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @mealYMD
+                    </div>
+                </div>
+            </li> *@
+            <li class="full">
+                <div class="form-item-wrap">
+                    <table aria-label="식수 정보">
+                        <tr>
+                            <th>@Localizer["Breakfast"]</th>
+                            <th>@Localizer["Lunch"]</th>
+                            <th>@Localizer["Dinner"]</th>
+                            <th>@Localizer["LatenightMeal"]</th>
+                            <th>@Localizer["Number"]</th>
+                            <th>@Localizer["Price"]</th>
+                        </tr>
+                        <tr>
+                            <td>@Model.Count1</td>
+                            <td>@Model.Count2</td>
+                            <td>@Model.Count3</td>
+                            <td>@Model.Count4</td>
+                            <td>@Model.CountTotal</td>
+                            <td>@Model.PriceTotal.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    }
+}
+
+@{
+    if(Model.TabIdx == 3){
+<div id='tab3' style='display:inline;'>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Company Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">@companyName</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["Meal Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @locationName
+                    </div>                
+                </div>
+            </li>
+            <li>
+                <div class="label s03">식수일</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @mealYMD
+                    </div>
+                </div>
+            </li>
+            <li class="full">
+                <div class="form-item-wrap">
+                    <table aria-label="식수 정보">
+                        <tr>
+                            <th>@Localizer["Breakfast"]</th>
+                            <th>@Localizer["Lunch"]</th>
+                            <th>@Localizer["Dinner"]</th>
+                            <th>@Localizer["LatenightMeal"]</th>
+                            <th>@Localizer["Number"]</th>
+                            <th>@Localizer["Price"]</th>
+                        </tr>
+                        <tr>
+                            <td>@Model.Count1</td>
+                            <td>@Model.Count2</td>
+                            <td>@Model.Count3</td>
+                            <td>@Model.Count4</td>
+                            <td>@Model.CountTotal</td>
+                            <td>@Model.PriceTotal.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+    }
+}
+
+@{
+    if(Model.TabIdx == 4){
+<div id='tab4' style='display:inline;'>
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @Localizer["Meal Information"]
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @locationName
+                    </div>                
+                </div>
+            </li>
+            <li>
+                <div class="label s03">식수일</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @mealYMD
+                    </div>
+                </div>
+            </li>
+            <li class="full">
+                <div class="form-item-wrap">
+                    <table aria-label="식수 정보">
+                        <tr>
+                            <th>@Localizer["Breakfast"]</th>
+                            <th>@Localizer["Breakfast"] (@Localizer["Menual"])</th>
+                            <th>@Localizer["Lunch"]</th>
+                            <th>@Localizer["Lunch"] (@Localizer["Menual"])</th>
+                            <th>@Localizer["Dinner"]</th>
+                            <th>@Localizer["Dinner"] (@Localizer["Menual"])</th>
+                            <th>@Localizer["LatenightMeal"]</th>
+                            <th>@Localizer["LatenightMeal"] (@Localizer["Menual"])</th>
+                            <th>@Localizer["Number"]</th>
+                            <th>@Localizer["Price"]</th>
+                        </tr>
+                        <tr>
+                            <td>@Model.Count1</td>
+                            <td>@Model.Count5</td>
+                            <td>@Model.Count2</td>
+                            <td>@Model.Count6</td>
+                            <td>@Model.Count3</td>
+                            <td>@Model.Count7</td>
+                            <td>@Model.Count4</td>
+                            <td>@Model.Count8</td>
+                            <td>@Model.CountTotal</td>
+                            <td>@Model.PriceTotal.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+    }
+}
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onClick="goList();">@Localizer["Confirm"]</button>
+    </div>
+</div>

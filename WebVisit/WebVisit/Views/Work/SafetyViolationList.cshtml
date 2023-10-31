@@ -1,0 +1,315 @@
+@model SafetyViolationListViewModel
+@{
+    @* ViewData["Title"] = "I/R 발행"; *@
+    SafetyViolationGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    SafetyViolationGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<span class='co'>반려</span>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>미승인</span>";
+        }else if(cellvalue == "3"){
+            return "<span class='cg01'>미승인</span>";
+        }
+
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/work/safetyviolationreg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        if(document.getElementById('aDetail') != null) {
+            var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&safetyViolationID='+clickID;
+            console.log("[goDetail]"+uri);        
+            window.location = uri;
+        }
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+    
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchSafetyViolationStatus.options[myform.searchSafetyViolationStatus.selectedIndex].value;
+        var field2 = myform.searchSafetyViolationReasonID.options[myform.searchSafetyViolationReasonID.selectedIndex].value;
+        var keyword1 = myform.searchName.value.trim().replace("/","");
+        var keyword2 = myform.searchCompanyName.value.trim().replace("/","");
+        var keyword3 = myform.searchStartViolationDate.value.trim().replace("/","");
+        var keyword4 = myform.searchEndViolationDate.value.trim().replace("/","");
+        var url = myform.action + field1 + "/" + field2; 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchsafetyviolationstatus="" asp-route-searchsafetyviolationreasonid="" 
+    asp-route-searchname="" asp-route-searchcompanyname="" asp-route-searchstartviolationdate="" asp-route-searchendviolationdate="">
+                <li>
+                    <div class="label">@Localizer["Progress Information"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchSafetyViolationStatus" asp-items='@(new SelectList(Model.CodeSafetyViolationStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchSafetyViolationStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchSafetyViolationStatus" asp-items='@(new SelectList(Model.CodeSafetyViolationStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchSafetyViolationStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Name"]' name="searchName" value="@searchRoute.SearchName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Partner Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Partner Name"]' name="searchCompanyName" value="@searchRoute.SearchCompanyName" />
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label ">@Localizer["Violation Reason"]</div>
+                    <div class="form-item-wrap">
+                        <select class="select full" name="searchSafetyViolationReasonID" asp-items='@(new SelectList(Model.SafetyViolationReasons, nameof(SafetyViolationReason.SafetyViolationReasonID), nameof(SafetyViolationReason.SafetyViolationReasonContents), @searchRoute.SearchSafetyViolationReasonID))'>
+                            <option value='-1'>@Localizer["Entire"]</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label t01">@Localizer["Violation Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchStartViolationDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchStartViolationDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchEndViolationDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchEndViolationDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownloadSafetyViolation" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+@{
+    if(ViewBag.Registable){
+            <a asp-action="SafetyViolationReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Register IR"]</button>
+            </a>
+    }
+}
+@{
+    if(ViewBag.Readable){
+            <a asp-action="SafetyViolationDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="SafetyViolationDetail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+    }
+}
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">        
+        <table class="tbl01">
+            <tr>
+                <th>@Localizer["Violation Date"]</th>
+                <th>@Localizer["Issuer Name"]</th>
+                <th>@Localizer["Violator Name"]</th>
+                <th>@Localizer["Violator Company Name"]</th>
+                <th>@Localizer["Violation Reason"]</th>
+                <th>@Localizer["Limited Days"]</th>
+                <th>@Localizer["Restricted Period"]</th>
+                <th>@Localizer["Department Charge"]</th>
+                <th>@Localizer["IR Progress Status"]</th>
+            </tr>
+@{
+    // a: SafetyViolationPerson, b: SafetyViolation
+    foreach(var m in Model.SafetyViolations){
+        var safetyViolationReasonContents="";
+        var violationPenaltyPeoriod1=0;
+        var violationPenaltyPeoriod2=0;
+        var violationPenaltyPeoriod3=0;
+        var violationPenaltyPeoriod=0;
+        var SafetyViolationID = -1;
+        var ViolationDate = "";
+        var InsertName = "";
+        var InsertOrgNameKor ="";
+        var SafetyViolationStatusName = "";
+        if (m.b.SafetyViolationReasonID >= 0 && Model.SafetyViolationReasons != null) {
+            foreach(var a in Model.SafetyViolationReasons) {
+                if (a.SafetyViolationReasonID == m.b.SafetyViolationReasonID) {
+                    safetyViolationReasonContents = a.SafetyViolationReasonContents;
+                    violationPenaltyPeoriod1 = a.ViolationPenaltyPeoriod1;
+                    violationPenaltyPeoriod2 = a.ViolationPenaltyPeoriod2??0;
+                    violationPenaltyPeoriod3 = a.ViolationPenaltyPeoriod3??0;
+                }
+            }                
+            if (m.b.SafetyViolationStatus >= 0 && Model.CodeSafetyViolationStatus != null) {
+                foreach(var a in Model.CodeSafetyViolationStatus) {
+                    if (a.SubCodeID == m.b.SafetyViolationStatus) {
+                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                            SafetyViolationStatusName = a.CodeNameKor;
+                        }else {
+                            SafetyViolationStatusName = a.CodeNameEng??"";
+                        }
+                    }
+                }
+            }
+            SafetyViolationID = m.b.SafetyViolationID;
+            ViolationDate = m.b.ViolationDate.ToString("yyyy-MM-dd");
+            InsertName = m.b.InsertName;
+            InsertOrgNameKor = m.b.InsertOrgNameKor;
+        }
+        var StartDate = "";
+        var EndDate = "";
+        if (m.a.StartDate != null) {
+            StartDate = m.a.StartDate.ToString("yyyy-MM-dd");
+        }
+        if (m.a.EndDate != null) {
+            EndDate = m.a.EndDate.ToString("yyyy-MM-dd");
+        }
+        // 안전수칙위반자(SafetyViolationPerson )의 ViolationTime 에 따라 ViolationPenaltyPeoriod1, ViolationPenaltyPeoriod2, ViolationPenaltyPeoriod3
+        @* if(m.ViolationTime == 2){
+            violationPenaltyPeoriod=violationPenaltyPeoriod2;
+        }else if(m.ViolationTime == 3){
+            violationPenaltyPeoriod=violationPenaltyPeoriod3;
+        }else{
+            violationPenaltyPeoriod=violationPenaltyPeoriod1;
+        } *@
+        violationPenaltyPeoriod=violationPenaltyPeoriod1;
+
+            <tr onclick="selectRow(this, @SafetyViolationID);" ondblclick="goDetail(@SafetyViolationID)">
+                <td>@ViolationDate</td>
+                <td>@InsertName</td>
+                <td>@m.a.Name</td>
+                <td>@m.a.CompanyName</td>
+                <td>@safetyViolationReasonContents</td>
+                <td>@violationPenaltyPeoriod @Localizer["Day"]</td>
+                <td>@StartDate  ~ @EndDate</td>
+                <td>@InsertOrgNameKor</td>
+                <td>@SafetyViolationStatusName</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap">   
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

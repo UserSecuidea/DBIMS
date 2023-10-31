@@ -1,0 +1,323 @@
+@model List<Menu>;
+@{
+    @* ViewData["Title"] = "메뉴 관리"; *@
+}
+<script>
+    $(function(){
+        // 트리 열기
+        $("body").on("click", ".treemenu-item-wrap ul li a", function(){
+            console.log("click +");
+            var ck = $(this).hasClass("on");
+            if(ck){
+                $(this).removeClass("on");
+            }else{
+                $(this).addClass("on");
+            }
+        });
+        // 링크
+        $("body").on("click", ".treemenu-item-wrap a.link", function(){
+            console.log("click menu");
+            $(".treemenu-item-wrap a").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+
+    function editMenu(groupNo, menuID){
+        window.location = "/sys/menulist/"+groupNo+"/"+menuID+"/?culture=@CultureInfo.CurrentCulture.ToString()"
+        @* var dvSaveForm = document.getElementById("dvAddForm");
+        dvSaveForm.style.display = "flex"; *@
+    }
+    function addMenu(groupNo){
+        var myform = document.fmAddMenu;
+        myform.action = "/sys/menulist/"+groupNo+"/0/?culture=@CultureInfo.CurrentCulture.ToString()";
+        
+        console.log("[addMenu] action:" +myform.action);
+        var dvEditForm = document.getElementById("dvEditForm");
+        dvEditForm.style.display = "none";
+
+        var dvAddForm = document.getElementById("dvAddForm");
+        dvAddForm.style.display = "flex";
+        // URL IconImg
+        if (groupNo == 0) {
+            myform.URL.readOnly = true;
+            myform.IconImg.readOnly = false;
+            myform.IconImg.value="/images/ico/ico-gnb-list12.svg";
+        } else {
+            myform.URL.readOnly = false;
+            myform.IconImg.readOnly = true;
+            myform.IconImg.value="";
+        }
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddMenu;
+        myform.mode.value="A";
+        console.log(myform.action);
+        // MenuNameKor MenuNameEng URL IconImg
+        if (myform.MenuNameKor.value.trim().length < 1) {
+            alert('@Localizer["Please enter Korean"]');
+            return;
+        }
+        if (myform.MenuNameEng.value.trim().length < 1) {
+            alert('@Localizer["Please enter English"]');
+            return;
+        }
+
+        myform.submit();
+    }
+    function goAddCancel(){
+        var myform = document.fmAddMenu;
+        myform.reset();
+    }
+
+    // edit
+    function saveEditForm(){
+        var myform = document.fmEditMenu;
+        myform.mode.value="E";
+        console.log(myform.action);
+
+        myform.submit();
+    }
+    function deleteEditForm(){
+        var myform = document.fmEditMenu;
+        myform.mode.value="D";
+        myform.submit();
+    }
+    function goEditCancel(){
+        var myform = document.fmEditMenu;
+        myform.reset();
+    }
+</script>
+
+<div class="menu-page-wrap">
+    <div class="menu-left-wrap">
+        <div class="menu-tit">@Localizer["Menu List"]</div>
+        <div class="treemenu-item-wrap">
+                <ul>
+@{
+    var isOpen = false;
+    var LastGroupNo = 0;
+}
+@foreach(var a in Model) 
+{
+        if (a.Depth == 0) {
+                if(isOpen){
+                        @:<li>
+                            @:<a href="javascript:void(0)" class="link" onclick="addMenu(@LastGroupNo)">
+                                @:<div class="stxt">@Localizer["Add Menu"] (+)</div>
+                            @:</a>
+                        @:</li>
+                    @:</ul>
+                    @:</li>
+                }
+                isOpen = true;
+                @:<li>
+                    @:<a href="javascript:void(0)" class='@(ViewBag.GroupNo == a.MenuID ? "on":"")' onclick="editMenu(@a.GroupNo, @a.MenuID)">
+                        @:<div class="sico">
+                            @:<i class="el-icon-plus"></i>
+                            @:<i class="el-icon-minus"></i>
+                        @:</div>
+                        @:<div class="stxt">@(CultureInfo.CurrentCulture.ToString().Equals("ko")?a.MenuNameKor:a.MenuNameEng)</div>
+                    @:</a>
+                    @:<ul>
+        } else {
+                        @:<li>
+                            @:<a href="javascript:void(0)" class="link" onclick="editMenu(@a.GroupNo, @a.MenuID)">
+                                @* if (ViewBag.MenuID == a.MenuID) {
+                                    @:<div class="stxt" style="text-decoration: underline !important;font-weight: bold;">
+                                }else {
+                                    @:<div class="stxt">
+                                } *@
+                                @:<div class="stxt">
+                                @(CultureInfo.CurrentCulture.ToString().Equals("ko")?a.MenuNameKor:a.MenuNameEng)
+                                @:</div>
+                            @:</a>
+                        @:</li>
+        }
+    LastGroupNo = a.GroupNo;
+}
+@if(isOpen){
+                        @:<li>
+                            @:<a href="javascript:void(0)" onclick="addMenu(@LastGroupNo)" class="link">
+                                @:<div class="stxt">@Localizer["Add Menu"] (+)</div>
+                            @:</a>
+                        @:</li>
+                        @:</ul>
+                    @:</li>
+}
+                <li>
+                    <a href="javascript:void(0)" onclick="addMenu(0);" class="link">
+                        @* style="text-decoration: underline !important;font-weight: bold;" *@
+                        <div class="stxt">@Localizer["Add Menu"] (+)</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="menu-right-wrap">
+        <div class="menu-tit">@Localizer["Menu Settings"]</div>
+@* ################### ADD #################### *@
+        <div id="dvAddForm" style='display:@(ViewBag.MenuID == 0? "flex":"none");'>
+<form method="post" name="fmAddMenu">
+    <input type="hidden" name="mode" value="A" />
+        <div class="reg-form-wrap">
+            <ul>
+                <li class="full">
+                    <div class="label s03">@Localizer["Korean Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Korean Name"]' name="MenuNameKor" value="" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["English Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["English Name"]' name="MenuNameEng" value="" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">URL</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="URL" name="URL" value="" readOnly />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">ICON</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="Icon Image URL" name="IconImg" value="/images/ico/ico-gnb-list04.svg" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+@{
+    foreach(var m in ViewBag.levels ?? new List<String>()){
+        <div class="tit-header-wrap">
+            <div class="rtit">@m.LevelName</div>
+            <input type="hidden" name="MenuLevelID" value = "0" size="3" />
+            <input type="hidden" name="LevelID" value = "@m.LevelID" size="3" />
+        </div>
+        <div class="reg-form-wrap">
+            <ul>
+                <li class="full">
+                    <div class="label s03">@Localizer["Korean Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Korean Name"]' name="MenuNameKorByLevel" value="" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["English Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["English Name"]' name="MenuNameEngByLevel" value="" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    }
+}
+        <div class="req-btn-wrap">
+            @* 2023.09.21 신인아 버튼정리 start~end
+            <div class="lt-item">
+             </div>*@
+            <div class="lt-item">
+                <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Save"]</button>
+                @* <button type="button" class="btn-org" onclick="deleteAddForm();">@Localizer["Delete"]</button> *@
+                <button type="button" class="btn-gray" onclick="goAddCancel();">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+</form>
+        </div>
+
+@* ################### EDIT #################### *@
+        <div id="dvEditForm" style='display:@(ViewBag.MenuID == 0? "none":"flex");'>
+<form method="post" name="fmEditMenu">
+    <input type="hidden" name="mode" value="E" />
+        <div class="reg-form-wrap">
+            <ul>
+                <li class="full">
+                    <div class="label s03">@Localizer["Korean Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Korean Name"]' name="MenuNameKor" value="@ViewBag.MenuNameKor" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["English Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["English Name"]' name="MenuNameEng" value="@ViewBag.MenuNameEng" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">URL</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="URL" name="URL" value="@ViewBag.URL" @ViewBag.URLDisabled />
+                        
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">ICON</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="Icon Image URL" name="IconImg" value="@ViewBag.IconImg" @ViewBag.IconImgDisabled />
+                    </div>
+                </li>
+            </ul>
+        </div>
+@{
+    foreach(var m in ViewBag.menuLevels ?? new List<string>()){
+        var MenuNameKor = ViewBag.MenuNameKor;
+        var MenuNameEng = ViewBag.MenuNameEng;
+        var MenuLevelID = 0;
+        var LevelID = 0;
+        if (m.b.Count > 0){
+            MenuNameKor = m.b[0].MenuNameKor;
+            MenuNameEng = m.b[0].MenuNameEng;
+            MenuLevelID = m.b[0].MenuLevelID;
+            LevelID = m.b[0].LevelID;
+        }
+        <div class="tit-header-wrap">
+            <div class="rtit">@m.a.LevelName</div>
+            <input type="hidden" name="MenuLevelID" value = "@MenuLevelID" size="3" />
+            <input type="hidden" name="LevelID" value = "@LevelID" size="3" />
+        </div>
+        <div class="reg-form-wrap">
+            <ul>
+                <li class="full">
+                    <div class="label s03">@Localizer["Korean Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Korean Name"]' name="MenuNameKorByLevel" value="@MenuNameKor" />
+                    </div>
+                </li>
+                <li class="full">
+                    <div class="label s03">@Localizer["English Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["English Name"]' name="MenuNameEngByLevel" value="@MenuNameEng" />
+                    </div>
+                </li>
+                <!--
+                 <li>
+                    <div class="label s03">표시</div>
+                    <div class="form-item-wrap">
+                        <select class="select">
+                            <option>표시</option>
+                        </select>
+                    </div>
+                </li> 
+                -->
+            </ul>
+        </div>
+    }
+}
+
+
+        <div class="req-btn-wrap">
+            @* 2023.09.21 신인아 버튼정리 start~end
+            <div class="lt-item">
+            </div>*@
+            <div class="lt-item">
+                <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+                <button type="button" class="btn-org" onclick="deleteEditForm();">@Localizer["Delete"]</button>
+                <button type="button" class="btn-gray" onclick="goEditCancel();">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+</form>
+
+        </div>
+    </div>
+</div>

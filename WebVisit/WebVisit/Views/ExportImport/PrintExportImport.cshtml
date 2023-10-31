@@ -1,0 +1,597 @@
+@using WebVisit.Models.ViewModels;   @*2023.09.15 dsyoo*@
+@model ExportImportDetailViewModel
+@{
+    @* ViewData["Title"] = "Home Page"; *@
+    Layout = "_Iframe";
+}
+<script>
+    window.print();
+</script>
+@{
+    //2023.09.16 dsyoo
+    var ReadOnly="";
+    var Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                0  //신청(0) 디폴트
+                            );
+    var HideImport="";
+
+    var ExportLocationName = "";
+    var ExternalCompany = "";
+    var ImportTypeName = "";
+    var ExportTypeName = "";
+    var DeliveryMethodTypeName = "";
+    var ExportImportPurposeTypeName = "";
+
+}
+<table width="100%" border="0" cellpadding="0" cellspacing="0" >
+    <tr>
+        <td height="30" align ="center" style="font-size:25pt;font-weight:bold"> 반  출  입  증  </td>
+        </tr>
+</table>
+@* 자산 *@
+<div id='tab1' style='display:@(Model.ExportImport.ExportImportType == 0 ? "inline" : "none");'>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="txt_black"><b>&nbsp;&nbsp;&nbsp;반출 정보</b></td>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="black">
+                            <tr>
+                                <td class="print-TableTitleL" style="width:18%">반출입번호</td>
+                                <td class="print-TableCon_l" style="width:32%">@Model.ExportImport.ExportImportNo</td>
+                                <td class="print-TableTitleL" style="width:18%">상태</td>
+                                <td class="print-TableCon_l" style="width:32%">
+                                    @{
+                                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                                            );
+                                        ReadOnly = "disabled";
+                                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                                
+
+                                                foreach (var option in Opts)
+                                                {
+                                                            @option.Text
+                                                }
+                                    
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출자</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertName</td>
+                                <td class="print-TableTitleL">반출자정보</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertOrgNameKor</td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출소속사업장</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeLocation){
+                                        if (m2.SubCodeDesc == Model.ExportImport.ExportLocation){
+                                            ExportLocationName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportLocationName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">상대처구분</td>
+                                <td class="print-TableCon_l">
+                            @{
+                                    if(Model.ExportImport.ExportType == 0 || Model.ExportImport.ExportType == 2){
+                                        ExternalCompany = "외부업체";
+                                    }
+                                    @ExternalCompany
+                            }                            
+                                </td>
+                            </tr>
+                            @{
+                                if(Model.ExportImport.ExportType == 0 || Model.ExportImport.ExportType == 2){
+                                    <tr>
+                                        <td class="print-TableTitleL">인수자</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyContactName</td>
+                                        <td class="print-TableTitleL">인수자정보</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyTel</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="print-TableTitleL">업체명</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyName</td>
+                                        <td class="print-TableTitleL">사업자번호</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.BizRegNo</td>
+                                    </tr>
+                                }
+
+                                if(Model.ExportImport.ExportType == 1 || Model.ExportImport.ExportType == 2){
+                                    <tr>
+                                        <td class="print-TableTitleL">반입사업장 인수자</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.Name</td>
+                                        <td class="print-TableTitleL">반입사업장 인수자정보</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel</td>
+                                    </tr>
+                                }
+                            }
+                            <tr>
+                                <td class="print-TableTitleL">반입구분</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeImportType){
+                                        if (m2.SubCodeID == Model.ExportImport.ImportType){
+                                            ImportTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ImportTypeName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">반입예정일</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.ImportDate</td>
+                            </tr>						
+                            <tr>
+                                <td class="print-TableTitleL">전달구분</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeDeliveryMethodType){
+                                        if (m2.SubCodeID == Model.ExportImport.DeliveryMethodType){
+                                            DeliveryMethodTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @DeliveryMethodTypeName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">반출입목적</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeExportImportPurposeType){
+                                        if (m2.SubCodeID == Model.ExportImport.ExportImportPurposeType){
+                                            ExportImportPurposeTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportImportPurposeTypeName
+                                }
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출입사유</td>
+                                <td class="print-TableCon_l_Long" colspan="3">@Model.ExportImport.Reason</td>
+                            </tr> 
+                        </table>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+		<tr>
+			<td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+                    <tr>
+                        <td class="txt_black"><b>&nbsp;&nbsp;&nbsp;품목 정보</b></td>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                </table>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="black">
+                                <colgroup>
+                                    <col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:38%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:8%">
+                                </colgroup>
+                                <tr>
+                                    <td class="print-TableTitleL_c" style="width:10%;">번호</td>
+                                    <td class="print-TableTitleL_c" style="width:25%;">자재코드</td>
+                                    <td class="print-TableTitleL_c" style="width:25%;">자재명</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">수량</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">단위</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">규격</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">비고</td>
+                                </tr>
+    @{
+                foreach(ExportImportItem m in Model.ExportImportItems){  
+                    if(m.ImportCnt == null){
+                        m.ImportCnt = 0.0f;
+                    }                            
+                                
+                                <tr>
+                                    <td class="print-TableCon_l" style="text-align:center;width:10%;">@m.ExportImportItemID</td>                                    
+                                    <td class="print-TableCon_l" style="width:25%">@m.MaterialsCode</td>
+                                    <td class="print-TableCon_l" style="width:25%">@m.MaterialsName</td>
+                                    <td class="print-TableCon_r" style="width:10%">@m.Quantity</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Unit</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Standard</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Memo</td>                                    
+                                </tr>
+
+                }
+    }
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="black" style="margin-top:20px;margin-bottom:10px;">
+                                <tr>
+                                    <td class="print-TableTitleL_c">반출경로</td>
+                                    <td class="print-TableTitleL_c">일자</td>
+                                    <td class="print-TableTitleL_c">시간</td>
+                                    <td class="print-TableTitleL_c">성명</td>
+                                    <td class="print-TableTitleL_c">연락처</td>
+                                    <td class="print-TableTitleL_c">이상유무 확인</td>
+                                </tr>
+    @{
+        for(var i=0; i<4; i++){
+                                <tr>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                </tr>
+        }        
+    }                     
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+	</table>
+</div>
+@* 수리 *@
+<div id='tab2' style='display:@(Model.ExportImport.ExportImportType == 1 ? "inline" : "none");'>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="txt_black"><b>&nbsp;&nbsp;&nbsp;반출 정보</b></td>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="black">
+                            <tr>
+                                <td class="print-TableTitleL" style="width:18%">반출입번호</td>
+                                <td class="print-TableCon_l" style="width:32%">@Model.ExportImport.ExportImportNo</td>
+                                <td class="print-TableTitleL" style="width:18%">상태</td>
+                                <td class="print-TableCon_l" style="width:32%">
+                                    @{
+                                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                                            );
+                                        ReadOnly = "disabled";
+                                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                                
+
+                                                foreach (var option in Opts)
+                                                {
+                                                            @option.Text
+                                                }
+                                    
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출자</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertName</td>
+                                <td class="print-TableTitleL">반출자정보</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertOrgNameKor</td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출소속사업장</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeLocation){
+                                        if (m2.SubCodeDesc == Model.ExportImport.ExportLocation){
+                                            ExportLocationName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportLocationName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">상대처구분</td>
+                                <td class="print-TableCon_l">
+                            @{
+                                    if(Model.ExportImport.ExportType == 0){
+                                        ExternalCompany = "외부업체";
+                                    }
+                                    @ExternalCompany
+                            }                            
+                                </td>
+                            </tr>
+                            @{
+                                if(Model.ExportImport.ExportType == 0 || Model.ExportImport.ExportType == 2){
+                                    <tr>
+                                        <td class="print-TableTitleL">인수자</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyContactName</td>
+                                        <td class="print-TableTitleL">인수자정보</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyTel</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="print-TableTitleL">업체명</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.CompanyName</td>
+                                        <td class="print-TableTitleL">사업자번호</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.BizRegNo</td>
+                                    </tr>
+                                }
+
+                                if(Model.ExportImport.ExportType == 2){
+                                    <tr>
+                                        <td class="print-TableTitleL">반입사업장 인수자</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.Name</td>
+                                        <td class="print-TableTitleL">반입사업장 인수자정보</td>
+                                        <td class="print-TableCon_l">@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel</td>
+                                    </tr>
+                                }
+                            }
+                            <tr>
+                                <td class="print-TableTitleL">반입구분</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeImportType){
+                                        if (m2.SubCodeID == Model.ExportImport.ImportType){
+                                            ImportTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ImportTypeName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">반입예정일</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.ImportDate</td>
+                            </tr>						
+                            <tr>
+                                <td class="print-TableTitleL">전달구분</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeDeliveryMethodType){
+                                        if (m2.SubCodeID == Model.ExportImport.DeliveryMethodType){
+                                            DeliveryMethodTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @DeliveryMethodTypeName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">반출입목적</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeExportImportPurposeType){
+                                        if (m2.SubCodeID == Model.ExportImport.ExportImportPurposeType){
+                                            ExportImportPurposeTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportImportPurposeTypeName
+                                }
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출입사유</td>
+                                <td class="print-TableCon_l_Long" colspan="3">@Model.ExportImport.Reason</td>
+                            </tr> 
+                        </table>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+		<tr>
+			<td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+                    <tr>
+                        <td class="txt_black"><b>&nbsp;&nbsp;&nbsp;품목 정보</b></td>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                </table>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="black">
+                                <colgroup>
+                                    <col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:38%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:8%">
+                                </colgroup>
+                                <tr>
+                                    <td class="print-TableTitleL_c" style="width:10%;">번호</td>
+                                    <td class="print-TableTitleL_c" style="width:25%;">자재코드</td>
+                                    <td class="print-TableTitleL_c" style="width:25%;">자재명</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">수량</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">단위</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">규격</td>
+                                    <td class="print-TableTitleL_c" style="width:10%">비고</td>
+                                </tr>
+    @{
+                foreach(ExportImportItem m in Model.ExportImportItems){  
+                    if(m.ImportCnt == null){
+                        m.ImportCnt = 0.0f;
+                    }                            
+                                
+                                <tr>
+                                    <td class="print-TableCon_l" style="text-align:center;width:10%;">@m.ExportImportItemID</td>                                    
+                                    <td class="print-TableCon_l" style="width:25%">@m.MaterialsCode</td>
+                                    <td class="print-TableCon_l" style="width:25%">@m.MaterialsName</td>
+                                    <td class="print-TableCon_r" style="width:10%">@m.Quantity</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Unit</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Standard</td>
+                                    <td class="print-TableCon_l" style="width:10%">@m.Memo</td>  
+                                </tr>
+
+                }
+    }
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="black" style="margin-top:20px;margin-bottom:10px;">
+                                <tr>
+                                    <td class="print-TableTitleL_c">반출경로</td>
+                                    <td class="print-TableTitleL_c">일자</td>
+                                    <td class="print-TableTitleL_c">시간</td>
+                                    <td class="print-TableTitleL_c">성명</td>
+                                    <td class="print-TableTitleL_c">연락처</td>
+                                    <td class="print-TableTitleL_c">이상유무 확인</td>
+                                </tr>
+    @{
+        for(var i=0; i<4; i++){
+                                <tr>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                    <td class="print-TableCon_l">&nbsp;</td>
+                                </tr>
+        }        
+    }                     
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+	</table> 
+</div>
+
+@* 노트북 *@
+<div id='tab3' style='display:@(Model.ExportImport.ExportImportType == 2 ? "inline" : "none");'>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class="txt_black"><b>&nbsp;&nbsp;&nbsp;반출 정보</b></td>
+                        <td height="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="black">
+                            <tr>
+                                <td class="print-TableTitleL" style="width:18%">반출입번호</td>
+                                <td class="print-TableCon_l" style="width:32%">@Model.ExportImport.ExportImportNo</td>
+                                <td class="print-TableTitleL" style="width:18%">상태</td>
+                                <td class="print-TableCon_l" style="width:32%">
+                                    @{
+                                        //2023.09.15 dsyoo 승인상태는 항상 비활성화상태임
+                                        Opts = SelectItems.ElApprovalOptions(CultureInfo.CurrentCulture.ToString(),
+                                                Model.CodeExportImportApplyStatus,          //승인상태코드목록
+                                                Model.ExportImport.ExportImportApplyStatus  //승인상태
+                                            );
+                                        ReadOnly = "disabled";
+                                        ReadOnly = "disabled";   //자산반출입 승인은 전자결재에 의해서만 상태값이 변경된다.
+                                                
+
+                                                foreach (var option in Opts)
+                                                {
+                                                            @option.Text
+                                                }
+                                    
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출자</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertName</td>
+                                <td class="print-TableTitleL">반출자정보</td>
+                                <td class="print-TableCon_l">@Model.ExportImport.InsertOrgNameKor</td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출소속사업장</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeLocation){
+                                        if (m2.SubCodeDesc == Model.ExportImport.ExportLocation){
+                                            ExportLocationName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportLocationName
+                                }
+                                </td>
+                                <td class="print-TableTitleL">구분</td>
+                                <td class="print-TableCon_l">
+                                @{
+                                    foreach (var m2 in Model.CodeExportType){
+                                        if (m2.SubCodeID == Model.ExportImport.ExportType){
+                                            ExportTypeName = m2.CodeNameKor;
+                                            break;
+                                        }
+                                    }
+                                    @ExportTypeName
+                                }                            
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출일</td>
+                                <td class="print-TableCon_l">
+                                    @Model.ExportImport.ExportDate @Model.ExportImport.ExportDateHour : @Model.ExportImport.ExportDateMinute
+                                </td>
+                                <td class="print-TableTitleL">반입일</td>
+                                <td class="print-TableCon_l">
+                                    @Model.ExportImport.ImportDate @Model.ExportImport.ImportDateHour : @Model.ExportImport.ImportDateMinute
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="print-TableTitleL">반출입사유</td>
+                                <td class="print-TableCon_l_Long" colspan="3">
+                                    <table style="word-wrap:break-word; white-space: pre-line; table-layout: fixed;">
+                                        <tr>
+                                            <td>
+                                                @Model.ExportImport.Reason
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr> 
+                        </table>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+		<tr>
+			<td>
+                <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="black" style="margin-top:20px;margin-bottom:10px;">
+                    <tr>
+                        <td class="print-TableTitleL_c">반출경로</td>
+                        <td class="print-TableTitleL_c">일자</td>
+                        <td class="print-TableTitleL_c">시간</td>
+                        <td class="print-TableTitleL_c">성명</td>
+                        <td class="print-TableTitleL_c">연락처</td>
+                        <td class="print-TableTitleL_c">이상유무 확인</td>
+                    </tr>
+@{
+    for(var i=0; i<4; i++){
+                    <tr>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                        <td class="print-TableCon_l">&nbsp;</td>
+                    </tr>
+    }
+}
+                </table>
+            </td>
+        </tr>
+	</table> 
+</div>

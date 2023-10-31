@@ -1,0 +1,527 @@
+@{
+    ViewData["Title"] = "클린룸 시험방";
+    Layout = "_CleanRoomTest";
+}
+
+<script type="text/javascript">
+var SetTime = 1800;		// 최초 설정 시간(기본 : 초)
+
+$(document).ready(function () {	
+	timeSetting=setInterval('msg_time()',1000);
+	
+	var questionCount = 10;
+	var cleanroom_training_site = "01003";
+	var correctAnswerCount = "";
+	var s_pl_answer = [{"exam_order":"3"},{"exam_order":"4"},{"exam_order":"5"}];
+	for(var i=0; i<s_pl_answer.length;i++){
+		$("input[name='"+s_pl_answer[i].exam_order+"_ansCheck']").prop("type","checkbox")
+	}
+	$('input[type="checkbox"]').click(function(){
+		var values = [];
+		var id = $(this).attr('id');
+		var question = id.split('_')[0];
+		$("input:checkbox[name="+question+"_ansCheck]:checked").each(function () {
+			values.push($(this).val());
+		});
+		$("#q"+question+"_ansCheck").text(values);
+	});
+
+	$('input[type="radio"]').click(function(){
+		var id = $(this).attr('id');
+		var value = $(this).val();
+		var question = id.split('_')[0];
+		$("#q"+question+"_ansCheck").text(value);
+		
+	});
+		
+	$('#btn_submit').click(function(){
+		var checked = [];
+		var nullCheck = false;
+		for(var i=1;i<=questionCount;i++){
+			var param={};
+			var ansCheck = $("#q"+i+"_ansCheck").text();
+			ansCheck = ansCheck.replaceAll(",",";")
+			param.question = i;
+			param.answer = ansCheck;
+			
+			if(ansCheck == ""){
+				nullCheck= true;
+			}
+			checked.push(param);
+		}
+		
+		@* checked = [{"question":1,"answer":"3"},{"question":2,"answer":"1"},{"question":3,"answer":"1;4;5"},{"question":4,"answer":"1;2;5"},{"question":5,"answer":"4;5"},{"question":6,"answer":"3"},{"question":7,"answer":"2"},{"question":8,"answer":"2"},{"question":9,"answer":"4"},{"question":10,"answer":"4"}];
+		nullCheck = false; *@
+		@* console.log("[btn_submit]checked:",checked); *@
+
+		if(nullCheck == true){
+			Ext.MessageBox.alert("Message", "답안을 모두 체크 해 주세요." ); 
+		}else{
+			Ext.Ajax.request({
+				url: "/home/cleanroomanswer",
+				type: "POST",
+				params: {"ansCheck":JSON.stringify(checked),"CLEANROOM_TRAINING_SITE":cleanroom_training_site},
+				dataType: "json",
+			    success: function ( result, request ) {
+					var rs = JSON.parse(result.responseText);
+					@* console.log("json:", result.responseText); *@
+					@* console.log("json:", rs.examPass); *@
+					var passYN = rs.examPass;
+					correctAnswerCount = rs.correctAnswerCount;
+		 	    	$("#examPoint").text(correctAnswerCount);
+// 		 	    	checkWrongAnswer(wrongAnswerList);
+		 	    	if(passYN == "fail"){
+		 	    			Ext.MessageBox.alert("Message", "점수 : "+correctAnswerCount+"점<br>커트라인(80점)을 넘지 못하였습니다. 영상을 다시 시청 후 재시험을 진행 해 주세요." ,function(btn, text){
+				   		    if (btn == 'ok'){
+								closeWin(false);
+				   		    	@* window.close(); *@
+				   		    }
+				   		});
+		 	    	}else{
+		 	    		Ext.MessageBox.alert("Message", "점수 : "+correctAnswerCount+"점<br>교육 이수가 완료 되었습니다." ,function(btn, text){
+				   		    if (btn == 'ok'){
+								closeWin(true);
+				   		    	@* window.close(); *@
+				   		    }
+				   		});
+		 	    	}
+			    }
+			});
+		}
+			
+	});
+
+});
+
+function closeWin(isPass){
+	if(isPass){
+		@* window.alert(window.opener.cleanRoomTestResult); *@
+		window.opener.cleanRoomTestResult(true);
+	}
+	window.close();
+}
+
+function checkWrongAnswer(list){
+	var obj ={};
+	obj.wrongList = list;
+	var jsonList = JSON.parse(obj.wrongList);
+	for(var i=0; i<jsonList.length;i++){
+		var temp = jsonList[i];
+		$("#q"+temp.incorrectAnswer+"_ansCheck").css("color","red");
+		$("#q"+temp.correctAnswer+"_ansCheck").css("color","black");
+	}
+}
+
+function msg_time() {	// 1초씩 카운트
+	var time = Math.floor(SetTime / 60) + "분 " + (SetTime % 60) + "초";	// 남은 시간 계산
+	var msg = "현재 남은 시간은 <font color='red'>" + time + "</font> 입니다.";
+	$("#ViewTimer").html(msg);
+
+	SetTime--;					// 1초씩 감소
+
+	if (SetTime < 0) {			// 시간이 종료 되었으면..
+		clearInterval(timeSetting);		// 타이머 해제
+		Ext.MessageBox.alert("Message", "시간초과로 인하여 시험이 종료 됩니다. 영상을 다시 시청 후 시험 진행을 해 주세요." ,function(btn, text){
+   		    if (btn == 'ok'){
+	   		    	window.close();
+   		    }
+   		});
+	}
+}
+
+</script>
+ <form id = "C_EXAM" name="C_EXAM" method="post">
+		<table style="width:100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+		       <tr>
+		        <td class="bigtitle_pop">클린룸 교육 TEST</td>
+		       </tr>
+		 </table>
+		 <br>
+		 <div id="ViewTimer" style="font-weight: bold; margin-bottom: 5px;"></div>
+		<table style="width:100%;cellspacing:0;cellpadding:0;border-collapse:collapse;" id="tablebox2">
+			<colgroup>
+				<col width="13%">
+				<col width="20%">
+				<col width="13%">
+				<col width="20%">
+				@* <col width="13%">
+				<col width="20%"> *@
+			</colgroup>
+			<tr>
+	         	<td class="tb_line3"  style = "font-weight: bold;">사업장</td>
+                <td class="tb_line2">상우사업장</td>
+				<td class="tb_line3"  style = "font-weight: bold;" >점수</td>
+            	<td class="tb_line2" id = "examPoint" style = "color: red;"></td>
+			</tr>
+			@* <tr>
+				<td class="tb_line3"  style = "font-weight: bold;">성명</td>
+				<td class="tb_line2" >@ViewBag.name</td>
+				<td class="tb_line3"  style = "font-weight: bold;">업체명</td>
+				<td class="tb_line2" >@ViewBag.companyName</td>
+			</tr> *@
+		</table>
+		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+		  <tr>
+		    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+		  </tr>
+		</table>
+		<table style="width:100%;cellspacing:0;cellpadding:0;border-collapse:collapse;" id="tablebox2">
+			<colgroup>
+				<col width="20%"> 
+				<col width="*">
+			</colgroup>
+			<tr>
+				<td style="vertical-align: text-top;padding: 2% 1% 1% 1%;border-right: 1px solid #c0d4e9;">
+					<table style="width:100%;cellspacing:0;cellpadding:0;border-collapse:collapse;" id="tablebox2">
+						<colgroup>
+							<col width="30%">
+							<col width="*">
+						</colgroup>
+						<tr>
+							<td class="tb_line3" style="text-align: center;font-weight: bold;">문항</th>
+							<td class="tb_line3" style="text-align: center;font-weight: bold;">제출답안</th>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">1</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q1_ansCheck"></span><span id="q1_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">2</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q2_ansCheck"></span><span id="q2_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">3</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q3_ansCheck"></span><span id="q3_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">4</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q4_ansCheck"></span><span id="q4_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">5</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q5_ansCheck"></span><span id="q5_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">6</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q6_ansCheck"></span><span id="q6_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">7</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q7_ansCheck"></span><span id="q7_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">8</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q8_ansCheck"></span><span id="q8_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">9</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q9_ansCheck"></span><span id="q9_collectAns"></span></td>
+						</tr>
+						
+						<tr>
+							<td  class="tb_line2"  style="text-align: center;">10</td>
+							<td  class="tb_line2"  style="text-align: center; font-weight: bold; ">
+							<span id="q10_ansCheck"></span><span id="q10_collectAns"></span></td>
+						</tr>
+						
+					</table> 
+					<div id="btn_submit" style="float: right;">
+					<table style="height:19;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;margin-top: 10px;">
+						<tr>
+							<td><img src="/images/old/btn_l.gif"></td>
+							<td class="bt_name"><a href="#">답안제출</a></td>
+							<td><img src="/images/old/btn_r.gif"></td>
+						</tr>
+					</table>
+					</div>
+					
+				</td>
+				<!-- 문제 frame -->
+				<td>
+				<div style="width: 100%;height: 600px; overflow: auto">
+					<table style="width:100%;cellspacing:0;cellpadding:0;border-collapse:collapse;" >
+						<tr>
+							<td>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">1. Air-Born Particle발생의 원인 중 가장 큰 비중을 차지하는 원인은 무엇인가? </div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="1_1_ansCheck" name = "1_ansCheck" value="1"> 1. 장비
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="1_2_ansCheck" name = "1_ansCheck" value="2"> 2. 재료
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="1_3_ansCheck" name = "1_ansCheck" value="3"> 3. 사람
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="1_4_ansCheck" name = "1_ansCheck" value="4"> 4. 공정
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">2. 손 세척 시 소요 시간으로 올바른 것은? </div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="2_1_ansCheck" name = "2_ansCheck" value="1"> 1. 손 세척 10초 + 건조 30초
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="2_2_ansCheck" name = "2_ansCheck" value="2"> 2. 손 세척  5초 + 건조 10초
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="2_3_ansCheck" name = "2_ansCheck" value="3"> 3. 손 세척 20초 + 건조 20초
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="2_4_ansCheck" name = "2_ansCheck" value="4"> 4. 손 세척 10초 + 건조 20초
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">3. Mask 착용에 대한 설명 중 알맞은 것을 모두 고르시오.</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="3_1_ansCheck" name = "3_ansCheck" value="1"> 1. Mask 착용 시 최대한 살이 노출되지 않도록 착용한다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="3_2_ansCheck" name = "3_ansCheck" value="2"> 2. 코의 1/2 이하만 가릴 수 있도록 착용한다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="3_3_ansCheck" name = "3_ansCheck" value="3"> 3. Mask의 접힌 부분은 펼치지 않고 그대로 착용한다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="3_4_ansCheck" name = "3_ansCheck" value="4"> 4. Mask 가운데의 알루미늄 Bar를 휘어서 최대한 코에 밀착한다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="3_5_ansCheck" name = "3_ansCheck" value="5"> 5. Mask를 착용하는 이유는 호흡으로 발생될 수 있는 Particle을 최소화 하기 위함이다.
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">4. 다음 중 잘못된 행동을 모두 고르시오.</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="4_1_ansCheck" name = "4_ansCheck" value="1"> 1. Partition에 기대는 행위.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="4_2_ansCheck" name = "4_ansCheck" value="2"> 2. 어깨 동무나 가벼운 신체 접촉
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="4_3_ansCheck" name = "4_ansCheck" value="3"> 3. Line 입실 전 허리끈을 조이는 행위.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="4_4_ansCheck" name = "4_ansCheck" value="4"> 4. Cassette를 두 손으로 운반하는 행위.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="4_5_ansCheck" name = "4_ansCheck" value="5"> 5. Air Shower 사용 인원을 초과하여 사용하는 행위
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">5. 다음 중 Clean Room(Class 1)지역의 반입 금지 물품을 모두 고르시오.</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="5_1_ansCheck" name = "5_ansCheck" value="1"> 1. Clean Paper
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="5_2_ansCheck" name = "5_ansCheck" value="2"> 2. Wiper
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="5_3_ansCheck" name = "5_ansCheck" value="3"> 3. 안쪽이 플라스틱인 Tape
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="5_4_ansCheck" name = "5_ansCheck" value="4"> 4. Air bubble 포장지
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="5_5_ansCheck" name = "5_ansCheck" value="5"> 5. 녹슨 도구
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">6. Mask를 착용할 때에는 Mask의 가운데를 Λ 모양으로 접은 후 코의 (           )이상이 가릴 수 있도록 덮는다.</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="6_1_ansCheck" name = "6_ansCheck" value="1"> 1. 1/2
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="6_2_ansCheck" name = "6_ansCheck" value="2"> 2. 1/3
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="6_3_ansCheck" name = "6_ansCheck" value="3"> 3. 2/3
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="6_4_ansCheck" name = "6_ansCheck" value="4"> 4. 1/4
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">7. Clean Room에서 사용이 가능한 화장품은?</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="7_1_ansCheck" name = "7_ansCheck" value="1"> 1. 립스틱
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="7_2_ansCheck" name = "7_ansCheck" value="2"> 2. Skin 로션
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="7_3_ansCheck" name = "7_ansCheck" value="3"> 3. Was
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="7_4_ansCheck" name = "7_ansCheck" value="4"> 4. BB 크림
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">8. 다음 중 물품 반입 시 절차에 대하여 잘못된 것은?</div>
+									
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="8_1_ansCheck" name = "8_ansCheck" value="1"> 1. Wet wiper -> Dry wiper 순으로 Cleaning 
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="8_2_ansCheck" name = "8_ansCheck" value="2"> 2. 종이 등의 물품은 Cleaning 을 실시하지 않는다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="8_3_ansCheck" name = "8_ansCheck" value="3"> 3. 전자 기판 등은 마른 Wiper로만 cleaning 한다.
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="8_4_ansCheck" name = "8_ansCheck" value="4"> 4. Wet Wiper로 닦을 때는 물품 전체를 닦아주고, 빠진 곳이 없게끔 실시한다.
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif" alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">9. Clean Room 입실순서에 맞게 나열한것을 고르시오.</div>
+									
+										<div style="margin-left: 10px;margin-bottom: 3px;"><img style="width:90%" src="/images/old/cleanRoomExam/fab2/q9.png" alt=""></div>
+						    		
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="9_1_ansCheck" name = "9_ansCheck" value="1"> 1. 가-마-라-나-다
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="9_2_ansCheck" name = "9_ansCheck" value="2"> 2. 가-라-나-다-마
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="9_3_ansCheck" name = "9_ansCheck" value="3"> 3. 마-가-나-라-다
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="9_4_ansCheck" name = "9_ansCheck" value="4"> 4. 가-라-다-나-마
+						    		</div>
+								
+						    		<table style="100%;border:0;cellpadding:0;cellspacing:0;border-collapse:collapse;">
+										  <tr>
+										    <td style="height:5;"><img src="/images/old/blank.gif"  alt="" /></td>
+										  </tr>
+										</table>
+									<div style="margin-left: 10px;margin-bottom: 3px; font-weight: bold;">10. 다음 그림중 착용 상태가 올바른 사진을 고르시오.</div>
+									
+										<div style="margin-left: 10px;margin-bottom: 3px;"><img style="width:90%" src="/images/old/cleanRoomExam/fab2/q10.png" alt=""></div>
+						    		
+						    		
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="10_1_ansCheck" name = "10_ansCheck" value="1"> 1. Head Cover 머리카락 노출  
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="10_2_ansCheck" name = "10_ansCheck" value="2"> 2. 마스크 코 아래로 착용
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="10_3_ansCheck" name = "10_ansCheck" value="3"> 3. Glove 밖으로 손목 보이도록 착용
+						    		</div>
+								
+						    		<div style="margin-left: 20px;margin-bottom: 3px;">
+						    		<input type ="radio" id="10_4_ansCheck" name = "10_ansCheck" value="4"> 4. 눈만 노출하여 착용
+						    		</div>
+								
+							</td>
+						</tr>
+				</table>
+				</div>
+				</td>
+			</tr>
+		</table>
+</form>

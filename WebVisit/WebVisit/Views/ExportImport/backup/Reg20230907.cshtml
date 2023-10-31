@@ -1,0 +1,1739 @@
+@model ExportImportRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Apply ExportImport"]; //"반출입 신청";
+}
+<script>
+    window.onload = function (){
+        @* console.log("PREV_URL:"+PREV_URL); *@
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+        @* console.log("PREV_URL:"+PREV_URL); *@
+    }
+    var currentTabIndex = 1;
+    $(function () {
+        $("body").on("click", "#btnTab1", function () {
+            @* $(this).addClass('on'); *@
+            currentTabIndex = 1;
+            $('#btnTab1').addClass('on');
+            $('#btnTab2').removeClass('on');
+            $('#btnTab3').removeClass('on');
+            $('#tab1').css("display", "block");
+            $('#tab2').css("display", "none");
+            $('#tab3').css("display", "none");
+        });
+        $("body").on("click", "#btnTab2", function () {
+            currentTabIndex = 2;
+            $('#btnTab1').removeClass('on');
+            $('#btnTab2').addClass('on');
+            $('#btnTab3').removeClass('on');
+            $('#tab1').css("display", "none");
+            $('#tab2').css("display", "block");
+            $('#tab3').css("display", "none");
+        });
+        $("body").on("click", "#btnTab3", function () {
+            currentTabIndex = 3;
+            $('#btnTab1').removeClass('on');
+            $('#btnTab2').removeClass('on');
+            $('#btnTab3').addClass('on');
+            $('#tab1').css("display", "none");
+            $('#tab2').css("display", "none");
+            $('#tab3').css("display", "block");
+        });
+
+        $("body").on("click", "#tab1-btn-add", function () {
+            var _temp = $("#temp1").html();
+            console.log("tab1-btn-add");
+            $("#add-form-wrap1").append(_temp);
+            $("#add-form-wrap1 .num").each(function (i) {
+                $(this).text("0" + (i + 1));
+            });
+        });
+        $("body").on("click", "#tab2-btn-add", function () {
+            console.log("tab2-btn-add");
+            //var _temp = $("#temp1").html();
+            var _temp = $("#temp3").html();
+            $("#add-form-wrap2").append(_temp);
+            $("#add-form-wrap2 .num").each(function (i) {
+                $(this).text("0" + (i + 1));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap a", function () {
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            if (currentTabIndex == 1) {
+                $("#add-form-wrap1 .num").each(function (i) {
+                    $(this).text("0" + (i + 1));
+                });
+            } else if(currentTabIndex == 2) {
+                $("#add-form-wrap2 .num").each(function (i) {
+                    $(this).text("0" + (i + 1));
+                });
+            }
+        });
+        $("body").on("change", "#file1", function (ev) {
+            console.log("[body>change file1]");
+            $(this).parents(".form-item-wrap").eq(0).find(".value").text($(this).val());
+        });
+        $("body").on("click", "#btn-upload1", function (ev) {
+            console.log("[body>click btn-upload1]");
+            $("#file1").trigger("click");
+        });
+    });
+
+    
+    function selectNotebookExportType(){
+        const myform = document.fmAddNotebookForm;
+        var exportType = myform.ExportType.value;
+        var content = "";
+        if(exportType == "4"){ // 대여노트북 
+            $('#spDesc').css("display", "block");
+            alert('@Localizer["If you need to use the system and take out data from outside, please contact itsecurity in advance"]');
+            content = "1. 대여 목적 : 긴급 대응용 / 출장용 中 택 1 \n\n2. 반출 문서 리스트(문서명 기재) \n - 없음\n3. 접속 허용 IT 시스템 리스트 \n- 없음\n4. 기타 협조 요청 사항 :  ";
+            @* content = '@Localizer["Purpose of rental"]'; *@
+            //노트북관리번호 노트북시리얼번호 가리기             
+            $('#spNotebookNumber').css("display", "none");
+        }else{
+            $('#spDesc').css("display", "none");
+            $('#spNotebookNumber').css("display", "block");
+        }
+        var textarea_str = $("#textarea").val();
+        textarea_str = content;
+        $("#textarea").html(textarea_str); 
+    }
+    
+    function selectExportType(fmName){
+        const myform = eval("document."+fmName+";");
+        const exportImportType = myform.ExportImportType.value; //ExportImportType - 0: 자산, 1: 수리, 2: 노트북  
+        const selExportImportPurposeType = myform.ExportImportPurposeType;
+        const selImportType = myform.ImportType;
+        const raExportType = myform.ExportType;
+        var strExportType=''; // ExportType - 0: 외부업체, 1: 공장간이동, 2: 외부업체경유공장간이동
+        for (i = 0; i < raExportType.length; i++) {
+            if (raExportType[i].checked)
+                strExportType=raExportType[i].value;
+        }
+        if(exportImportType == "1"){ //수리 
+            //div: dImportAceptor2(반입사업장 인수자)
+            if(strExportType == "2"){ // 외부업체경유공장간이동
+                $('#dImportAceptor2').css("display", "inline");
+            }else{ //외부업체
+                $('#dImportAceptor2').css("display", "none");
+            }
+        }else{ //자산 
+            //div: dExternalCompanyAceptor(외부업체 인수자), dImportAceptor(반입사업장 인수자)
+
+            var exportImportPurposeTypeArr = [];
+            if(strExportType == "1"){ // 공장간이동
+                $('#dExternalCompanyAceptor').css("display", "none");
+                $('#dImportAceptor').css("display", "inline");
+                // 반입소속사업장(ImportLocation) 선택가능 
+                myform.ImportLocation.disabled = true;
+                myform.ImportLocation.removeAttribute("disabled");
+
+                // 반출입목적(ExportImportPurposeType) 선택고정 - 5 이체(이동) 
+                selExportImportPurposeType.disabled = true;
+                selExportImportPurposeType.disabled = "disabled";
+                 for (let i=0; i<selExportImportPurposeType.options.length; i++){
+                    if(selExportImportPurposeType.options[i].value == 5){
+                        selExportImportPurposeType.options[i].disabled = false;
+                        selExportImportPurposeType.options[i].selected = true;
+                    }else{
+                        selExportImportPurposeType.options[i].disabled = true;
+                    }
+                }
+
+                // 반입구분 선택고정 ImportType: 0 반입요 
+                selImportType.disabled = false;
+                selImportType.removeAttribute("disabled");
+                 for (let i=0; i<selImportType.options.length; i++){
+                    if(selImportType.options[i].value == 0){
+                        selImportType.options[i].disabled = false;
+                        selImportType.options[i].selected = true;
+                    }else{
+                        selImportType.options[i].disabled = true;
+                    }
+                }
+
+            }else if(strExportType == "2"){ // 외부업체경유공장간이동
+                exportImportPurposeTypeArr = ['1', '3', '4', '7', '8', '10', '12'];
+                $('#dExternalCompanyAceptor').css("display", "inline");
+                $('#dImportAceptor').css("display", "inline");
+                // 반입소속사업장(ImportLocation) 선택가능 
+                myform.ImportLocation.disabled = false;
+                myform.ImportLocation.removeAttribute("disabled");
+
+                // 반출입목적(ExportImportPurposeType) 부분적 선택가능 - 1: 리클레임, 3: 세정(재생), 4: 교환, 7: 분석, 8: Demo, 10: Warranty, 12: 태블릿
+                selExportImportPurposeType.disabled = false;
+                selExportImportPurposeType.removeAttribute("disabled");
+                for (let i=0; i<selExportImportPurposeType.options.length; i++){                                      
+                    if(exportImportPurposeTypeArr.includes(selExportImportPurposeType.options[i].value)){
+                        selExportImportPurposeType.options[i].disabled = false;
+                    }else{
+                        selExportImportPurposeType.options[i].disabled = true;
+                    }
+                    if(i==0){
+                        selExportImportPurposeType.options[i].disabled = false;
+                        selExportImportPurposeType.options[i].selected = true;
+                    }
+                }
+
+                // 반입구분(ImportType): : 선택 불가 ExportImportPurposeType 에 따라 선택 가능한 항목이 정해짐 
+                selImportType.options[0].selected = true;
+                selImportType.disabled = true;
+                selImportType.disabled = "disabled";
+
+            }else{ //외부업체 
+                exportImportPurposeTypeArr = ['1', '2', '3', '4', '7', '8', '10', '11', '12'];
+                $('#dExternalCompanyAceptor').css("display", "inline");
+                $('#dImportAceptor').css("display", "none");
+                // 반입소속사업장(ImportLocation) 선택불가 
+                myform.ImportLocation.disabled = true;
+                myform.ImportLocation.options[0].selected = true;
+                myform.ImportLocation.disabled = "disabled";
+                
+                /* form 보낼때 다시 해제하기
+                myform.ImportLocation.disabled = false;
+                myform.ImportLocation.removeAttribute("disabled");
+                */
+                // 반출입목적(ExportImportPurposeType) 부분적 선택가능 - 1: 리클레임, 2: 판매, 3: 세정(재생), 4: 교환, 7: 분석, 8: Demo, 10: Warranty, 11: 반환, 12: 태블릿                
+                selExportImportPurposeType.disabled = false;
+                selExportImportPurposeType.removeAttribute("disabled");
+                 for (let i=0; i<selExportImportPurposeType.options.length; i++){
+                    if(exportImportPurposeTypeArr.includes(selExportImportPurposeType.options[i].value)){
+                        selExportImportPurposeType.options[i].disabled = false;
+                    }else{
+                        selExportImportPurposeType.options[i].disabled = true;
+                    }
+                    if(i==0){
+                        selExportImportPurposeType.options[i].disabled = false;
+                        selExportImportPurposeType.options[i].selected = true;
+                    }
+                }
+
+                // 반입구분(ImportType): 선택 불가 ExportImportPurposeType 에 따라 선택 가능한 항목이 정해짐 
+                selImportType.options[0].selected = true;
+                selImportType.disabled = true;
+                selImportType.disabled = "disabled";
+            }
+        }
+    }
+
+    function selectExportImportPurposeType(fmName, exportImportPurposeTypeVal){
+        const myform = eval("document."+fmName+";");
+        const exportImportType = myform.ExportImportType.value; //ExportImportType - 0: 자산, 1: 수리, 2: 노트북  
+        const selExportImportPurposeType = myform.ExportImportPurposeType;
+        const selImportType = myform.ImportType;
+        const raExportType = myform.ExportType;
+        var strExportType=''; // ExportType - 0: 외부업체, 1: 공장간이동, 2: 외부업체경유공장간이동
+        for (i = 0; i < raExportType.length; i++) {
+            if (raExportType[i].checked)
+                strExportType=raExportType[i].value;
+        }
+        if(exportImportType == "1"){ //수리 
+
+        }else{ //자산 
+            if(strExportType == "1"){ // 공장간이동
+
+            }else if(strExportType == "2"){ // 외부업체경유공장간이동
+                
+                // 반입구분(ImportType): : 선택 불가 ExportImportPurposeType 에 따라 선택 가능한 항목이 정해짐
+                @* 1: 리클레임, 3: 세정(재생), 4: 교환, 7: 분석, 8: Demo, 10: Warranty, 12: 태블릿  *@
+
+                @* 
+                1	리클레임	선택불가
+                3	세정(재생)	반입요
+                4	교환	"대체품반입요 대체품선입고"
+                7	분석	반입요
+                8	Demo	반입요
+                12	태블릿	선택불가
+                10	Warranty	대체품반입요 
+
+                0	반입요  
+                1	반입불요 
+                2	매각
+                3	반입불요(무상)
+                4	대체품반입요 
+                5	대체품선입고 
+                
+                *@
+                if(exportImportPurposeTypeVal == 3 || exportImportPurposeTypeVal == 7 || exportImportPurposeTypeVal == 8){ //세정(재생), 분석, Demo
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(selImportType.options[i].value==0){ //반입요
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                    }
+                }else if(exportImportPurposeTypeVal == 4){ //교환
+                    var importTypeArr=['4', '5'];
+                    selImportType.disabled = false;
+                    selImportType.removeAttribute("disabled");
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(importTypeArr.includes(selImportType.options[i].value)){ //대체품반입요 대체품선입고
+                            selImportType.options[i].disabled = false;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                        if(i==0){
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }
+                    }
+                }else if(exportImportPurposeTypeVal == 10){ //Warranty
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(selImportType.options[i].value==4){ //대체품반입요
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                    }
+                }else{ //리클레임, 태블릿
+                    selImportType.options[0].selected = true;
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+                }
+            }else{ //외부업체 
+
+                // 반입구분(ImportType): 선택 불가 ExportImportPurposeType 에 따라 선택 가능한 항목이 정해짐 
+                selImportType.options[0].selected = true;
+                selImportType.disabled = true;
+                selImportType.disabled = "disabled";
+                @* 
+                1	리클레임	반입불요
+                2	판매	반입불요
+                3	세정(재생)	반입요
+                4	교환	"대체품반입요 대체품선입고"
+                7	분석	반입요
+                8	Demo	반입요
+                10	Warranty	대체품반입요
+                11	반환	반입불요
+                12	태블릿	반입요 
+
+                0	반입요  
+                1	반입불요 
+                2	매각
+                3	반입불요(무상)
+                4	대체품반입요 
+                5	대체품선입고 
+                
+                *@ 
+
+                //반입소속사업장, 반입예정일 선택 
+                myform.ImportLocation.disabled = false;
+                myform.ImportLocation.removeAttribute("disabled");
+                myform.ImportDate.disabled = false;
+                myform.ImportDate.removeAttribute("disabled");     
+
+                if(exportImportPurposeTypeVal == 1 || exportImportPurposeTypeVal == 2 || exportImportPurposeTypeVal == 11){ //리클레임, 판매, 반환 
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(selImportType.options[i].value==1){ //반입불요
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                    }
+                    //반입소속사업장, 반입예정일 없음 
+                    myform.ImportLocation.disabled = true;
+                    myform.ImportDate.disabled = true;
+                }else if(exportImportPurposeTypeVal == 3 || exportImportPurposeTypeVal == 7 || exportImportPurposeTypeVal == 8 || exportImportPurposeTypeVal == 12){ //세정(재생), 분석, Demo, 태블릿
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(selImportType.options[i].value==0){ //반입요
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                    }
+
+                    //반입소속사업장, 반입예정일 선택 
+                    @* myform.ImportLocation.disabled = false;
+                    myform.ImportLocation.removeAttribute("disabled");
+                    myform.ImportDate.disabled = false;
+                    myform.ImportDate.removeAttribute("disabled"); *@
+                }else if(exportImportPurposeTypeVal == 4){ //교환
+                    var importTypeArr=['4', '5'];
+                    selImportType.disabled = false;
+                    selImportType.removeAttribute("disabled");
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(importTypeArr.includes(selImportType.options[i].value)){ //대체품반입요 대체품선입고
+                            selImportType.options[i].disabled = false;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                        if(i==0){
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }
+                    }
+
+                    //반입소속사업장, 반입예정일 선택 
+                    @* myform.ImportLocation.disabled = false;
+                    myform.ImportLocation.removeAttribute("disabled");
+                    myform.ImportDate.disabled = false;
+                    myform.ImportDate.removeAttribute("disabled"); *@
+                }else if(exportImportPurposeTypeVal == 10){ //Warranty
+                    selImportType.disabled = true;
+                    selImportType.disabled = "disabled";
+
+                    for (let i=0; i<selImportType.options.length; i++){
+                        if(selImportType.options[i].value==4){ //대체품반입요
+                            selImportType.options[i].disabled = false;
+                            selImportType.options[i].selected = true;
+                        }else{
+                            selImportType.options[i].disabled = true;
+                        }
+                    }
+                }
+
+            
+            }
+        }
+    }
+
+    // add - 자산 
+    function saveAddAssetForm(){
+        var myform = document.fmAddAsset;
+        @* 반출입 신청: mode 
+        ExportImportType 0: 자산, 1: 수리, 2: 노트북
+        ExportType 0: 외부업체, 1: 공장간이동, 2: 외부업체경유공장간이동, 3: 개인노트북, 4: 대여노트북
+        *@
+        @* document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the scheduled return date"]'; *@
+        
+        const selExportImportPurposeType = myform.ExportImportPurposeType;
+        selExportImportPurposeType.disabled = false;
+        selExportImportPurposeType.removeAttribute("disabled");
+        const selImportType = myform.ImportType;
+        selImportType.disabled = false;
+        selImportType.removeAttribute("disabled");
+
+        if(myform.ExportImportPurposeType.value.trim().length < 1 || myform.ExportImportPurposeType.value.trim() < 0){
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the purpose of exportimport"]';
+            myform.ExportImportPurposeType.focus();
+            return;
+        }
+        if(myform.ImportType.value.trim().length < 1 || myform.ImportType.value.trim() < 0 ){
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the import classify"]';
+            myform.ImportType.focus();
+            return;
+        }
+        if(myform.DeliveryMethodType.value.trim().length < 1 || myform.DeliveryMethodType.value.trim() < 0){
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the delivery method"]';
+            myform.DeliveryMethodType.focus();
+            return;
+        }
+        if(myform.ExportType.value.trim() == 0 && myform.CompanySabun.value.trim().length < 1 ){ // 외부업체 - 외부업체인수자
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select an outside vendor"]';
+            return;
+        }
+        if(myform.ExportType.value.trim() == 1 && myform.Sabun.value.trim().length < 1 ){ // 공장간이동 - 반입사업장인수자 
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the recipient of the import business"]';
+            return;
+        }
+        if(myform.ExportType.value.trim() == 2  && myform.CompanySabun.value.trim().length < 1){ // 외부업체경유공장간이동 - 외부업체인수자
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select an outside vendor"]';
+            return;
+        }
+        if(myform.ExportType.value.trim() == 2  && myform.Sabun.value.trim().length < 1 ){ // 외부업체경유공장간이동 - 외부업체인수자/반입사업장인수자
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select the recipient of the import business"]';
+            return;
+        }
+        if(myform.ApprovalSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select a approver"]';
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg1").innerHTML = '@Localizer["Please select a sub contact person"]';
+            return;
+        }
+
+        //품목 정보 자재이름, 수량, 단위 필수 
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            // MaterialsName[] Quantity[]
+            if (el.name == "MaterialsName[]" && el.value.trim().length < 1) {
+                document.getElementById("errormsg1").innerHTML = '@Localizer["Please enter the material name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "Quantity[]") {
+                if (el.value.trim().length < 1) {
+                    document.getElementById("errormsg1").innerHTML = '@Localizer["Please enter quantity"]';
+                    el.focus();
+                    return;
+                } else if (isNumber(el.value.trim()) == false) {
+                    document.getElementById("errormsg1").innerHTML = '@Localizer["Please enter a number for quantity"]';
+                    el.focus();
+                    return;
+                } else if (el.value.trim() < 1) {
+                    document.getElementById("errormsg1").innerHTML = '@Localizer["Please enter a value greater than 1 for quantity"]';
+                    el.focus();
+                    return;
+                }
+            }
+        }
+        var con = confirm('@Localizer["Would you like to apply for importexport"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+    
+    // add - 수리  
+    function saveAddRepairForm(){
+        var myform = document.fmAddRepairForm;
+
+        if(myform.ImportDate.value.trim().length < 1){
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select a import date"]';
+            myform.ImportDate.focus();
+            return;
+        }
+        if(myform.DeliveryMethodType.value.trim().length < 1 || myform.DeliveryMethodType.value.trim() < 0){
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select the delivery method"]';
+            myform.DeliveryMethodType.focus();
+            return;
+        }
+        @* if(myform.ExportType.value.trim() == 0 && myform.CompanySabun.value.trim().length < 1 ){ // 외부업체 - 외부업체인수자
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select an outside vendor"]';
+            return;
+        }
+        if(myform.ExportType.value.trim() == 2  && myform.CompanySabun.value.trim().length < 1){ // 외부업체경유공장간이동 - 외부업체인수자
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select an outside vendor"]';
+            return;
+        } *@
+        if(myform.ExportType.value.trim() == 2  && myform.Sabun.value.trim().length < 1 ){ // 외부업체경유공장간이동 - 외부업체인수자/반입사업장인수자
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select the recipient of the import business"]';
+            return;
+        }
+        if(myform.ApprovalSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select a approver"]';
+            return;
+        }
+        if(myform.ContactSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg2").innerHTML = '@Localizer["Please select a sub contact person"]';
+            return;
+        }
+        @* document.getElementById("errormsg2").innerHTML = '@Localizer["Please select the scheduled return date"]'; *@
+        
+        //품목 정보 자재이름, 수량, 단위 필수 
+        for(var i =0 ;i<myform.length; i++) {
+            var el = myform[i];
+            // MaterialsName[] Quantity[]
+            if (el.name == "MaterialsName[]" && el.value.trim().length < 1) {
+                document.getElementById("errormsg2").innerHTML = '@Localizer["Please enter the material name"]';
+                el.focus();
+                return;
+            }
+            if (el.name == "Quantity[]") {
+                if (el.value.trim().length < 1) {
+                    document.getElementById("errormsg2").innerHTML = '@Localizer["Please enter quantity"]';
+                    el.focus();
+                    return;
+                } else if (isNumber(el.value.trim()) == false) {
+                    document.getElementById("errormsg2").innerHTML = '@Localizer["Please enter a number for quantity"]';
+                    el.focus();
+                    return;
+                } else if (el.value.trim() < 1) {
+                    document.getElementById("errormsg2").innerHTML = '@Localizer["Please enter a value greater than 1 for quantity"]';
+                    el.focus();
+                    return;
+                }
+            }
+        }
+        var con = confirm('@Localizer["Would you like to apply for importexport"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+    
+    // add - 노트북   
+    function saveAddNotebookForm(){
+        var myform = document.fmAddNotebookForm;
+        if(myform.ExportDate.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please select the scheduled return date"]';
+            myform.ExportDate.focus();
+            return;
+        }
+        if(myform.ImportDate.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please select the scheduled pickup date"]';
+            myform.ImportDate.focus();
+            return;
+        }
+        if(myform.ExportType.value=='3' && myform.ManagementNo.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please enter your laptop management number"]';
+            myform.ManagementNo.focus();
+            return;
+        }
+        if(myform.ExportType.value=='3' && myform.SerialNo.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please enter your laptop serial number"]';
+            myform.SerialNo.focus();
+            return;
+        }
+        if(myform.ApprovalSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please select a approver"]';            
+            return;
+        }
+        
+        if(myform.ExportType.value == 3 && myform.FormFile.value.trim().length < 1 ){
+            document.getElementById("errormsg3").innerHTML = '@Localizer["Please attach CEO approval history"]';
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to apply for importexport"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // search - 외부업체인수자
+    function goSearchExternalCompany(fmName){
+        const myform = eval("document."+fmName+";");
+        var companySabunObj = null;
+        var companyContactNameObj = null;
+        var companyNameObj = null;
+        var bizRegNoObj = null; 
+        var companyTelObj = null; 
+        companySabunObj = myform.CompanySabun;
+        companyContactNameObj = myform.CompanyContactName;
+        companyNameObj = myform.CompanyName;
+        bizRegNoObj = myform.BizRegNo;
+        companyTelObj = myform.CompanyTel;
+
+        popSelectExternalCompany(companySabunObj, companyContactNameObj, companyNameObj, bizRegNoObj, companyTelObj);
+    }
+
+    // search - 임직원 
+    function goSearchPerson(sMode, fmName){
+        const myform = eval("document."+fmName+";");
+        //sMode-1: 반입사업장인수자(사원) 검색, 2: 담당자(사원) 검색, 3: 결재자 검색
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        var locationObj = null;
+        var locationNameObj = null;
+        var companyIdObj = null;
+        var companyNameObj = null;
+        var gradeIdObj = null;
+        var gradeNameObj = null;
+        var personTypeIdObj = null;
+        var personTypeIdNameObj = null;
+        var cardNoObj = null;
+
+        if(sMode == 3){
+            nameObj = myform.ApprovalName;
+            sabunObj =  myform.ApprovalSabun;
+            orgIdObj =  myform.ApprovalOrgID;
+            orgKorObj =  myform.ApprovalOrgNameKor;
+            orgEngObj =  myform.ApprovalOrgNameEng;
+            telObj = myform.ApprovalTel;            
+        }else if(sMode == 2){
+            nameObj = myform.ContactName;
+            sabunObj =  myform.ContactSabun;
+            orgIdObj =  myform.ContactOrgID;
+            orgKorObj =  myform.ContactOrgNameKor;
+            orgEngObj =  myform.ContactOrgNameEng;
+            telObj = myform.ContactTel;
+        }else{
+            nameObj = myform.Name;
+            sabunObj =  myform.Sabun;
+            orgIdObj =  myform.OrgID;
+            orgKorObj =  myform.OrgNameKor;
+            orgEngObj =  myform.OrgNameEng;
+            telObj = myform.Tel;
+            @* mobileObj = myform.Mobile; 
+            locationObj = myform.Location;
+            locationNameObj = myform.LocationName;
+            companyIdObj = myform.CompanyID;
+            companyNameObj = myform.CompanyName;
+            gradeIdObj = myform.GradeID;
+            gradeNameObj = myform.GradeName;
+            personTypeIdObj = myform.PersonTypeID;
+            personTypeIdNameObj = myform.PersonTypeIDName;  
+            cardNoObj = myform.CardNo; *@
+        }
+        // ContactSabun ContactOrgID
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj);
+    }
+    
+    // search - 자재 
+    function goSearchMaterial(obj){
+        var myform;
+        var j = -1;
+        var itemNameObj;
+        var itemCodeObj;
+        var standardObj;
+        var unitObj;
+        var prNoObj;
+        if (currentTabIndex == 1) {
+            myform = document.fmAddAsset;
+        } else if(currentTabIndex == 2) {
+            myform = document.fmAddRepairForm;
+            popSelectMaterial(null, itemNameObj, itemCodeObj, standardObj, unitObj, prNoObj);
+        }
+        if (myform != null){
+            var idx = findIndex(myform, "MaterialsCode[]", obj);
+            if (idx > -1) {
+                for(var el of myform) {
+                    if (el.name == "MaterialsCode[]"){
+                        j++;
+                    }
+                    if(idx == j) {                        
+                        if (el.name == "MaterialsCode[]"){
+                            itemCodeObj = el;
+                        }
+                        if (el.name == "MaterialsName[]"){
+                            itemNameObj = el;
+                        }
+                        if (el.name == "Unit[]"){
+                            unitObj = el;
+                        }
+                        if (el.name == "Standard[]"){
+                            standardObj = el;
+                        }
+                        if (el.name == "PRNo[]"){
+                            prNoObj = el;
+                        }
+                    }
+                }
+                popSelectMaterial(null, itemNameObj, itemCodeObj, standardObj, unitObj, prNoObj);
+            }
+        }
+    }
+
+    // search - PR 
+    function goSearchPR(obj){
+        var myform;
+        var j = -1;
+        var itemNameObj;
+        var itemCodeObj;
+        var unitObj;
+        var prNoObj;
+        var standardObj;
+        if(currentTabIndex == 2) {
+            myform = document.fmAddRepairForm;
+            console.log("currentTabIndex:"+currentTabIndex);
+            @* popSelectPR(null, itemNameObj, itemCodeObj, unitObj, prNoObj, location); *@
+        }
+        var location = myform.ExportLocation.options[myform.ExportLocation.selectedIndex].value;
+        if (myform != null){
+            var idx = findIndex(myform, "PRNo[]", obj);
+            if (idx > -1) {
+                for(var el of myform) {
+                    if (el.name == "PRNo[]"){
+                        j++;
+                    }
+                    if(idx == j) {                        
+                        if (el.name == "MaterialsCode[]"){
+                            itemCodeObj = el;
+                        }
+                        if (el.name == "MaterialsName[]"){
+                            itemNameObj = el;
+                        }
+                        if (el.name == "Unit[]"){
+                            unitObj = el;
+                        }
+                        if (el.name == "Standard[]"){
+                            standardObj = el;
+                        }
+                        if (el.name == "PRNo[]"){
+                            prNoObj = el;
+                        }
+                    }
+                }
+                console.log("[goSearchPR] location:"+location, prNoObj);
+                popSelectPR(null, itemNameObj, itemCodeObj, unitObj, prNoObj,standardObj, location);
+            }
+        }
+    }
+</script>
+
+<div class="tabmenu-list-wrap">
+    <ul>
+        <li><a href="javascript:void(0)" id='btnTab1' class="on">@Localizer["Property"]</a></li>
+        <li><a href="javascript:void(0)" id='btnTab2'>@Localizer["Repair"]</a></li>
+        <li><a href="javascript:void(0)" id='btnTab3'>@Localizer["Notebook"]</a></li>
+    </ul>
+</div>
+
+@* 자산 *@
+<div id='tab1' style='display:block;'>
+    @* 
+    ExportImportType - 0: 자산, 1: 수리, 2: 노트북
+    ExportType - 0: 외부업체, 1: 공장간이동, 2: 외부업체경유공장간이동, 3: 개인노트북, 4: 대여노트북
+    ExportLocation 
+    ImportLocation 
+
+    ExportImportPurposeType - 0: 수리, 1: 리클레임, 2: 판매, 3: 세정(재생), 4: 교환, 5: 이체(이동), 6: 기타, 7: 분석, 8: Demo, 9: 우수협력업체, 10: Warranty, 11: 반환, 12: 태블릿
+    자산 - 외부업체: 1: 리클레임, 2: 판매, 3: 세정(재생), 4: 교환, 7: 분석, 8: Demo, 10: Warranty, 11: 반환, 12: 태블릿
+    자산 - 공장간이동: 5 이체(이동) 
+    자산 - 외부업체경유공장간이동: 1: 리클레임, 3: 세정(재생), 4: 교환, 7: 분석, 8: Demo, 10: Warranty, 12: 태블릿
+
+    수리 - 외부업체: 0: 수리
+    수리 - 외부업체경유공장간이동: 0: 수리
+
+    ImportType - 0: 반입요, 1: 반입불요, 2: 매각, 3: 반입불요(무상), 4: 대체품반입요, 5: 대체품선입고
+    DeliveryMethodType - 0: 방문수령, 1: 우편/택배, 2: 대리인수령, 3: 핸드캐리, 4: 물류차량
+    *@
+<form name="fmAddAsset" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="ExportImportType" value="0" />@* 0: 자산, 1: 수리, 2: 노트북 *@
+
+    @* 외부업체인수자 *@
+    <input type="hidden" name="CompanySabun" value="" />
+    
+    @* 반입사업장인수자 *@
+    <input type="hidden" name="Sabun" value="" />
+    <input type="hidden" name="OrgID" value="" />
+
+    @* 결재자 *@
+    <input type="hidden" name="ApprovalSabun" value="" />
+    <input type="hidden" name="ApprovalOrgID" value="" />
+
+    @* 부담당자 *@
+    <input type="hidden" name="ContactSabun" value="" />
+    <input type="hidden" name="ContactOrgID" value="" />
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Export Classify"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="ExportType" value="0" checked onclick="selectExportType('fmAddAsset');" />
+                        <span>@Localizer["External Company"]</span>
+                    </label> 
+                    <label style='display:@(ViewBag.my.Location.Equals("6000") ? "none" : "flex")'>
+                        <input type="radio" name="ExportType" value="1" onclick="selectExportType('fmAddAsset');" />
+                        <span>@Localizer["Inter Factory Movement"]</span>
+                    </label>
+                    <label style='display:@(ViewBag.my.Location.Equals("6000") ? "none" : "flex")'>
+                        <input type="radio" name="ExportType" value="2" onclick="selectExportType('fmAddAsset');" />
+                        <span>@Localizer["External Company Passage"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Affiliation Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled><option value=''>-</option></select>
+                        }else{
+                            <select class="select" name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled><option value=''>-</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Import Purpose"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="ExportImportPurposeType" onchange="selectExportImportPurposeType('fmAddAsset', this.value);"> 
+                        <option value="">@Localizer["Select"]</option>
+                        @* <option value="0" disabled>Localizer["Repair"]</option> *@
+                        <option value="1">@Localizer["Reclaim"]</option>
+                        <option value="2">@Localizer["Sale"]</option>
+                        <option value="3">@Localizer["Cleaning"]</option>
+                        <option value="4">@Localizer["Exchange"]</option>
+                        <option value="5" disabled>@Localizer["Transfer"]</option>
+                        @* <option value="6" disabled>기타</option> *@
+                        <option value="7">@Localizer["Analysis"]</option>
+                        <option value="8">@Localizer["Demo"]</option>
+                        @* <option value="9" disabled>우수협력업체</option> *@
+                        <option value="10">@Localizer["Warranty"]</option>
+                        <option value="11">@Localizer["Return"]</option>
+                        <option value="12">@Localizer["Tablets"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Date"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]' name="ImportDate" disabled onkeyup="generateDateString(this)" maxlength="10" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="ImportType" disabled>
+                        <option value="">@Localizer["Select"]</option>
+                        <option value="0">@Localizer["Bring"]</option>
+                        <option value="1">@Localizer["Do Not Bring"]</option>
+                        @* <option value="2">매각</option> *@
+                        @* <option value="3">반입불요(무상)</option> *@
+                        <option value="4">@Localizer["Replacement Item Return"]</option>
+                        <option value="5">@Localizer["Replacement Item Prereceiving"]</option>                   
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Delivery Method"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
+                        }else{
+                            <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" />
+                </div>
+            </li>
+        </ul>
+    </div>
+    @* 
+    인수자정보 
+    1. 자산: 반출구분(0-외부업체, 1-공장간 이동, 2-외부업체 경유 공장간 이동) 에 따라 다름  
+    [외부업체] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 
+    [공장간 이동] 인수자 정보: 반입사업장 인수자, 반입사업장 인수자 정보 
+    [외부업체 경유 공장간 이동] 인수자 정보: 외부업체 인수자, 본인직접반출, 외부업체 인수자 정보 , 반입사업장 인수자, 반입사업장 인수자 정보 
+    2. 수리&노트북은 인수자 정보 없음 
+    *@
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Aceptor Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <!-- 외부업체 인수자 -->
+            <div id="dExternalCompanyAceptor" style="display:inline;">
+                <li>
+                    <div class="label s03">@Localizer["External Company Aceptor"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @* 외부업체 : CompanyContactName CompanyName 	BizRegNo	CompanyTel popSelectExternalCompany *@
+                        <input type="text" class="inp" placeholder='@Localizer["External Company Aceptor"]' name="CompanyContactName" readonly onclick="goSearchExternalCompany('fmAddAsset');" />
+                        <button type="button" class="btn-search" onclick="goSearchExternalCompany('fmAddAsset');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03"><input type="checkbox" name="IsSelf" value="Y" />&nbsp; @Localizer["Direct Transfer"]</div>
+                    <div class="form-item-wrap">
+                    </div>
+                </li>
+                <li>
+                    <div class="label s01">@Localizer["External Company Aceptor Information"]<span></span></div>
+                </li>
+                <li class="vtype">
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" name="CompanyName" value="" readonly />
+                        <input type="text" class="inp" name="BizRegNo" value="" readonly />
+                        <input type="text" class="inp" name="CompanyTel" value="" readonly />
+                        @* CompanyName 	BizRegNo	CompanyTel  *@
+                        @* <input type="text" class="inp" name="CompanyInfo" value="한국이브이그룹 유한회사 /101-86-39423 / 010-2345-6789" readonly /> *@
+                    </div>
+                </li>
+            </div>
+            <!-- 반입사업장 인수자 -->
+            <div id="dImportAceptor" style="display:none;">
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @* 사원검색: Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel*@
+                        <input type="text" class="inp" placeholder='@Localizer["Import Place Of Business Aceptor"]' name="Name" readonly onclick="goSearchPerson(1, 'fmAddAsset');" />
+                        <button type="button" class="btn-search" onclick="goSearchPerson(1, 'fmAddAsset');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor Information"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @* Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel *@
+                        <input type="text" class="inp" name="OrgNameKor" value="" readonly />
+                        <input type="hidden" class="inp" name="OrgNameEng" value="" readonly />
+                        <input type="text" class="inp" name="Tel" value="" readonly />
+                    </div>
+                </li>
+            </div>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" readonly onclick="goSearchPerson(3, 'fmAddAsset');" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson(3, 'fmAddAsset');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ApprovalOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ApprovalOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ApprovalTel" value="" readonly />
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                    @* <input type="text" class="inp" name="ApprovalInfo" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Sub Contact Name"]' name="ContactName"  readonly onclick="goSearchPerson(2, 'fmAddAsset');" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson(2, 'fmAddAsset');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Information"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ContactOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ContactTel" value="" readonly />
+                    @* ContactSabun	ContactName	ContactOrgID	ContactOrgNameKor	ContactOrgNameEng ContactTel *@
+                    @* <input type="text" class="inp" name="ContactInfo" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Item Information"]</div>
+    </div>
+    <div id="add-form-wrap1" style="display:block;">
+        <div class="reg-form-wrap" id="reg-form-wrap1">
+            <div class="reg-header-wrap" id ="reg-header-wrap1">
+                <div class="num">01</div>
+                <input type="hidden" name="PRNo[]" value="" />
+            </div>
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Material Code"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode[]" value="" readonly onclick="goSearchMaterial(this);" />
+                        <button type="button" class="btn-search" onclick="goSearchMaterial(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Material Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName[]" value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Unit"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                        @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]"  value="" maxlength="100" /> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Quantity"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="number" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]"  value="" maxlength="10" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Standard"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard[]"  value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Description"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Description"]' name="Memo[]"  value="" maxlength="100" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="msg-wrap">
+        <div class="label org">
+            @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="errormsg1" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+    <div class="req-btn-wrap">
+        <div class="lt-item">
+        </div>
+        <div class="lt-item">
+            <button type="button" class="btn-gray" id="tab1-btn-add">@Localizer["Add Item"]</button>
+            <button type="button" class="btn-green" onclick="saveAddAssetForm();">@Localizer["Application"]</button>
+        </div>
+    </div>
+</form>
+</div>
+
+@* 수리 *@
+<div id='tab2' style='display:none;'>
+<form method="post" name="fmAddRepairForm">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="ExportImportType" value="1" />@* 0: 자산, 1: 수리, 2: 노트북 *@
+    
+    @* 외부업체인수자 *@
+    <input type="hidden" name="CompanySabun" value="" />
+
+    @* 반입사업장인수자 *@
+    <input type="hidden" name="Sabun" value="" />
+    <input type="hidden" name="OrgID" value="" />
+
+    @* 결재자 *@
+    <input type="hidden" name="ApprovalSabun" value="" />
+    <input type="hidden" name="ApprovalOrgID" value="" />
+
+    @* 부담당자 *@
+    <input type="hidden" name="ContactSabun" value="" />
+    <input type="hidden" name="ContactOrgID" value="" />
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Export Classify"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="ExportType" value="0" checked onclick="selectExportType('fmAddRepairForm');" />
+                        <span>@Localizer["External Company"]</span>
+                    </label>
+                    <label style='display:@(ViewBag.my.Location.Equals("6000") ? "none" : "flex")'>
+                        <input type="radio" name="ExportType" value="2" onclick="selectExportType('fmAddRepairForm');"/>
+                        <span>@Localizer["External Company Passage"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Affiliation Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export Import Purpose"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="ExportImportPurposeType">
+                        <option value="0">@Localizer["Repair"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Date"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]' name="ImportDate" onkeyup="generateDateString(this)" maxlength="10" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="ImportType">
+                        <option value="0">@Localizer["Bring"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Delivery Method"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
+                        }else{
+                            <select class="select" name="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li class="full mr-type">
+                <div class="label s03">@Localizer["Request VMI"]</div>
+                <div class="form-item-wrap">
+                    <label>
+                        <input type="radio" name="IsVMI" value="N" checked />
+                        <span>@Localizer["General Repair"]</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="IsVMI" value="Y" />
+                        <span>@Localizer["Request VMI"]</span>
+                    </label>
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+@* 외부업체 경유 공장간 이동 일때 *@
+    <!-- 반입사업장 인수자 -->
+    <div id="dImportAceptor2" style="display:none;">
+        <div class="tit-header-wrap">
+            <div class="rtit">@Localizer["Aceptor Information"]</div>
+        </div>
+        <div class="reg-form-wrap">
+            <ul>
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @* 사원검색: Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel*@
+                        <input type="text" class="inp" placeholder='@Localizer["Import Place Of Business Aceptor"]' name="Name" readonly  onclick="goSearchPerson(1, 'fmAddRepairForm');" />
+                        <button type="button" class="btn-search" onclick="goSearchPerson(1, 'fmAddRepairForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Import Place Of Business Aceptor Information"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @* Sabun	Name 	OrgID	OrgNameKor	OrgNameEng Tel *@
+                        <input type="text" class="inp" name="OrgNameKor" value="" readonly />
+                        <input type="hidden" class="inp" name="OrgNameEng" value="" readonly />
+                        <input type="text" class="inp" name="Tel" value="" readonly />
+                        @* <input type="text" class="inp" name="ImportAceptorInfo" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]<span></span></div>
+                <div class="form-item-wrap"> 
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" readonly onclick="goSearchPerson(3, 'fmAddRepairForm');" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson(3, 'fmAddRepairForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ApprovalOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ApprovalOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ApprovalTel" value="" readonly />
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng ApprovalTel *@
+                    @* <input type="text" class="inp" name="ApprovalInfo" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Sub Contact Name"]' name="ContactName" readonly onclick="goSearchPerson(2, 'fmAddRepairForm');" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson(2, 'fmAddRepairForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sub Contact Information"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ContactOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ContactTel" value="" readonly />
+                    @* ContactSabun	ContactName	ContactOrgID	ContactOrgNameKor	ContactOrgNameEng ContactTel *@
+                    @* <input type="text" class="inp" name="ApprovalInfo" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Item Information"]</div>
+    </div>
+
+    <div id="add-form-wrap2" style="display:block;">
+        <div class="reg-form-wrap" id="reg-form-wrap2">
+            <div class="reg-header-wrap" id ="reg-header-wrap2">
+                <div class="num">01</div>
+            </div>
+            <ul>
+                <li>
+                    <div class="label s03">PR No<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='PR No' name="PRNo[]" value="" readonly onclick="goSearchPR(this);" />
+                        <button type="button" class="btn-search" onclick="goSearchPR(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Material Code"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode[]" value="" readonly/>
+                        @* <button type="button" class="btn-search" onclick="goSearchMaterial(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Material Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName[]" value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Unit"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                        @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Quantity"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="number" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]" value="" maxlength="10" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Standard"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard[]"  value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Description"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" name="Memo[]" value="" maxlength="100" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="msg-wrap">
+        <div class="label org">
+            @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="errormsg2" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+
+    <div class="req-btn-wrap">
+        <div class="lt-item">
+        </div>
+        <div class="lt-item">
+            <button type="button" class="btn-gray" id="tab2-btn-add">@Localizer["Add Item"]</button>
+            <button type="button" class="btn-green" onclick="saveAddRepairForm();">@Localizer["Application"]</button>
+        </div>
+    </div>
+</form>
+</div>
+
+@* 노트북 *@
+<div id='tab3' style='display:none;'>
+<form method="post" name="fmAddNotebookForm" enctype="multipart/form-data">      
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="ExportImportType" value="2" /> @* 0: 자산, 1: 수리, 2: 노트북 *@
+
+    @* 결재자 *@
+    <input type="hidden" name="ApprovalSabun" value="" />
+    <input type="hidden" name="ApprovalOrgID" value="" />
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["ExportImport Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Export Affiliation Place Of Business"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Classify"]<span></span></div>
+                <div class="form-item-wrap">
+                    <select class="select" name="ExportType" onchange="selectNotebookExportType();">
+                        <option value="3">@Localizer["Personal Notebook"]</option>
+                        <option value="4">@Localizer["Rental Notebook"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Export DateTime"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Export DateTime"]' name="ExportDate" onkeyup="generateDateString(this)" maxlength="10" />
+                    <select class="select" name="ExportDateHour">
+                        @{
+                            for(int i=0; i<=22; i++){
+                                <option value='@i'>@i @Localizer["Hour"]</option>
+                            }
+                        }
+                    </select>
+                    <select class="select" name="ExportDateMinute">
+                        <option value='0'>0 @Localizer["Minute"]</option>
+                        <option value='30'>30 @Localizer["Minute"]</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Import DateTime"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder='@Localizer["Import DateTime"]'  name="ImportDate" onkeyup="generateDateString(this)" maxlength="10" />
+                    <select class="select" name="ImportDateHour">
+                        @{
+                            for(int i=0; i<=22; i++){
+                                <option value='@i'>@i @Localizer["Hour"]</option>
+                            }
+                        }
+                    </select>
+                    <select class="select" name="ImportDateMinute">
+                        <option value='0'>0 @Localizer["Minute"]</option>
+                        <option value='30'>30 @Localizer["Minute"]</option>
+                    </select>
+                </div>
+            </li>
+            <span id="spNotebookNumber" style="display:block;">
+                <li style="padding-top:20px;">
+                    <div class="label s03">@Localizer["Notebook Management Number"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Notebook Management Number"]' name="ManagementNo" />
+                    </div>
+                </li>
+                <li style="padding-top:20px;">
+                    <div class="label s03">@Localizer["Notebook Serial Number"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Notebook Serial Number"]' name="SerialNo" />
+                    </div>
+                </li>
+            </span>
+            <li class="full">
+                <div class="label s03">@Localizer["Self Payment Status"]</div>
+                <div class="form-item-wrap">
+                    <input type="checkbox" name="IsSelfApproval" value="Y" />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Export Import Reason"]</div>
+                <div class="form-item-wrap">
+                    <textarea class="textarea" id="textarea" name="Reason" placeholder='@Localizer["Export Import Reason"]' ></textarea>
+                    @* <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="Reason" /> *@
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03"></div>
+                <div class="form-item-wrap">
+                    <span id="spDesc" style="display:none;font-size:13px;" >
+                        < @Localizer["Payment Route"] ><BR />
+                        @Localizer["Review of the security officer of the requesting department"]
+                        <span style="color:#ec2309f1;">
+                            <BR /><BR />
+                            < @Localizer["Caution"] ><BR />
+                            @Localizer["It must be used only for customer response and business processing purposes, and data download and camera photography are not permitted"]<BR />
+                            @Localizer["Documents taken out for business and all confidential data and information must be deleted after the purpose is completed"]<BR />
+                        </span>
+                    </span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approver"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" readonly onclick="goSearchPerson(3, 'fmAddNotebookForm');" />
+                    <button type="button" class="btn-search" onclick="goSearchPerson(3, 'fmAddNotebookForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Approver Information"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ApprovalOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ApprovalOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ApprovalTel" value="" readonly />
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng *@
+                    @* <input type="text" class="inp" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["CEO Approval history Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Attach"]<span></span></div>
+                <div class="form-item-wrap">
+                    <label asp-for="ExportImport.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                    <input asp-for="ExportImport.FormFile" name = "FormFile" id="file1" accept=".pdf" style="display:none;" type="file">
+                    <span asp-validation-for="ExportImport.FormFile"></span>
+                    @* <input type="file" class="hidden" accept=".pdf"  />
+                    <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button> *@
+                    <div class="value">@Localizer["No Files Selected"]</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="msg-wrap">
+        <div class="label org">
+            @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="errormsg3" class="label org red">@ViewBag.ErrorMsg</span>
+        </div>
+    </div>
+    <div class="req-btn-wrap">
+        <div class="lt-item">
+        </div>
+        <div class="lt-item">
+            <button type="button" class="btn-green" onclick="saveAddNotebookForm();">@Localizer["Application"]</button>
+        </div>
+    </div>
+</form>
+</div>
+
+<template id="temp1" class="template">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">02</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="삭제" /></a>
+            <input type="hidden" name="PRNo[]" value="" />
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Material Code"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode[]" value="" readonly onclick="goSearchMaterial(this);" />
+                    <button type="button" class="btn-search" onclick="goSearchMaterial(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Material Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName[]" value="" maxlength="100" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Unit"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }                
+                    @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Quantity"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]" value="" maxlength="10" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Standard"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard[]"  value="" maxlength="100" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Memo[]" value="" maxlength="100" />
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<template id="temp2" class="template">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">02</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="삭제" /></a>
+            <input type="hidden" name="PRNo[]" value="" />
+        </div>
+        <ul>
+            @* <li>
+                <div class="label s03">PR No<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='PR No' name="PRNo[]" value="" readonly onclick="goSearchPR(this);" />
+                    <button type="button" class="btn-search" onclick="goSearchPR(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li> *@
+            <li>
+                <div class="label s03">@Localizer["Material Code"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode[]" value="" readonly />
+                    <button type="button" class="btn-search" onclick="goSearchMaterial(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Material Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName[]" value="" maxlength="100" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Unit"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }                
+                    @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Quantity"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]" value="" maxlength="10" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Standard"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard[]"  value="" maxlength="100" />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Memo[]" value="" maxlength="100" />
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<template id="temp3" class="template">
+        <div class="reg-form-wrap" id="reg-form-wrap2">
+            <div class="reg-header-wrap" id ="reg-header-wrap2">
+                <div class="num">02</div>
+                <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="삭제" /></a>
+            </div>
+            <ul>
+                <li>
+                    <div class="label s03">PR No<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='PR No' name="PRNo[]" value="" readonly onclick="goSearchPR(this);" />
+                        <button type="button" class="btn-search" onclick="goSearchPR(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Material Code"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Code"]' name="MaterialsCode[]" value="" readonly/>
+                        @* <button type="button" class="btn-search" onclick="goSearchMaterial(this);"><img src="/images/ico/ico-search.svg" alt="검색" /></button> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Material Name"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Material Name"]' name="MaterialsName[]" value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Unit"]<span></span></div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                            }else{
+                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                            }
+                        }
+                        @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Quantity"]<span></span></div>
+                    <div class="form-item-wrap">
+                        <input type="number" class="inp" placeholder='@Localizer["Quantity"]' name="Quantity[]" value="" maxlength="10" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Standard"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder='@Localizer["Standard"]' name="Standard[]"  value="" maxlength="100" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label s03">@Localizer["Description"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp" name="Memo[]" value="" maxlength="100" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+</template>
+
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+<partial name="~/Views/_Popup/PopSelectExternalCompany.cshtml" />
+<partial name="~/Views/_Popup/PopSelectMaterial.cshtml" />
+<partial name="~/Views/_Popup/PopSelectPR.cshtml" />
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+<iframe name="ifTemp" id="ifTemp" src="" title="temp" border="0" style="display:none;"></iframe>

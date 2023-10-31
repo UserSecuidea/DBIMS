@@ -1,0 +1,25 @@
+@model CarryItemRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Apply CarryItem"]; //"휴대물품신청";
+    ViewBag.InPage = true;
+}
+<script>
+</script>
+<partial name="~/Views/_Popup/PopRegCarryItem.cshtml" />
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+<partial name="~/Views/_Popup/PopSelectApprovalPerson.cshtml" model="@Model.ApprovalPeople" />
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>
+
+@if (TempData.Keys.Contains("DATA.CarryItemApplyID"))
+{
+    var id = @TempData["DATA.CarryItemApplyID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/carryitem?carryItemApplyID='+@id);
+    }
+</script>
+    }
+}

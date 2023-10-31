@@ -1,0 +1,244 @@
+@{
+    @* ViewData["Title"] = "레벨 관리"; *@
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+
+    };
+    var selectedIndex = 0;
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+       selectedRowObj=row;
+        row.classList.add('on');
+    }
+    function onChangeLevel(sel){
+        var txt = sel.options[sel.selectedIndex].text;
+        var val = sel.options[sel.selectedIndex].value;
+        console.log("[onChangeLevel] txt:"+txt+", val:"+val);
+        if (val == -1){
+            sel.selectedIndex = selectedIndex;
+            popAddLevel();
+        } else {
+            selectedIndex = sel.selectedIndex;
+            window.location = "/sys/levellist/"+sel.options[sel.selectedIndex].value;
+        }
+    }
+    function popAddLevel(){
+        common.popOpen(document.getElementById('popAddLevel'));
+    }
+    function checkAll(ck){
+        console.log("[checkAll]"+ck.checked);
+
+        var myform = document.fmMenu;
+        Array.from(myform.elements).forEach((input) => {
+            input.checked = ck.checked;
+            if(input.type == 'checkbox'){
+                console.log("[checkAll]",input);
+            }
+        });   
+    }
+    function saveLevel(){
+        var myform = document.fmLevel;
+        var LevelName = myform.LevelName.value.trim();
+        if (LevelName.length<1) {
+            alert('@Localizer["Please enter Level Name"]');
+            myform.LevelName.focus();
+            return;
+        }
+        myform.LevelName.value = LevelName;
+        myform.submit();
+    }
+    function saveMenu(mode){
+        var myform = document.fmMenu;
+        if(mode == 'A') {
+            myform.submit();
+        } else {
+            myform.reset();
+        }
+    }
+</script>
+
+<form name="fmLevel" method="post">
+    <input type="hidden" name="mode" value="L" />
+<div id="popAddLevel" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Add Level"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt="@Localizer["Close Popup"]" /></a>
+        </div>
+        <div class="pop-cont-wrap scrolls">
+            <div class="reg-form-wrap ">
+                <ul>
+                    @* <li>
+                        <div class="label s02">사업장</div>
+                        <div class="form-item-wrap">
+                            <select class="select"></select>
+                        </div>
+                    </li> *@
+                    <li>
+                        <div class="label s02">@Localizer["Level Name"]</div>
+                        <div class="form-item-wrap">
+                            <input type=text class="inp" name='LevelName' value='' />&nbsp;&nbsp;
+                            <button type="button" class="btn-green" onclick="saveLevel();">@Localizer["Save"]</button>
+                        </div>
+                    </li>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<section class="grid-item-wrap">
+<form name="fmMenu" method="post" action="/sys/levellist/@ViewBag.id">
+    <input type="hidden" name="mode" value="M" />
+    <section class="page-search-wrap">
+        <div class="mob-toggle-wrap">
+            <a href="javascript:void(0)">
+                <span>@Localizer["Filter"]</span>
+                <img src="/images/ico/ico-arr-up01.svg" alt='@Localizer["Select Level"]' />
+            </a>
+        </div>
+        <div class="search-group-wrap">
+            <div class="search-form-wrap">
+                <ul>
+                    <li>
+                        <div class="label">@Localizer["Select Level"]</div>
+                        <div class="form-item-wrap">
+                            @* @{
+                                foreach(Level level in ViewBag.levels){
+                                    @level.LevelName
+                                }
+                            } *@
+                            <select name="LevelID" class="select" onchange="onChangeLevel(this);" 
+                                asp-items="@(new SelectList(ViewBag.levels, nameof(Level.LevelID), nameof(Level.LevelName), ViewBag.id))">
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+                <div class="side-btn-wrap">
+                <button type="button" class="btn-green" onclick="saveMenu('A');">@Localizer["Save"]</button>
+                @* <button type="button" class="btn-org" onclick="saveMenu('D');">@Localizer["Delete"]</button> *@
+                <button type="button" class="btn-gray" onclick="saveMenu('R');">@Localizer["Cancel"]</button>
+
+            </div>
+        </div>
+    </section>
+    <section class="grid-item-wrap">
+    <div class="tbl-item-wrap">
+        <!--<div id="pager"></div>-->
+        <table class="tbl01">
+            <tr>
+                <th><input name="ck" type="checkbox" onchange="checkAll(this)" /></th>
+                <th>@Localizer["Menu Name"] (@Localizer["Korean"])</th>
+                <th>@Localizer["Menu Name"] (@Localizer["English"])</th>
+                <th>@Localizer["Enabled"]</th>
+            </tr>
+    @{
+        string MenuNameKor ="";
+        string MenuNameEng ="";
+        bool isAccess = false;
+        bool hasData = false;
+        bool isSubMenu = false;
+        foreach (var r in ViewBag.menuLevels) {
+            isAccess = false;
+            hasData = false;
+            isSubMenu = false;
+            MenuNameKor = r.a.MenuNameKor;
+            MenuNameEng = r.a.MenuNameEng;
+            if (r.b.Count > 0){
+                hasData = true;
+                if (r.b[0].IsAccess == "Y") {
+                    isAccess = true;
+                }
+                MenuNameKor = r.b[0].MenuNameKor;
+                MenuNameEng = r.b[0].MenuNameEng;
+                @* @r.a.MenuNameKor <text>/</text>@r.b[0].MenuNameKor<text><br /></text> *@
+            }
+            if (r.a.Depth > 0) {
+                isSubMenu = true;
+            }
+            <tr>
+                <td>
+                    @* <text>Depth:</text>@r.a.Depth <text>/ Count:</text> @r.b.Count <text>/ IsDelete:</text> @r.a.IsDelete *@
+                    @* <text>GroupNo:</text>@r.a.GroupNo <text>MenuNameKor:</text>@r.a.MenuNameKor <text>-</text> @MenuNameKor *@
+                    @if (hasData){
+                        @* <text>/ MenuLevelID:</text> @(r.b[0]?.MenuLevelID) *@
+                        @* @(r.b[0].IsAccess.Equal("Y")? checked=\"checked\":"") *@
+                        <input name = "MenuIDs" type = "checkbox" checked=@isAccess value='@(r.a.MenuID)_@(r.b[0].MenuLevelID)' />
+                        @* <span>@(r.a.MenuID)_@(r.b[0].MenuLevelID)</span> *@
+                    } else if (r.a.Depth == 1) {
+                        <input name = "MenuIDs" type = "checkbox" value='@(r.a.MenuID)_0' />
+                        @* <span>@(r.a.MenuID)</span> *@
+                    } else {
+                        @* <span>@(r.a.MenuID)</span> *@
+                    }
+                </td>
+                <td style="text-align:left;padding-left: 50px;">
+                    <span>@(isSubMenu?"ㄴ ":"")</span>
+                    @MenuNameKor</td>
+                <td style="text-align:left;padding-left: 50px;">
+                    <span>@(isSubMenu?"ㄴ ":"")</span>
+                    @MenuNameEng
+                </td>
+                <td>
+                    @if (hasData)
+                    {
+                        <span>@(r.b[0].IsAccess).</span>
+                    }else if (r.a.Depth == 1) {
+                        <span>N</span>
+                    }
+                </td>
+            </tr>
+    }
+}
+            @* <tr>
+                <td><input name="MenuID" type="checkbox" /></td>
+                <td>임직원 정보관리</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr onclick="selectRow(this, 1);">
+                <td><input name="MenuID" type="checkbox" /></td>
+                <td>ㄴ 임직원 관리</td>
+                <td></td>
+                <td>Y</td>
+            </tr>
+            <tr onclick="selectRow(this, 2);">
+                <td><input name="MenuID" type="checkbox" /></td>
+                <td>ㄴ 출입증 관리</td>
+                <td></td>
+                <td>Y</td>
+            </tr>
+            <tr onclick="selectRow(this, 3);">
+                <td><input name="MenuID" type="checkbox" /></td>
+                <td>ㄴ 차량 관리</td>
+                <td></td>
+                <td>Y</td>
+            </tr> *@
+
+        </table>
+    </div>
+
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+        </div>
+        <div class="side-btn-wrap">
+            <button type="button" class="btn-green" onclick="saveMenu('A');">@Localizer["Save"]</button>
+            @* <button type="button" class="btn-org" onclick="saveMenu('D');">@Localizer["Delete"]</button> *@
+            <button type="button" class="btn-gray" onclick="saveMenu('R');">@Localizer["Cancel"]</button>
+        </div>
+    </div>
+</form>
+</section>

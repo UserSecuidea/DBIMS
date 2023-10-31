@@ -1,0 +1,134 @@
+@model SafetyViolationReasonDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Register and Modify Safety Regulation"]; //"안전 위규 등록 및 수정";
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    function goList(){
+        window.location = '/work/safetyviolationreasonlist/?culture=@CultureInfo.CurrentCulture'
+    } 
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddSafetyViolationReason;
+         @* 안전 위규 : mode SafetyViolationReasonContents ViolationPenaltyPeoriod1 ViolationPenaltyPeoriod2 ViolationPenaltyPeoriod3 ViolationLevel OrderNo *@
+         if(myform.SafetyViolationReasonID.value > 0){
+            myform.mode.value = "E";
+         }
+        if(myform.SafetyViolationReasonContents.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter issuance criteria"]';
+            myform.SafetyViolationReasonContents.focus();
+            return;
+        }
+        if(myform.ViolationPenaltyPeoriod1.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the 1st prohibition period"]';
+            myform.ViolationPenaltyPeoriod1.focus();
+            return;
+        }
+        if(myform.ViolationPenaltyPeoriod2.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the 2nd prohibition period"]';
+            myform.ViolationPenaltyPeoriod2.focus();
+            return;
+        }
+        if(myform.ViolationPenaltyPeoriod3.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the 3rd prohibition period"]';
+            myform.ViolationPenaltyPeoriod3.focus();
+            return;
+        }
+        if(myform.ViolationLevel.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your risk level"]';
+            myform.ViolationLevel.focus();
+            return;
+        }
+        if(myform.OrderNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter sort order"]';
+            myform.OrderNo.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Do you want to save the safety violation"]');        
+        if(con){
+            myform.submit();
+        }
+    }
+</script>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Violation Regulation Information"]</div>
+</div>
+
+<form name="fmAddSafetyViolationReason" method="post">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="SafetyViolationReasonID" value='@Model.SafetyViolationReason.SafetyViolationReasonID' />
+    <div class="reg-form-wrap">
+        <ul>
+            <li class="full">
+                <div class="label s03">@Localizer["Issuance Standard"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Issuance Standard"]' name="SafetyViolationReasonContents" value='@Model.SafetyViolationReason.SafetyViolationReasonContents' />
+                </div>
+            </li>
+            <li class="empty02">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["First Prohibition Period"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["First Prohibition Period"]' name="ViolationPenaltyPeoriod1" value='@Model.SafetyViolationReason.ViolationPenaltyPeoriod1' />
+                    <span class="e03">@Localizer["Day"]</span>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Second Prohibition Period"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Second Prohibition Period"]' name="ViolationPenaltyPeoriod2" value='@Model.SafetyViolationReason.ViolationPenaltyPeoriod2' />
+                    <span class="e03">@Localizer["Day"]</span>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Third Prohibition Period"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Third Prohibition Period"]' name="ViolationPenaltyPeoriod3" value='@Model.SafetyViolationReason.ViolationPenaltyPeoriod3' />
+                    <span class="e03">@Localizer["Day"]</span>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Risk Level"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Risk Level"]' name="ViolationLevel" value='@Model.SafetyViolationReason.ViolationLevel' />
+                    <span class="e03">@Localizer["Level"]</span>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sort Order"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" class="inp" placeholder='@Localizer["Sort Order"]' name="OrderNo" value='@Model.SafetyViolationReason.OrderNo' />
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Save"]</button>
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

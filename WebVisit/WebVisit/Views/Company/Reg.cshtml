@@ -1,0 +1,275 @@
+@* @model Company *@
+@model CompanyRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Register New"]; //"신규등록";
+}
+<script>
+    // search - 결재자 
+    function goSearchApprovalPerson(sMode, fmName){
+        const myform = eval("document."+fmName+";");
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        nameObj = myform.ApprovalName;
+        sabunObj =  myform.ApprovalSabun;
+        orgIdObj =  myform.ApprovalOrgID;
+        orgKorObj =  myform.ApprovalOrgNameKor;
+        orgEngObj =  myform.ApprovalOrgNameEng;
+        telObj = myform.ApprovalTel;
+
+        popSelectApprovalPerson(nameObj, sabunObj, telObj, mobileObj, orgIdObj, orgKorObj, orgEngObj); 
+
+    }
+
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddCompany;
+        var regBizNo = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/;
+        var regEmail = /^[a-z0-9\.\_%+-]+@@[a-z0-9\.\-]+\.[a-z]{2,4}$/i;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        if(myform.CompanyName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company name"]';
+            @* alert('@Localizer["Please enter your company name"]'); *@
+            myform.CompanyName.focus();
+            return;
+        }
+        if(myform.CeoName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the name of the representative"]';
+            myform.CeoName.focus();
+            return;
+        }
+        if(myform.BizRegNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business registration number"]';
+            myform.BizRegNo.focus();
+            return;
+        }
+        if(!regBizNo.test(myform.BizRegNo.value )) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business registration number correctly"] ex)123-45-69870';
+            myform.BizRegNo.focus();
+            return;
+        }
+        if(myform.FormFile.value.trim().length < 1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please attach business registration certificate"]';
+            return;
+        }
+        if(myform.Address.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business address"]';
+            myform.Address.focus();
+            return;
+        }
+        if(myform.ContactPersonName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact person name"]';
+            myform.ContactPersonName.focus();
+            return;
+        }
+        if(myform.Email.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your e-mail"]';
+            myform.Email.focus();
+            return;
+        }
+        if(!regEmail.test(myform.Email.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your email correctly"] ex)0000@0000.000';
+            myform.Email.focus();
+            return;
+        }
+        if(myform.Tel.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company phone number"]';
+            myform.Tel.focus();
+            return;
+        }
+        if(!regPhone.test(myform.Tel.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the correct company phone number"] ex)000-0000-0000';
+            myform.Tel.focus();
+            return;
+        }
+        if(myform.ContactPersonTel.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact information of the person in charge"]';
+            myform.ContactPersonTel.focus();
+            return;
+        }
+        if(!regPhone.test(myform.ContactPersonTel.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact information correctly"] ex)000-0000-0000';
+            myform.ContactPersonTel.focus();
+            return;
+        }
+        if(myform.ApprovalSabun.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a approver"]';
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // file events
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+</script>
+
+@if (TempData.Keys.Contains("DATA.CompanyID"))
+{
+    var id = @TempData["DATA.CompanyID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/company?companyID='+@id);
+    }
+</script>
+    }
+}
+<form method="post" name="fmAddCompany" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="A" />
+    <input type="hidden" name="CompanyType" value=2 /> @* 0: 본사, 1: 상주협력사, 2: 비상주협력사 *@
+    <input type="hidden" name="CompanyStatus" value=0 />@* 0: 승인대기, 1: 승인완료, 2: 반려 *@
+    @* 결재자 *@
+    <input type="hidden" name="ApprovalSabun" value="" />
+    <input type="hidden" name="ApprovalOrgID" value="" />
+    
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Partner Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Classify"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["NonResident Partner"]' readonly />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Approval Status"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Waiting Approval"]' readonly />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Company Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value="@Model.company.CompanyName" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Representative Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Representative Name"]' name="CeoName" value="@Model.company.CeoName" required />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Business Registration Number"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='000-00-11111' name="BizRegNo" id="BizRegNo" value="@Model.company.BizRegNo" required maxlength="12" 
+                    onkeyup="setBizNo(this.value,'BizRegNo')" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Business License"]<span></span></div>
+            <div class="form-item-wrap">
+            @* FormFile->company.FormFile *@
+                <label asp-for="@Model.company.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                <input asp-for="@Model.company.FormFile" id="file1" name="FormFile" accept=".pdf, .jpeg, .jpg, .png, .gif" style="display:none;" type="file">
+                <span asp-validation-for="@Model.company.FormFile"></span>
+                <div class="value">@Localizer["No Files Selected"]</div>
+                @* <input type="file" class="hidden" accept=".pdf" name="BizRegFile"  />
+                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>
+                <div class="value">@Localizer["No Files Selected"]</div> *@
+            </div>
+        </li>
+        <li class="full">
+            <div class="label s03">@Localizer["Company Address"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Company Address"]' name="Address" value="@Model.company.Address" />
+            </div>
+        </li>
+        <li class="empty02"></li>
+        <li>
+            <div class="label s03">@Localizer["Contact Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Contact Name"]' name="ContactPersonName" value="@Model.company.ContactPersonName"  />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Email"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="email" class="inp" placeholder='xxxx@email.com' name="Email" value="@Model.company.Email" required />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Company Tel"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="tel" class="inp" placeholder='@Localizer["Company Tel"] ex)000-0000-0000' pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="Tel" value="@Model.company.Tel" maxlength="13" required />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Contact Tel"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="tel" class="inp" placeholder='@Localizer["Contact Tel"] ex)000-0000-0000' pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" name="ContactPersonTel" value="@Model.company.ContactPersonTel" onkeyup="generatePhoneString(this);" maxlength="13" required />
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Approval Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Approver"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" placeholder='@Localizer["Approver"]' name="ApprovalName" readonly onclick="goSearchApprovalPerson(3, 'fmAddCompany');" />
+                <button type="button" class="btn-search" onclick="goSearchApprovalPerson(3, 'fmAddCompany');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Approver Information"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="ApprovalOrgNameKor" value="" readonly />
+                <input type="hidden" class="inp" name="ApprovalOrgNameEng" value="" readonly />
+                <input type="text" class="inp" name="ApprovalTel" value="" readonly />
+                @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng *@
+                @* <input type="text" class="inp" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+            </div>
+        </li>
+    </ul>
+</div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼 정리 start ~end
+    <div class="lt-item">
+    </div> *@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Save"]</button>
+    </div>
+</div>
+<partial name="~/Views/_Popup/PopSelectApprovalPerson.cshtml" model="@Model.ApprovalPeople" />
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>

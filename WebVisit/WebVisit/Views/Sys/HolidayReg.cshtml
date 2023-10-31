@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = @Localizer["Register Holiday"]; //"공휴일 등록";
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddHoliday;
+        if(myform.HolidayDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a holiday date"]';
+            myform.HolidayDate.focus();
+            return;
+        }
+        if(myform.HolidayName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the name of the holiday"]';
+            myform.HolidayName.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to register a holiday"]');
+        if(con){
+            myform.submit();
+        }
+    }
+</script>
+
+<form name="fmAddHoliday" method="post">
+    <input type="hidden" name="mode" value="A" />
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Registration Information"]</div>
+</div>
+<div class="reg-form-wrap">
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Holiday Date"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="HolidayDate" onkeyup="generateDateString(this)" maxlength="10" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Holiday Name"]</div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp full" placeholder='@Localizer["Holiday Name"]' name="HolidayName" />
+            </div>
+        </li>
+    </ul>
+</div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+        <!--
+        <button type="button" class="btn-gray">출입카드 회수처리</button>
+        <button type="button" class="btn-gray">비밀번호 초기화</button>
+        -->
+    </div>*@
+    <div class="lt-item">
+        <button type="button" class="btn-green" onclick="saveAddForm();">@Localizer["Register"]</button>
+    </div>
+</div>

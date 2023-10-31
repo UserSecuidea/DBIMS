@@ -1,0 +1,112 @@
+@using WebVisit.Models.DomainModels.LPR;
+@model CarListViewModel
+@{
+    @* ViewData["Title"] = "차량출입 조회"; *@
+    CarListGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    CarListGridData searchRoute = Model.SearchRoute;
+}
+<script>
+
+function search() {
+        var myform = document.fmSearch;
+        var keyword1 = myform.searchDate.value.trim().replace("/","");
+        var url = myform.action; 
+        if (keyword1 != null && keyword1.length > 0) {
+            url += keyword1;
+        }else {
+            url +="+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }    
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="열기" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap" id='searchField1'>
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchdate="">
+                <li>
+                    <div class="label">@Localizer["Search Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchDate" value="@searchRoute.SearchDate" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="차량출입조회 목록">
+            <tr>
+                <th>PassedTime</th>
+                <th>차량 용도</th>
+                <th>방문객입구</th>
+                <th>방문객출구</th>
+                <th>부천정문입구</th>
+                <th>부천정문출구</th>
+                <th>상우정문입구</th>
+                <th>상우정문출구</th>
+            </tr>
+@{
+    foreach(var m in Model.PassedVehicleLogs){
+        <tr>
+            <td>@m.PassedTime</td>
+            <td>@m.VehiclePurpose</td>
+            <td>@m.CountVisitorEntry</td>
+            <td>@m.CountVisitorExit</td>
+            <td>@m.Count1Entry</td>
+            <td>@m.Count1Exit</td>
+            <td>@m.Count2Entry</td>
+            <td>@m.Count2Exit</td>
+        </tr>
+    }
+}
+            @* <tr>
+                <th>@Localizer["Access Location"]</th>
+                <th>@Localizer["Entry"]</th>
+                <th>@Localizer["Exit"]</th>
+                <th>@Localizer["Entry Exit"]</th>
+                <th>@Localizer["Entry"] ( @Localizer["Previous Day"] )</th>
+                <th>@Localizer["Exit"] ( @Localizer["Previous Day"] )</th>
+                <th>@Localizer["Entry Exit"] ( @Localizer["Previous Day"] )</th>
+                <th>@Localizer["Entry"] ( @Localizer["Day Before"] )</th>
+                <th>@Localizer["Exit"] ( @Localizer["Day Before"] )</th>
+                <th>@Localizer["Entry Exit"] ( @Localizer["Day Before"] )</th>
+            </tr>
+            <tr>
+                <td>부천 정문</td>
+                <td>2500</td>
+                <td>2400</td>
+                <td>100</td>
+                <td>2600</td>
+                <td>2700</td>
+                <td>2700</td>
+                <td>2600</td>
+                <td>2700</td>
+                <td>2700</td>
+            </tr> *@
+
+        </table>
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:block;border:0;"></iframe>

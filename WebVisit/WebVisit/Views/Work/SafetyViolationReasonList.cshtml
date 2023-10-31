@@ -1,0 +1,153 @@
+@model SafetyViolationReasonListViewModel
+@{
+    @* ViewData["Title"] = "안전 위규 관리"; *@
+    SafetyViolationReasonGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+
+    function goReg(){
+        window.location = "/work/safetyviolationreasondetail/?culture=@CultureInfo.CurrentCulture";
+    }
+    @* function goDetail(){
+        window.location = '/work/safetyviolationreasondetail/?culture=@CultureInfo.CurrentCulture'
+    } *@
+    
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&safetyViolationReasonID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+</script>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+            <!--
+            <select class="select">
+                <option>15행</option>
+            </select>
+            <button type="button"><img src="/images/ico/ico-refresh.svg" /></button>
+            -->
+        </div>
+        <div class="side-btn-wrap">
+            <button type="button" class="btn-green" onClick="goReg();">@Localizer["New registration"]</button>
+            <a asp-action="SafetyViolationReasonDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="SafetyViolationReasonDetail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap t01">        
+        <table class="tbl01">
+            <tr>
+                <th>NO</th>
+                <th style="width:400px;">@Localizer["Safety Rules Violation Issuance Standard"]</th>
+                <th>@Localizer["First"]</th>
+                <th>@Localizer["Secondary"]</th>
+                <th>@Localizer["Third"]</th>
+                <th>@Localizer["Risk Level"]</th>
+                <th>@Localizer["Sort Order"]</th>
+                <th>@Localizer["First Registered Person"]</th>
+                <th>@Localizer["Final Modifier"]</th>
+            </tr>
+
+@{
+    foreach(SafetyViolationReason m in Model.SafetyViolationReasons){ 
+            <tr onclick="selectRow(this, @m.SafetyViolationReasonID);" ondblclick="goDetail(@m.SafetyViolationReasonID)">
+                <td>@m.SafetyViolationReasonID</td>
+                <td>@m.SafetyViolationReasonContents</td>
+                <td>@m.ViolationPenaltyPeoriod1 @Localizer["Day"]</td>
+                <td>@m.ViolationPenaltyPeoriod2 @Localizer["Day"]</td>
+                <td>@m.ViolationPenaltyPeoriod3 @Localizer["Day"]</td>
+                <td>@m.ViolationLevel</td>
+                <td>@m.OrderNo</td>
+                <td>@m.InsertName</td>
+                <td>@m.UpdateName</td>
+            </tr>
+    }
+}
+            @* <tr onclick="selectRow(this, 2);">
+                <td>1</td>
+                <td>작업 중 보호구 미착용 및 착용상태 불량(안전모, 안전화, 호흡용 보호구)</td>
+                <td>1일</td>
+                <td>3일</td>
+                <td>7일</td>
+                <td>1</td>
+                <td>0</td>
+                <td>홍길동</td>
+                <td>김담당</td>
+            </tr> *@
+            
+        </table>
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="SafetyViolationReasonList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="SafetyViolationReasonList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="SafetyViolationReasonList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="SafetyViolationReasonList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>

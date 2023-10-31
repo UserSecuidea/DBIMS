@@ -1,0 +1,483 @@
+@model ExportImportDetailViewModel
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>DB 하이텍 - 결재</title>
+        <style>
+        .pop-TableTitleL
+        {
+            padding: 12px 20px; 
+            text-align: left; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;
+        }
+        .pop-TableCon_l_Long
+        {
+            padding:5px 15px; 
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;
+        }
+        .bigtitle_pop
+        {
+            font-weight:bold;
+            font-size:20px;
+            color:#555;
+            padding:20px 0;
+        }
+        .smalltitle_pop
+        {
+            height: 40px; 
+            line-height: 40px; 
+            background: #89919c; 
+            margin: 0px 0px; 
+            border-bottom: 1px solid #5b5c6c; 
+            font-size: 16px; 
+            color: #fff; 
+            font-family: '돋움'; 
+            text-indent: 20px;"
+        }
+        .tabletitle_pop
+        {
+            padding: 12px 20px; 
+            text-align: center; 
+            border-top: 1px solid #e1e5e6; 
+            background: #f1f7f7; 
+            font-size: 12px; 
+            color: #6F6F6F;"
+        }
+        .tabledata_pop
+        {
+            padding:5px 15px; 
+            text-align:center;
+            padding:10px;
+            border-top:1px solid #e1e5e6; 
+            background:#fff; 
+            font-size:12px;"		
+        }
+        </style>
+    </head>
+    <body>
+        @* data: @Model.ExportImportID *@
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td style="padding-top:10px;font-size: 13px; color: red; ">
+                            %주의사항<br>
+                            -반출 신청 시 팀장 결재를 필히 득해야 합니다.<br>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 제목 -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td class="bigtitle_pop">반출입신청</td><td>&nbsp;</td><td></td>
+                        </tr>
+                    </table>
+                    <!-- header 정보 입력 -->
+                    <div id="D_INOUT">
+<div id='tab1' style='display:@(Model.ExportImport.ExportImportType == 0 ? "inline" : "none");'>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <!-- 반출입정보 -->
+                            <tr><td height="7" class="smalltitle_pop"><b>반출입 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >반출입번호</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.ExportImport.ExportImportNo</span></td>
+                                            <td class="pop-TableTitleL">반출입목적</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportImportPurposeType > -1 && Model.CodeExportImportPurposeType != null) {
+                                                        foreach(var a in Model.CodeExportImportPurposeType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ExportImportPurposeType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출구분</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportType > -1 && Model.CodeExportType != null) {
+                                                        foreach(var a in Model.CodeExportType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ExportType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL">반입구분</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ImportType > -1 && Model.CodeImportType != null) {
+                                                        foreach(var a in Model.CodeImportType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ImportType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출소속사업장</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportLocation != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.ExportImport.ExportLocation) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL">반입소속사업장</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ImportLocation != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.ExportImport.ImportLocation) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반입일</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.ImportDate</span></td>
+                                            <td class="pop-TableTitleL">반출물 전달 방법</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.DeliveryMethodType > -1 && Model.CodeDeliveryMethodType != null) {
+                                                        foreach(var a in Model.CodeDeliveryMethodType) {
+                                                            if (a.SubCodeID == Model.ExportImport.DeliveryMethodType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL" colspan="1">반출입사유</td>
+                                            <td class="pop-TableCon_l_Long" colspan="3"><span>@Model.ExportImport.Reason</span></td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                            <!-- 인수자정보 -->
+                            <tr><td style="height: 40px;"></td></tr>
+                            <tr><td class="smalltitle_pop"><b>인수자 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <div style='display:@((Model.ExportImport.ExportType == 0 || Model.ExportImport.ExportType == 2) ? "inline" : "none");'>
+                                        <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC" style="margin-top:-1px">
+                                            <tr>
+                                                <td class="pop-TableTitleL" style="width:30%">외부업체 인수자 정보(업체명 / 사업자번호 / 전화번호)</td>
+                                                <td class="pop-TableCon_l_Long"style="width:70%">
+                                                <span>@Model.ExportImport.CompanyContactName / @Model.ExportImport.CompanyName / @Model.ExportImport.BizRegNo / @Model.ExportImport.CompanyTel</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div style='display:@((Model.ExportImport.ExportType == 1 || Model.ExportImport.ExportType == 2) ? "inline" : "none");'>
+                                        <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC" style="margin-top:-1px">
+                                            <colgroup>
+                                                <col width="22%">
+                                                <col width="28%">
+                                                <col width="22%">
+                                                <col width="28%">
+                                            </colgroup>
+                                            <tr>
+                                                <td class="pop-TableTitleL">반입사업장 인수자</td>
+                                                <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.Name</span></td>
+                                                <td class="pop-TableTitleL">반입사업장 인수자 정보</td>
+                                                <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 품목정보 -->
+                            <tr><td style="height: 40px;"></td> </tr>
+                            <tr><td style="height: 40px; line-height: 40px; background: #89919c; margin: 0px 0px; border-bottom: 1px solid #5b5c6c; font-size: 16px; color: #fff; font-family: '돋움'; text-indent: 20px;"><b>품목 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <tr>
+                                            @* <td class="tabletitle_pop" style="width: 10%">PR_No.</td> *@
+                                            <td class="pop-TableTitleL" style="width: 25%">자재코드</td>
+                                            <td class="pop-TableTitleL" style="width: 7%">자재명</td>
+                                            <td class="pop-TableTitleL" style="width: 6%">수량</td>
+                                            <td class="pop-TableTitleL" style="width: 7%">단위</td>
+                                            <td class="pop-TableTitleL" style="width: 10%">규격</td>
+                                            <td class="pop-TableTitleL" style="width: 5%">비고</td>
+                                        </tr>
+@{
+    foreach(ExportImportItem m in Model.ExportImportItems){  
+                                        <tr>
+                                            <td class="pop-TableCon_l_Long">@m.MaterialsCode</td>
+                                            <td class="pop-TableCon_l_Long">@m.MaterialsName</td>
+                                            <td class="pop-TableCon_l_Long">@m.Quantity</td>
+                                            <td class="pop-TableCon_l_Long">@m.Unit</td>
+                                            <td class="pop-TableCon_l_Long">@m.Standard</td>
+                                            <td class="pop-TableCon_l_Long">@m.Memo</td>
+                                        </tr>
+    }
+}                                        
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+</div>
+<div id='tab2' style='display:@(Model.ExportImport.ExportImportType == 1 ? "inline" : "none");'>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <!-- 반출입정보 -->
+                            <tr><td class="smalltitle_pop"><b>반출입 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >반출입번호</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.ExportImport.ExportImportNo</span></td>
+                                            <td class="pop-TableTitleL">반출입목적</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportImportPurposeType > -1 && Model.CodeExportImportPurposeType != null) {
+                                                        foreach(var a in Model.CodeExportImportPurposeType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ExportImportPurposeType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출구분</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportType > -1 && Model.CodeExportType != null) {
+                                                        foreach(var a in Model.CodeExportType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ExportType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL">반입구분</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ImportType > -1 && Model.CodeImportType != null) {
+                                                        foreach(var a in Model.CodeImportType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ImportType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출소속사업장</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ExportLocation != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.ExportImport.ExportLocation) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="pop-TableTitleL">반입소속사업장</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.ImportLocation != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.ExportImport.ImportLocation) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반입일</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.ImportDate</span></td>
+                                            <td class="pop-TableTitleL">반출물 전달 방법</td>
+                                            <td class="pop-TableCon_l_Long">
+                                                @{
+                                                    if (Model.ExportImport.DeliveryMethodType > -1 && Model.CodeDeliveryMethodType != null) {
+                                                        foreach(var a in Model.CodeDeliveryMethodType) {
+                                                            if (a.SubCodeID == Model.ExportImport.DeliveryMethodType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">VMI요청</td>
+                                            <td class="pop-TableCon_l_Long">@Model.ExportImport.IsVMI</td>
+                                            <td class="pop-TableTitleL" colspan="1">반출입사유</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.Reason</span></td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                            <!-- 인수자정보 -->
+                            <tr>
+                                <td style='display:@(Model.ExportImport.ExportType == 2 ? "flex" : "none");' class="smalltitle_pop"><b>인수자 정보</b></td>
+                            </tr>
+                            <tr>
+                                <td height="40" style='display:@(Model.ExportImport.ExportType == 2 ? "flex" : "none");'>
+                                    <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC" >
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반입사업장 인수자</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.Name</span></td>
+                                            <td class="pop-TableTitleL">반입사업장 인수자 정보</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.OrgNameKor / @Model.ExportImport.Tel</span></td>
+                                        </tr>
+                                    </table>   	  
+                                </td>
+                            </tr>
+                            <!-- 품목정보 -->
+                            <tr><td style="height: 40px;"></td> </tr>
+                            <tr><td style="height: 40px; line-height: 40px; background: #89919c; margin: 0px 0px; border-bottom: 1px solid #5b5c6c; font-size: 16px; color: #fff; font-family: '돋움'; text-indent: 20px;"><b>품목 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <tr>
+                                            @* <td class="tabletitle_pop" style="width: 10%">PR_No.</td> *@
+                                            <td class="pop-TableTitleL" style="width: 25%">자재코드</td>
+                                            <td class="pop-TableTitleL" style="width: 7%">자재명</td>
+                                            <td class="pop-TableTitleL" style="width: 6%">수량</td>
+                                            <td class="pop-TableTitleL" style="width: 7%">단위</td>
+                                            <td class="pop-TableTitleL" style="width: 10%">규격</td>
+                                            <td class="pop-TableTitleL" style="width: 5%">비고</td>
+                                        </tr>
+@{
+    foreach(ExportImportItem m in Model.ExportImportItems){  
+                                        <tr>
+                                            <td class="pop-TableCon_l_Long">@m.MaterialsCode</td>
+                                            <td class="pop-TableCon_l_Long">@m.MaterialsName</td>
+                                            <td class="pop-TableCon_l_Long">@m.Quantity</td>
+                                            <td class="pop-TableCon_l_Long">@m.Unit</td>
+                                            <td class="pop-TableCon_l_Long">@m.Standard</td>
+                                            <td class="pop-TableCon_l_Long">@m.Memo</td>
+                                        </tr>
+    }
+}                                        
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+</div>
+<div id='tab3' style='display:@(Model.ExportImport.ExportImportType == 2 ? "inline" : "none");'>
+
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <!-- 반출입정보 -->
+                            <tr><td height="7" class="smalltitle_pop"><b>반출입 정보</b></td></tr>
+                            <tr>
+                                <td height="4">
+                                    <table width="100%"  border="0" cellpadding="4" cellspacing="1" bgcolor="#CCCCCC">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="28%">
+                                            <col width="22%">
+                                            <col width="28%">
+                                        </colgroup>
+                                        <tr>
+                                            <td class="pop-TableTitleL" >반출입번호</td>
+                                            <td class="pop-TableCon_l_Long" ><span>@Model.ExportImport.ExportImportNo</span></td>
+                                            <td class="pop-TableTitleL">구분</td>
+                                            <td class="pop-TableCon_l_Long">                                            
+                                                @{
+                                                    if (Model.ExportImport.ExportType > -1 && Model.CodeExportType != null) {
+                                                        foreach(var a in Model.CodeExportType) {
+                                                            if (a.SubCodeID == Model.ExportImport.ExportType) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출일</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.ExportDate @Model.ExportImport.ExportDateHour 시 @Model.ExportImport.ExportDateMinute 분</span></td>
+                                            <td class="pop-TableTitleL">반입일</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.ImportDate @Model.ExportImport.ImportDateHour 시 @Model.ExportImport.ImportDateMinute 분</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출소속사업장</td>
+                                            <td class="pop-TableCon_l_Long" colspan="3">
+                                                @{
+                                                    if (Model.ExportImport.ExportLocation != null && Model.CodeLocation != null) {
+                                                        foreach(var a in Model.CodeLocation) {
+                                                            if (a.SubCodeDesc == Model.ExportImport.ExportLocation) {
+                                                                <span>@a.CodeNameKor</span>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">노트북관리번호</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.ManagementNo</span></td>
+                                            <td class="pop-TableTitleL">노트북시리얼번호</td>
+                                            <td class="pop-TableCon_l_Long"><span>@Model.ExportImport.SerialNo</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pop-TableTitleL">반출입사유</td>
+                                            <td class="pop-TableCon_l_Long" colspan="3"><span>@Model.ExportImport.Reason</span></td>
+                                        </tr>
+                                    </table> 
+                                </td>
+                            </tr>
+                        </table>
+
+</div>                        
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,295 @@
+@model CompanyDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Company"]; //"업체 정보 상세";
+    CompanyGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    // ViewBag.IsOwner = true;
+    // ViewBag.IsEditable = false;
+}
+<script>
+    // edit
+    function saveEditForm(){
+        var myform = document.fmEditCompany;
+        var regBizNo = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/;
+        var regEmail = /^[a-z0-9\.\_%+-]+@@[a-z0-9\.\-]+\.[a-z]{2,4}$/i;
+        var regPhone= /^([0-9]{2,4})-?([0-9]{3,4})-?([0-9]{4})$/;
+        if(myform.CompanyName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company name"]';
+            @* alert('@Localizer["Please enter your company name"]'); *@
+            myform.CompanyName.focus();
+            return;
+        }
+        if(myform.CeoName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the name of the representative"]';
+            myform.CeoName.focus();
+            return;
+        }
+        if(myform.BizRegNo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business registration number"]';
+            myform.BizRegNo.focus();
+            return;
+        }
+        if(!regBizNo.test(myform.BizRegNo.value )) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business registration number correctly"] ex)123-45-69870';
+            myform.BizRegNo.focus();
+            return;
+        }
+        if(!regBizNo.test(myform.BizRegNo.value )) {
+            alert('@Localizer["Please enter your business registration number correctly"] ex)123-45-69870')
+            return;
+        }
+        if(myform.Address.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your business address"]';
+            myform.Address.focus();
+            return;
+        }
+        if(myform.ContactPersonName.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact person name"]';
+            myform.ContactPersonName.focus();
+            return;
+        }
+        if(myform.Email.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your e-mail"]';
+            myform.Email.focus();
+            return;
+        }
+        if(!regEmail.test(myform.Email.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your email correctly"] ex)0000@0000.000';
+            myform.Email.focus();
+            return;
+        }
+        if(myform.Tel.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter your company phone number"]';
+            myform.Tel.focus();
+            return;
+        }
+        if(!regPhone.test(myform.Tel.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the correct company phone number"] ex)000-0000-0000';
+            myform.Tel.focus();
+            return;
+        }
+        if(myform.ContactPersonTel.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact information of the person in charge"]';
+            myform.ContactPersonTel.focus();
+            return;
+        }
+        if(!regPhone.test(myform.ContactPersonTel.value)) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the contact information correctly"] ex)000-0000-0000';
+            myform.ContactPersonTel.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // file events
+    $("body").on("change", "#file1", function (ev) {
+      console.log("[body>change file1]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload1", function (ev) {
+      console.log("[body>click btn-upload1]");
+      $("#file1").trigger("click");
+      @* $(this).prev("#file1").trigger("click"); *@
+    });
+
+    $("body").on("change", "#file2", function (ev) {
+      console.log("[body>change file2]");
+      $(this)
+        .parents(".form-item-wrap")
+        .eq(0)
+        .find(".value")
+        .text($(this).val());
+    });
+    $("body").on("click", "#btn-upload2", function (ev) {
+      console.log("[body>click btn-upload2]");
+      $("#file2").trigger("click");
+      @* $(this).prev("#file2").trigger("click"); *@
+    });
+    // 관리자: 사업자 번호, 비밀 번호 이외 모두 변경 가능
+    function resetPwd(){
+        console.log("[resetPwd]");
+        var myform = document.fmEditCompany;
+        myform.InitPassword.value="Y";
+        var con = confirm('@Localizer["Are you sure you want to reset your password"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    window.onload = function (){
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+    }
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }
+</script>
+<div class="tit-header-wrap">
+    <div class="rtit">@Localizer["Partner Information"]</div>
+</div>
+@* <div style="padding: 0px 120px 0px 120px;">
+   <div style="display: flex;justify-content: flex-start;align-items: left;">@ViewBag.ErrorMsg</div>
+</div> *@
+<div class="reg-form-wrap">
+<form method="post" name="fmEditCompany" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="CompanyID" value="@Model.Company.CompanyID" />
+    <input type="hidden" name="InitPassword" value="N" />
+    <ul>
+        <li>
+            <div class="label s03">@Localizer["Classify"]</div>
+            <div class="form-item-wrap">
+                @Localizer["NonResident Partner"]
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Approval Status"]</div>
+            <div class="form-item-wrap">
+                @{
+                    @* 업체상태 0: 승인대기, 1: 승인완료, 2: 반려 *@
+                    if (ViewBag.IsEditable){
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CompanyStatus" 
+                                asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.Company.CompanyStatus))' readonly="@(!ViewBag.IsEditable)"></select>
+                        }else{
+                            <select class="select" name="CompanyStatus" 
+                                asp-items='@(new SelectList(Model.CodeCompanyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.Company.CompanyStatus))' readonly="@(!ViewBag.IsEditable)"></select>
+                        }
+                    } else {
+                        foreach(var m in Model.CodeCompanyStatus) {
+                            if (m.SubCodeID == Model.Company.CompanyStatus) {
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <div>
+                                        <span>@m.CodeNameEng</span>
+                                        <input type="hidden" name="CompanyStatus" value="@Model.Company.CompanyStatus" />
+                                    </div>
+                                }else {
+                                    <div>
+                                        <span>@m.CodeNameKor</span>
+                                        <input type="hidden" name="CompanyStatus" value="@Model.Company.CompanyStatus" />
+                                    </div>
+                                }
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Company Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="CompanyName" value='@Model.Company.CompanyName' readonly="@(!ViewBag.IsEditable)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Representative Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="CeoName" value='@Model.Company.CeoName' readonly="@(!ViewBag.IsEditable)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Business Registration Number"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="BizRegNo" id="BizRegNo" value='@Model.Company.BizRegNo' 
+                    onkeyup="setBizNo(this.value,'BizRegNo')" maxlength="12" readonly/>
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Business License"]<span></span></div>
+            <div class="form-item-wrap">
+                <div class="value">
+                    <a href="javascript:void(0)" onclick="dl(0)" class="link-co">@(ViewBag.file1Name??"")</a>
+                </div>
+                @{
+                    if (ViewBag.IsEditable)
+                    {
+                        <label asp-for="Company.FormFile" id="btn-upload1" class="btn-func btn-upload">@Localizer["Attach"]</label>
+                        <input name="120-00-12345FormFile1" asp-for="Company.FormFile" id="file1" accept=".pdf, .jpeg, .jpg, .png, .gif" style="display:none;" type="file" value="" multiple="multiple">
+                        <span asp-validation-for="Company.FormFile"></span>
+                    }
+                }
+                @* <input type="file" class="hidden" accept=".pdf" name="BizRegFile"  />
+                <button type="button" class="btn-func btn-upload">@Localizer["Attach"]</button>
+                <div class="value">사업자등록증.pdf</div>
+                <button type="button" class="btn-gray">@Localizer["Download"]</button> *@
+            </div>
+        </li>
+        <li class="full">
+            <div class="label s03">@Localizer["Company Address"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="Address" value='@Model.Company.Address' readonly="@(!ViewBag.IsEditable && !ViewBag.IsOwner)" />
+            </div>
+        </li>
+        <li class="empty02"></li>
+        <li>
+            <div class="label s03">@Localizer["Contact Name"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="ContactPersonName" value='@Model.Company.ContactPersonName' readonly="@(!ViewBag.IsEditable && !ViewBag.IsOwner)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Email"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="Email" value='@Model.Company.Email' readonly="@(!ViewBag.IsEditable && !ViewBag.IsOwner)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Company Tel"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="Tel" value='@Model.Company.Tel' readonly="@(!ViewBag.IsEditable && !ViewBag.IsOwner)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Contact Tel"]<span></span></div>
+            <div class="form-item-wrap">
+                <input type="text" class="inp" name="ContactPersonTel" value='@Model.Company.ContactPersonTel' readonly="@(!ViewBag.IsEditable && !ViewBag.IsOwner)" />
+            </div>
+        </li>
+        <li>
+            <div class="label s03">@Localizer["Password"]</div>
+            <div class="form-item-wrap">
+                <input type="password" class="inp" name="Password" placeholder="************" maxlength="12" value="" readonly="@(!ViewBag.IsOwner)" />
+                @if(ViewBag.IsEditable) {
+                    <button type="button" class="btn-gray" onclick="resetPwd();">@Localizer["Reset Password"]</button>
+                }
+            </div>
+        </li>
+    </ul>
+</form>
+</div>
+
+<div class="msg-wrap">
+    <div class="label org">
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼 정리 start ~end
+    <div class="lt-item">
+    </div> *@
+    @if (ViewBag.IsEditable || ViewBag.IsOwner)
+    {
+        <div class="lt-item">
+            <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+        </div>
+    }
+</div>
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="Download" target="ifTemp">
+    <input type="hidden" name="CompanyID" value="@Model.Company.CompanyID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

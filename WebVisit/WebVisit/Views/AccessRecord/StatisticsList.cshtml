@@ -1,0 +1,96 @@
+@using WebVisit.Models.DomainModels.Passport;
+@model List<ViewPersonInout>;
+@{
+    @* ViewData["Title"] = "인원출입 현황"; *@
+}
+
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    function search(){
+        var myform = document.fmSearch;
+        myform.submit();
+    }
+</script>
+
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="열기" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="GET" name="fmSearch">
+                <li>
+                    <div class="label">@Localizer["Search Date"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="eventDate" value="@ViewBag.EventDate" placeholder="YYYY-MM-DD" class="inpdate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>                
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords"></div>
+        </div>
+        <div class="side-btn-wrap">           
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="일출입통계 목록">
+            <tr>
+                <th>@Localizer["Date"]</th>
+                <th>@Localizer["Classify"]</th>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Sum"]</th>
+                @* <th>@Localizer["Entrance Classify"]</th>
+                <th>@Localizer["Bucheon"]</th>
+                <th>@Localizer["Sangwoo"]</th>
+                <th>@Localizer["Pangyo"]</th>
+                <th>@Localizer["Sum"]</th>
+                <th>@Localizer["Sum"] ( @Localizer["Day Before"] )</th>
+                <th>@Localizer["Sum"] ( @Localizer["Previous Day"] )</th>
+                <th>@Localizer["Total Entrance"] ( @Localizer["Day Before"] - @Localizer["Previous Day"] )</th>
+                <th>@Localizer["Difference"]</th> *@
+            </tr>
+@{
+    foreach(var m in Model){
+        var strDate = "";
+        if(m.EventDate != null){
+            strDate = m.EventDate.Value.ToString("yyyy-MM-dd");
+        }
+        <tr>
+            <td>@strDate</td>
+            <td>@m.Dir</td>
+            <td>@m.LocationName</td>
+            <td>@m.Cnt</td>
+        </tr>
+    }
+}            
+           
+        </table>
+    </div>
+</section>

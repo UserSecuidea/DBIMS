@@ -1,0 +1,710 @@
+@* CodeLocation CodeImportPurpose CodePlace CodeCarryItem *@
+<script>
+    var cicontainer = null;
+    var ciindex = 0;
+    var obj ={idx: 0, items:[]};
+    var deObj={};
+    let add = (obj, key, val) => {
+        if (key in obj) obj[key] = [].concat(obj[key], val);
+        else obj[key] = val;
+    }
+    var inPage = @(ViewBag.InPage != null && ViewBag.InPage ? "true":"false");
+    var carryItemPerson = null;
+    /**
+    idx: 팝업을 호출한 방문객 index
+    */
+    function popCarryItem(idx, container, personObj){
+        clearCarryItem();
+        ciindex = idx;
+        cicontainer = container;
+        carryItemPerson = personObj;
+        if (carryItemPerson != null){
+                @* rows+="<tr onclick=\"selectSearchPerson('"+m.name+"','"+m.sabun+"','"+m.tel+"','"+m.mobile+"','"+m.email+"','"+m.orgID+"','"+m.orgNameKor+"','"+m.orgNameEng+"','"+m.location+"','"+m.locationName+"','"+m.companyID+"','"+m.companyName+"','"+m.gradeID+"','"+m.gradeName+"','"+m.personTypeID+"','"+m.personTypeIDName+"','"+m.cardNo+"','"+m.carAllowCnt+"','"+m.carRegCnt+"','"+m.gender+"','"+m.genderName+"','"+m.birthDate+"','"+m.personStatusId+"','"+m.personStatusName+"','"+m.homeAddr+"','"+m.isVisitorEdu+"','"+m.isCleanEdu+"','"+m.isSafetyEdu+"','"+m.workTypeCodeID+"')\">";
+                rows+="<td>"+m.name+"</td><td>"+m.orgNameKor+"</td><td>"+m.gradeName+"</td></tr>"; *@
+            console.log("carryItemPerson", carryItemPerson, carryItemPerson[0].name);
+            var myform = document.fmCarryItems;
+            var nameObj = myform.ContactPersonName;
+            var sabunObj = myform.ContactPersonSabun;
+            var telObj =  myform.ContactPersonTel;
+            var mobileObj =  myform.ContactPersonMobile;
+            var departIdObj =  myform.ContactPersonOrgID;
+            var departKorObj =  myform.ContactPersonOrgNameKor;
+            var departEngObj = myform.ContactPersonOrgNameEng;
+            nameObj.value = carryItemPerson[0].name;
+            sabunObj.value = carryItemPerson[0].sabun;
+            telObj.value = carryItemPerson[0].tel;
+            mobileObj.value = carryItemPerson[0].mobile;
+            departIdObj.value = carryItemPerson[0].orgID;
+            departKorObj.value = carryItemPerson[0].orgNameKor;
+            departEngObj.value = carryItemPerson[0].orgNameEng;
+        }
+        common.popOpen(document.getElementById('popCarryItem'));
+        if (cicontainer.value != undefined && cicontainer.value != "") {
+            deObj = JSON.parse(cicontainer.value);
+            console.log("[popCarryItem]", deObj)
+            var myform = document.fmCarryItems;
+            if (deObj.ImportDate != undefined) {
+                myform.ImportDate.value = deObj.ImportDate;
+            }
+            if (deObj.ExportDate != undefined) {
+                myform.ExportDate.value = deObj.ExportDate;
+            }
+            if (deObj.ContactPersonMobile != undefined) {
+                myform.ContactPersonMobile.value = deObj.ContactPersonMobile;
+            }
+            if (deObj.ContactPersonName != undefined) {
+                myform.ContactPersonName.value = deObj.ContactPersonName;
+            }
+            if (deObj.ContactPersonOrgID != undefined) {
+                myform.ContactPersonOrgID.value = deObj.ContactPersonOrgID;
+            }
+            if (deObj.ContactPersonOrgNameEng != undefined) {
+                myform.ContactPersonOrgNameEng.value = deObj.ContactPersonOrgNameEng;
+            }
+            if (deObj.ContactPersonOrgNameKor != undefined) {
+                myform.ContactPersonOrgNameKor.value = deObj.ContactPersonOrgNameKor;
+            }
+            if (deObj.ContactPersonSabun != undefined) {
+                myform.ContactPersonSabun.value = deObj.ContactPersonSabun;
+            }
+            if (deObj.ContactPersonTel != undefined) {
+                myform.ContactPersonTel.value = deObj.ContactPersonTel;
+            }
+            var i = 0;
+            if (deObj.Location != undefined) {
+                myform.Location.value = deObj.Location;
+            }
+            if (deObj.ImportPurposeCodeID != undefined) {
+                myform.ImportPurposeCodeID.value = deObj.ImportPurposeCodeID;
+                @* i = 0;
+                for(var a of myform.ImportPurposeCodeID.options){
+                    if (a.value == deObj.ImportPurposeCodeID){
+                        break;
+                    }
+                    i++;
+                }
+                myform.ImportPurposeCodeID.selectedIndex = i; *@
+            }
+            if (deObj.PlaceCodeID != undefined) {
+                myform.PlaceCodeID.value = deObj.PlaceCodeID;
+            }
+            if (deObj.items != undefined) {
+                for(var i = 0;i<deObj.items.length;i++){
+                    var a = deObj.items[i];
+                    if (i>0) {
+                        addItem();
+                    }
+                    var k = -1;
+                    for(var j =0 ;j < myform.length; j++) {
+                        var el = myform[j];
+                        if (el.name == "CarryItemCodeID"){
+                            k++;
+                            if (k > i) {
+                                break;
+                            }
+                        }
+                        if (i == k) {
+                            console.log("item is: ",el.name, el.value);
+                            if (el.name == "CarryItemCodeID") {
+                                if (a.CarryItemCodeID != undefined) {
+                                    el.value = a.CarryItemCodeID;
+                                }
+                            }else  if (el.name == "ItemName") {
+                                if (a.ItemName != undefined) {
+                                    el.value = a.ItemName;
+                                }
+                            }else  if (el.name == "ItemSN") {
+                                if (a.ItemSN != undefined) {
+                                    el.value = a.ItemSN;
+                                }
+                            }else  if (el.name == "Quantity") {
+                                if (a.Quantity != undefined) {
+                                    el.value = a.Quantity;
+                                }
+                            }else  if (el.name == "Unit") {
+                                if (a.Unit != undefined) {
+                                    el.value = a.Unit;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            document.getElementsByClassName("pop-cont-wrap scrolls")[0].scrollTo(0,0);
+        }
+/*
+
+items: Array(1)0: CarryItemCodeID: "1" ItemName: "1" ItemSN: "2" Quantity: "3" Unit: "4"        
+        */
+    }
+    function goChangeContactPerson(){
+        // ContactPersonName ContactPersonSabun ContactPersonTel ContactPersonMobile ContactPersonOrgID ContactPersonOrgNameKor ContactPersonOrgNameEng
+        var myform = document.fmCarryItems;
+        var nameObj = myform.ContactPersonName;
+        var sabunObj = myform.ContactPersonSabun;
+        var telObj =  myform.ContactPersonTel;
+        var mobileObj =  myform.ContactPersonMobile;
+        var departIdObj =  myform.ContactPersonOrgID;
+        var departKorObj =  myform.ContactPersonOrgNameKor;
+        var departEngObj = myform.ContactPersonOrgNameEng;
+        //console.log("[goChangeContactPerson]", nameObj);
+        // popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj)
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, departIdObj, departKorObj, departEngObj);
+    }
+    @* ImportPersonName ImportPersonSabun ImportPersonMobile ImportPersonOrgID ImportPersonOrgNameKor ImportPersonOrgNameEng *@
+    function goChangeImportPerson(){
+        // ContactPersonName ContactPersonSabun ContactPersonTel ContactPersonMobile ContactPersonOrgID ContactPersonOrgNameKor ContactPersonOrgNameEng
+        var myform = document.fmCarryItems;
+        var nameObj = myform.Name;
+        var sabunObj = myform.Sabun;
+        var telObj = myform.Tel;
+        var mobileObj =  myform.Mobile;
+        var departIdObj =  myform.OrgID;
+        var departKorObj =  myform.OrgNameKor;
+        var departEngObj = myform.OrgNameEng;
+        var companyNameObj =  myform.CompanyName;
+        var gradeNameObj = myform.GradeName;
+        //console.log("[goChangeImportPerson]", nameObj);
+        // popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj,
+        // gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj)
+        popSelectPerson(nameObj, sabunObj, telObj, mobileObj, null, departIdObj, departKorObj, departEngObj, null, null, null, companyNameObj, null, gradeNameObj);
+        issafeeduonly = false;
+        searchType = "P";
+    }
+
+    // search - 결재자 
+    function goSearchApprovalPerson(sMode, fmName){
+        const myform = eval("document."+fmName+";");
+        var nameObj = null;
+        var sabunObj =  null;
+        var orgIdObj =  null;
+        var orgKorObj =  null;
+        var orgEngObj =  null;
+        var telObj = null;
+        var mobileObj = null;
+
+        nameObj = myform.ApprovalName;
+        sabunObj =  myform.ApprovalSabun;
+        orgIdObj =  myform.ApprovalOrgID;
+        orgKorObj =  myform.ApprovalOrgNameKor;
+        orgEngObj =  myform.ApprovalOrgNameEng;
+        telObj = myform.ApprovalTel;
+
+        popSelectApprovalPerson(nameObj, sabunObj, telObj, mobileObj, orgIdObj, orgKorObj, orgEngObj); 
+
+    }
+    
+    function goSave(){
+        var myform = document.fmCarryItems;
+        if(inPage) {
+            if (cicontainer == null){
+                cicontainer = myform.CarryItems;
+            }
+            @* ContactPersonName ContactPersonMobile ContactPersonSabun  ContactPersonOrgID ContactPersonOrgNameKor ContactPersonOrgNameEng  *@
+            @* ContactName ContactSabun ContactMobile ContactOrgID ContactOrgNameKor ContactOrgNameEng *@
+            myform.ContactName.value = myform.ContactPersonName.value;
+            myform.ContactSabun.value = myform.ContactPersonSabun.value;
+            myform.ContactMobile.value = myform.ContactPersonMobile.value;
+            myform.ContactOrgID.value = myform.ContactPersonOrgID.value;
+            myform.ContactOrgNameKor.value = myform.ContactPersonOrgNameKor.value;
+            myform.ContactOrgNameEng.value = myform.ContactPersonOrgNameEng.value;
+        }
+        if (cicontainer != null) { // popup
+            obj ={idx:ciindex, items:[]};
+            var itemObj = {};
+            for(var i =0 ;i < myform.length; i++) {
+                var el = myform[i];
+                // "mode": "A","InsertVisitorType": "0","InsertVisitPersonID": "","ImportWayType": "0","CarryVisitorType": "0","VisitPersonID": "","Sabun": "","CompanyName": "",
+                // "OrgID": "", "OrgNameKor": "", "OrgNameEng": "", "ContactSabun": "B0000001", "ContactOrgID": "1", "ContactOrgNameKor": "인사팀", "ContactOrgNameEng": "HR", "ContactMobile": "010-2159-96996", 
+                // "ContactName": "홍길동", "CarryItems": "", "ImportPersonName": "심청이", "ImportPersonMobile": "010-6551-3899",
+                if (el.name != null && el.name != "") { // ContactPersonName ContactPersonMobile ContactPersonSabun  ContactPersonOrgID ContactPersonOrgNameKor ContactPersonOrgNameEng
+                    if (el.name=="ItemName" || el.name=="ItemSN" || el.name == "Quantity" || el.name == "Unit") {
+                        if (el.name == "ItemName"){
+                            if (el.value.trim().length < 1){
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please enter product name"]';
+                                el.focus();
+                                return;
+                            }
+                        }else if (el.name == "Quantity"){
+                            @* if (!isNumber(el.value.trim())){
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '수량은 숫자만 입력 해 주세요.';
+                                el.focus();
+                                return;
+                            } *@
+                            if (el.value.trim().length < 1){
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please enter quantity"]';
+                                el.focus();
+                                return;
+                            }
+                            if (el.value < 1){
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please enter a value greater than 1 for quantity"]';
+                                el.focus();
+                                return;
+                            }
+                        }
+                        add(itemObj, el.name, el.value);
+                    }else if (el.name == "CarryItemCodeID"){
+                        if (Object.keys(itemObj).length > 0){
+                            obj.items.push(itemObj);
+                        }
+                        itemObj = {}
+                        add(itemObj, el.name, el.value);
+                    }else {
+                        if (inPage == false){
+                            add(obj, el.name, el.value);
+                        }
+                        if (el.value == ""){
+                            if (el.name == "ImportDate") {
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please enter the scheduled delivery date"]';
+                                el.focus();
+                                return;
+                            }  else if (el.name == "ExportDate") {
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please enter the scheduled return date"]';
+                                el.focus();
+                                return;
+                            } else if (el.name == "ContactPersonSabun") {
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please select contact person"]';
+                                return;
+                            } else if (inPage == true && el.name == "Sabun") {
+                                document.getElementById("popRegCarryItemErrorMsg").innerHTML = '@Localizer["Please select a import person"]';
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            if (Object.keys(itemObj).length > 0){
+                obj.items.push(itemObj);
+            }
+            var str = JSON.stringify(obj);
+            @* cicontainer.innerText = str; *@
+            cicontainer.value = str;
+            if(inPage == false){
+                @* console.log("[goSave] 3-1"); *@
+                common.popClose(document.getElementById('popCarryItem'));
+            } else {
+                @* console.log("[goSave] 3-2"); *@
+                myform.submit();
+            }
+        } else {
+
+        }
+    }
+    function clearCarryItem(){
+        $("#add-form-wrap-carryitem .reg-form-wrap .num").each(function(i){
+            if ($(this).text() != "01") {
+                @* console.log("[clearCarryItem]", $(this).text()); *@
+                $(this).parents(".reg-form-wrap").eq(0).remove();
+            }
+        });
+        var myform = document.fmCarryItems;
+        myform.reset();
+    }
+    function addItem(){
+        var _temp = $("#tempCarryItem").html();
+        $("#add-form-wrap-carryitem").append(_temp);
+        console.log("click btn-add-carryitem");
+        $("#add-form-wrap-carryitem .num").each(function(i){
+            console.log("add-form-wrap-carryitem"+i)
+            $(this).text("0"+(i+1));
+        });
+    }
+    $(function(){
+        $("body").on("click", "#btn-add-carryitem", function(){
+            var _temp = $("#tempCarryItem").html();
+            $("#add-form-wrap-carryitem").append(_temp);
+            console.log("click btn-add-carryitem");
+            $("#add-form-wrap-carryitem .num").each(function(i){
+                console.log("add-form-wrap-carryitem"+i)
+                $(this).text("0"+(i+1));
+            });
+        });
+        $("body").on("click", ".reg-header-wrap-carryitem a", function(){
+            console.log("click .reg-header-wrap-carryitem a");
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+</script>
+@{
+    if (ViewBag.InPage != null && ViewBag.InPage){
+        @:<div>
+    } else {
+        @:<div id="popCarryItem" class="dialog" style="z-index:901;">
+    }
+}
+
+    <div class="pop-item-wrap">
+        <div class="pop-header-wrap">
+@{
+        if (ViewBag.InPage != null && ViewBag.InPage)
+        {
+            <div class="ptit"></div><br/>
+        }else{
+            <div class="ptit">@Localizer["Apply CarryItem"]</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        }
+}
+        </div>
+
+<form name="fmCarryItems" method="post">
+    @* ContactPersonName ContactPersonMobile ContactPersonSabun  ContactPersonOrgID ContactPersonOrgNameKor ContactPersonOrgNameEng  *@
+    <input type="hidden" name="ContactPersonSabun" value="" />
+    <input type="hidden" name="ContactPersonOrgID" value="" />
+    <input type="hidden" name="ContactPersonTel" value="" />
+    @* <input type="hidden" name="ContactPersonOrgNameKor" value="" /> *@
+    <input type="hidden" name="ContactPersonOrgNameEng" value="" />
+@{
+        if (ViewBag.InPage != null && ViewBag.InPage)
+        {
+            <input type="hidden" name="mode" value="A" />
+
+            <input type="hidden" name="InsertVisitorType" value="0" /><!-- 방문자구분(등록자) 회원(0)/방문자(1) -->
+            <input type="hidden" name="InsertVisitPersonID" value="" /><!-- 방문자구분(등록자) 이 방문자(1) 일 경우 방문객회원ID 입력, 회원일경우 InsertSabun ~ InsertOrgNameEng 입력 -->
+
+            <input type="hidden" name="ImportWayType" value="0" /> <!-- 반입자구분: 대행등록(0,임직원신청)/본인(1,방문신청)-->
+            <input type="hidden" name="CarryVisitorType" value="0" /><!-- 방문자구분 (반입자) 회원(0)/방문자(1) -->
+        @* ImportPersonSabun ImportPersonName ImportPersonCompanyName ImportPersonMobile ImportPersonOrgID ImportPersonOrgNameKor ImportPersonOrgNameEng *@
+            <input type="hidden" name="VisitPersonID" value="" /> <!-- 방문객회원ID (반입자): 방문자구분 이 방문자(1) 일 경우 방문객회원ID 입력  --> 
+            <input type="hidden" name="Sabun" value="" /> <!-- 회원사번(반입자): 방문자구분 회원(0) 일 경우 사번, 이름, 부서번호, 부서명 입력  -->
+            <input type="hidden" name="CompanyName" value="" />
+            <input type="hidden" name="OrgID" value="" />
+            <input type="hidden" name="OrgNameKor" value="" />
+            <input type="hidden" name="OrgNameEng" value="" />
+            <input type="hidden" name="GradeName" value="" />
+            <input type="hidden" name="Tel" value="" />
+
+            <input type="hidden" name="ContactSabun" value="" />
+            <input type="hidden" name="ContactOrgID" value="" />
+            <input type="hidden" name="ContactOrgNameKor" value="" />
+            <input type="hidden" name="ContactOrgNameEng" value="" />
+            <input type="hidden" name="ContactMobile" value="" />
+            <input type="hidden" name="ContactName" value="" />
+            <textarea name="CarryItems" cols="100" style="visibility:hidden;"></textarea>
+        }
+}
+
+@{
+        if (ViewBag.InPage == null || ViewBag.InPage == false)
+        {
+        @:<div class="pop-cont-wrap scrolls">
+        }
+}
+            <div class="reg-form-wrap ">
+                <ul>
+                    <li>
+                        <div class="label s02">@Localizer["Import Date"]<span></span></div>
+                        <div class="form-item-wrap">
+                            <input type="text" class="inpdate" placeholder='@Localizer["Import Date"]' name="ImportDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label s02">@Localizer["Export Date"]<span></span></div>
+                        <div class="form-item-wrap">
+                            <input type="text" placeholder='@Localizer["Export Date"]' class="inpdate" name="ExportDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label s02">@Localizer["Place Of Business"]<span></span></div>
+                        <div class="form-item-wrap">
+                            @{
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))'></select>
+                                }else{
+                                    <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))'></select>
+                                }
+                            }
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label s02">@Localizer["Import Purpose"]<span></span></div>
+                        <div class="form-item-wrap">
+                            @{
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                                }else{
+                                    <select class="select" name="ImportPurposeCodeID" asp-items='@(new SelectList(Model.CodeImportPurpose, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                                }
+                            }
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label s02">@Localizer["Import Place"]<span></span></div>
+                        <div class="form-item-wrap">
+                            @{
+                                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                    <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                                }else{
+                                    <select class="select" name="PlaceCodeID" asp-items='@(new SelectList(Model.CodePlace, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                                }
+                            }
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div>&nbsp;</div>
+            <div class="tit-header-wrap mt0">
+                <div class="rtit">@Localizer["Contact Information"]</div>
+            </div>
+            <div class="reg-form-wrap">
+                <ul>
+                    <li>
+                        <div class="label s02">@Localizer["Contact Name"]<span></span></div>
+                        <div class="form-item-wrap">
+                            @* 담당자 ContactSabun	ContactName	ContactOrgI D	ContactOrgNameKor	ContactOrgNameEng *@
+                            <input type="text" name="ContactPersonName" id="popContactPersonName" class="inp" placeholder='@Localizer["Contact Name"]' readonly onclick="goChangeContactPerson();" />
+                            <button type="button" class="btn-search" onclick="goChangeContactPerson();"><img src="/images/ico/ico-search.svg" alt="담당자 조회 팝업" /></button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="label s02">@Localizer["Visit Department"]<span></span></div>
+                        <div class="form-item-wrap">
+                            <input type="text" name="ContactPersonOrgNameKor" id="popContactPersonOrgName" class="inp" placeholder='@Localizer["Department Name"]' readonly onclick="goChangeContactPerson();" />
+                            <input type="hidden" name="ContactPersonMobile" id="popContactPersonTel" class="inp" placeholder='@Localizer["Contact Tel"]' readonly />
+                        </div>
+                    </li>
+                    @* <li>
+                        <div class="label s02">@Localizer["Contact Tel"]<span></span></div>
+                        <div class="form-item-wrap">
+                            <input type="text" name="ContactPersonMobile" id="popContactPersonTel" class="inp" placeholder='@Localizer["Contact Tel"]' readonly onclick="goChangeContactPerson();" />
+                        </div>
+                    </li> *@
+
+                </ul>
+            </div>
+@{
+        if (ViewBag.InPage != null && ViewBag.InPage)
+        {
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Import Person Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Import Person Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <!-- ImportPersonInfo 에는 반입자 검색 후에 이름(회사명) 으로 표시 , 실제 데이터는 form hidden Sabun, Name, OrgNameKor, OrgNameEng, CompanyName 입력 -->  
+                    <!-- 반입자 대상: 출입증이 있는 비상주사원, 방문/공사/안전교육 신청(승인필수)된 방문자-->
+                    <input type="text" name="Name" class="inp" placeholder='@Localizer["Import Person Name"]' readonly onclick="goChangeImportPerson();" />
+                    <button type="button" class="btn-search" onclick="goChangeImportPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Import Person Tel"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" name="Mobile" class="inp" placeholder='@Localizer["Import Person Tel"]' readonly onclick="goChangeImportPerson();" />
+                    @* <button type="button" class="btn-search" onclick="goChangeImportPerson();"><img src="/images/ico/ico-search.svg" alt="" /></button> *@
+                @* <button type="button" onclick="goChangeContactPerson()" class="btn-gray">@Localizer["Modify"]</button> *@
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    @if(ViewBag.IsEmployee != null && ViewBag.IsEmployee){
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Approval Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Approver Name"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Approver Name"]' name="ApprovalName" readonly onclick="goSearchApprovalPerson(3, 'fmCarryItems');" />
+                    <button type="button" class="btn-search" onclick="goSearchApprovalPerson(3, 'fmCarryItems');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Approver Tel"]<span></span></div>
+                <div class="form-item-wrap">
+                    <input type="hidden" name="ApprovalSabun" value="" />
+                    <input type="hidden" name="ApprovalOrgID" value="" />
+                    <input type="text" class="inp" name="ApprovalOrgNameKor" value="" readonly />
+                    <input type="hidden" class="inp" name="ApprovalOrgNameEng" value="" readonly />
+                    <input type="text" class="inp" name="ApprovalTel" value="" readonly />
+                    @* ApprovalSabun	ApprovalName	ApprovalOrgID	ApprovalOrgNameKor ApprovalOrgNameEng *@
+                    @* <input type="text" class="inp" value="제조기술1팀(Fab2) / 043-879-5705" readonly /> *@
+                </div>
+            </li>
+        </ul>
+    </div>        
+    }
+        }
+}
+            <div>&nbsp;</div>
+            <div class="tit-header-wrap mt0">
+                <div class="rtit">@Localizer["CarryItem Information"]</div>
+            </div>
+            <div id="add-form-wrap-carryitem">
+                <div class="reg-form-wrap" id="reg-form-wrap-carryitem">
+                    <div class="reg-header-wrap-carryitem">
+                        <div class="num">01</div>
+                    </div>
+                    <ul>
+                        <li>
+                            <div class="label s02">@Localizer["Classify"]<span></span></div>
+                            <div class="form-item-wrap">
+                                @{
+                                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                                    }else{
+                                        <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                                    }
+                                }
+                            </div>
+                        </li>
+                        <li>
+                            <div class="label s02">@Localizer["Product Name"]<span></span></div>
+                            <div class="form-item-wrap">
+                                <input type="text" name="ItemName" class="inp" placeholder='@Localizer["Product Name"]' />
+                            </div>
+                        </li>
+                        <li style="width:100%;">
+                            <div class="label s02">@Localizer["Serial Number"]</div>
+                            <div class="form-item-wrap">
+                                <input type="text" name="ItemSN" class="inp" placeholder='@Localizer["Serial Number"]' />
+                            </div>
+                        </li><li style="width:0%;"></li>
+                        <li>
+                            <div class="label s02">@Localizer["Unit"]<span></span></div>
+                            <div class="form-item-wrap">
+                                @{
+                                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                        <select class="select" name="Unit" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                                    }else{
+                                        <select class="select" name="Unit" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                                    }
+                                }
+                                @* <input type="text" name="Unit" class="inp" placeholder='@Localizer["Unit"]' /> *@
+                            </div>
+                        </li>
+                        <li>
+                            <div class="label s02">@Localizer["Quantity"]<span></span></div>
+                            <div class="form-item-wrap">
+                                <input type="number" name="Quantity" class="inp"min="1" max="100000" placeholder='@Localizer["Quantity"]' />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+@{
+        if (ViewBag.InPage == null || ViewBag.InPage == false)
+        {
+        @:</div>
+        }
+}
+</form>
+
+    <div class="label org" style="justify-content: flex-end;max-width: 980px;margin: 5px auto 0 auto;">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="popRegCarryItemErrorMsg" style="font-size:15px;color:#ec2309f1;">&nbsp; @ViewBag.ErrorMsg</span>
+    </div>
+        <div class="pop-btn-wrap"  id="pop-btn-wrap">
+            <button type="button" class="pop-btn-gray" id="btn-add-carryitem">@Localizer["Add"]</button>
+            <button type="button" class="pop-btn-green" onclick="goSave();">@Localizer["Application"]</button>
+        </div>
+    </div>
+
+</div>
+
+<template id="tempCarryItem" class="template">
+    <div class="reg-form-wrap" id="reg-form-wrap-carryitem">
+        <div class="reg-header-wrap-carryitem">
+            <div class="num">01</div>
+            <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt='@Localizer["Delete"]' /></a>
+        </div>
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Classify"]</div>
+                <div class="form-item-wrap">
+            @{
+                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                    <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'></select>
+                }else{
+                    <select class="select" name="CarryItemCodeID" asp-items='@(new SelectList(Model.CodeCarryItem, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'></select>
+                }
+            }
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Product Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemName" class="inp" placeholder='@Localizer["Product Name"]' />
+                </div>
+            </li>
+            <li style="width:100%;">
+                <div class="label s02">@Localizer["Serial Number"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" name="ItemSN" class="inp" placeholder='@Localizer["Serial Number"]' />
+                </div>
+            </li><li style="width:0%;"></li>
+            <li>
+                <div class="label s02">@Localizer["Unit"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Unit" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                        }else{
+                            <select class="select" name="Unit" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                        }
+                    }
+                    @* <input type="text" name="Unit" class="inp" placeholder='@Localizer["Unit"]' /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Quantity"]</div>
+                <div class="form-item-wrap">
+                    <input type="number" name="Quantity" class="inp" placeholder='@Localizer["Quantity"]' />
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<style>
+@* class="pop-btn-wrap" *@
+#pop-btn-wrap{
+    @* border-top: 1px solid #EBEFF6; *@
+    max-width: 980px;
+    width: calc( 100% -42px - 40px );
+    padding: 16px 20px;
+    margin: 5px auto 0 auto;
+    height: auto;
+    overflow: Hidden;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.pop-btn-green {
+    min-width: 80px;
+    margin-left: 8px;
+    border: 0;
+    background: #00854A;
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+}
+.pop-btn-gray {   
+    margin-right: 8px;
+    min-width: 80px;
+    margin-left: 8px;
+    border: 0;
+    background: #F2F4F9;
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #636D85;
+    font-weight: 500;
+}
+</style>

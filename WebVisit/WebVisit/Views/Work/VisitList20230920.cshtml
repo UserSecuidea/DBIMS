@@ -1,0 +1,491 @@
+@model WorkVisitApplyListViewModel
+@{
+    @* ViewData["Title"] = "공사출입신청조회"; *@
+    WorkVisitApplyGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    WorkVisitApplyGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusSelect (cellvalue, options, rowObject) {
+        return "<select class='select bon'><option>방문신청</option></select>";
+    };
+    function statusInput (cellvalue, options, rowObject) {
+        return "<input type='text' class='inp ac' />";
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<img src='/images/ico/ico-status-chk.svg' />";
+        }else if(cellvalue == "2"){
+            return "";
+        }
+    };
+    function statusBtn (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<button type='button' class='btn-green'>@Localizer["Save"]</button>";
+        }else if(cellvalue == "2"){
+            return "<button type='button' class='btn-gray'>@Localizer["Save"]</button>";
+        }
+
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/work/visitreg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        if(document.getElementById('aDetail') != null){
+            var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&workVisitApplyID='+clickID;
+            console.log("[goDetail]"+uri);        
+            window.location = uri;
+        }
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    // edit - 경비원이 방문자에 대하여 출입증 번호 부여 
+    function changeVisitStatus(visitApplyPersonID){
+        var myform = document.fmListWorkVisitApply;
+        if(visitApplyPersonID){
+            var visitStatus = eval("myform.VisitStatus_"+visitApplyPersonID+".value");
+            var cardNo = eval("myform.CardNo_"+visitApplyPersonID+".value");
+            if(visitStatus.trim().length < 1 ){
+                alert('@Localizer["Please select visit status"]');
+                return;
+            }
+            if(cardNo.trim().length < 1 ){
+                alert('@Localizer["Please enter your pass card number"]');
+                return;
+            }
+            if (!isNumber(cardNo)){
+                alert('@Localizer["Please enter only numbers for the pass number"]');
+                return;
+            }
+            if(cardNo.trim().length != 4 ){
+                alert('@Localizer["Please enter the pass number in 4 digits"]');
+                return;
+            }
+            if(visitStatus == 0 && cardNo.trim().length > 0){
+                alert('방문 대기 상태에서는 출입증 번호를 입력할 수 없습니다');
+                return;
+            }
+            var con = confirm('@Localizer["Would you like to register your pass"]');
+            if(con){
+                myform.mode.value="EVisitStatus";
+                myform.VisitApplyPersonID.value = visitApplyPersonID;
+                myform.VisitStatus.value = visitStatus;
+                myform.CardNo.value = cardNo;
+                myform.submit(); 
+            }
+        }
+    }
+
+    function search() {
+@* searchWorkVisitApplyStatus searchVisitStatus searchWorkName searchWorkStartDate searchWorkEndDate searchContactName searchCardNo *@
+        var myform = document.fmSearch;
+        var field1 = myform.searchWorkVisitApplyStatus.options[myform.searchWorkVisitApplyStatus.selectedIndex].value;
+        var field2 = myform.searchVisitStatus.options[myform.searchVisitStatus.selectedIndex].value;
+        var keyword1 = myform.searchWorkName.value.trim().replace("/","");
+        var keyword2 = myform.searchWorkStartDate.value.trim().replace("/","");
+        var keyword3 = myform.searchWorkEndDate.value.trim().replace("/","");
+        var keyword4 = myform.searchContactName.value.trim().replace("/","");
+        var keyword5 = myform.searchCardNo.value.trim().replace("/","");
+        var url = myform.action + field1+"/"+field2; 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        if (keyword5 != null && keyword5.length > 0) {
+            url += "/"+keyword5;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }    
+</script>
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchworkvisitapplystatus="" asp-route-searchvisitstatus="" asp-route-searchworkname="" asp-route-searchworkstartdate="" asp-route-searchworkenddate="" asp-route-searchcontactname=""
+    asp-route-searchcardno="">
+                <li>
+                    <div class="label">@Localizer["Work Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Work Name"]' name="searchWorkName" value="@searchRoute.SearchWorkName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Access CardNo"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Access CardNo"]' name="searchCardNo" value="@searchRoute.SearchCardNo" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Contact Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Contact Name"]' name="searchContactName" value="@searchRoute.SearchContactName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Approval Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchWorkVisitApplyStatus" asp-items='@(new SelectList(Model.CodeWorkVisitApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchWorkVisitApplyStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchWorkVisitApplyStatus" asp-items='@(new SelectList(Model.CodeWorkVisitApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchWorkVisitApplyStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li>
+                    <div class="label ">@Localizer["Status Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchVisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchVisitStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchVisitStatus" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchVisitStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label t01">@Localizer["Work Period"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchWorkStartDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchWorkStartDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchWorkEndDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchWorkEndDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>                
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    if(ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownloadVisit" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+}
+
+@{
+    if(ViewBag.Registable){
+            <a asp-action="VisitReg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Apply Work Visit"]</button>
+            </a>
+    }
+}
+            
+@{
+    if(ViewBag.Readable){
+            <a asp-action="VisitDetail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="VisitDetail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+    }
+}
+        </div>
+    </div>
+    <div class="tbl-item-wrap">
+<form method="post" name="fmListWorkVisitApply">
+    <input type="hidden" name="mode" value="EVisitStatus" />
+    <input type="hidden" name="VisitApplyPersonID" value='' />
+    <input type="hidden" name="VisitStatus" value='' />
+    <input type="hidden" name="CardNo" value='' />
+        <table class="tbl01" aria-label="목록">
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Approval"]</th>
+                <th>@Localizer["Work Period"]</th>
+                <th>@Localizer["Company Name"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Work Name"]</th>
+                <th>@Localizer["Contact Name"]</th>
+                <th>@Localizer["Introductory Visitor Training"]</th>
+                <th>@Localizer["Visit Status"]</th>
+@{
+        if(ViewBag.IsEditable){
+                <th>@Localizer["Access CardNo"]</th>
+                <th></th>
+        }
+}
+            </tr>
+
+@{
+    var location = ""; 
+    var workName = "";
+    var contactName = "";
+    int workApplyStatus = -1;
+    var workApplyStatusName = "";
+    int visitApplyStatus = -1;
+    var visitApplyStatusName = "";
+    var workPeriod = "";
+    foreach(var m in ViewBag.workVisitApplyPersonList ?? new List<string>()){ 
+        location = m.b.Location;
+        workName = m.b.WorkName;
+        contactName = m.b.ContactName;
+        workApplyStatus = m.b.WorkApplyStatus; // 현재는 공사신청 승인 공사출입신청 승인이 아닌지 체크 필요 
+        workPeriod = m.b.WorkStartDate +"~"+m.b.WorkEndDate;
+        @* if (m.b.Count > 0){
+            location = m.b[0].Location;
+            workName = m.b[0].WorkName;
+            contactName = m.b[0].ContactName;
+            workApplyStatus = m.b[0].WorkApplyStatus; // 현재는 공사신청 승인 공사출입신청 승인이 아닌지 체크 필요 
+            workPeriod = m.b[0].WorkStartDate +"~"+m.b[0].WorkEndDate;
+        } *@
+        if (location != null && Model.CodeLocation != null) {
+            foreach(var a in Model.CodeLocation) {
+                if (a.SubCodeDesc != null && a.SubCodeDesc.Equals(location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = a.CodeNameKor;
+                    }else {
+                        location = a.CodeNameEng;
+                    }
+                }
+            }
+        } 
+        @* 공사신청상태 
+        if (workApplyStatus >= 0 && Model.CodeWorkApplyStatus != null) {
+            foreach(var a in Model.CodeWorkApplyStatus) {
+                if (a.SubCodeID != null && a.SubCodeID.Equals(workApplyStatus)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        workApplyStatusName = a.CodeNameKor;
+                    }else {
+                        workApplyStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        }  *@
+        @* 방문신청상태  *@
+        visitApplyStatus = m.a.VisitApplyStatus;
+        if (visitApplyStatus >= 0 && Model.CodeVisitApplyStatus != null) {
+            foreach(var a in Model.CodeVisitApplyStatus) {
+                if (a.SubCodeID != null && a.SubCodeID.Equals(visitApplyStatus)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        visitApplyStatusName = a.CodeNameKor;
+                    }else {
+                        visitApplyStatusName = a.CodeNameEng;
+                    }
+                }
+            }
+        } 
+            <tr onclick="selectRow(this, @m.a.WorkVisitApplyID);" ondblclick="goDetail(@m.a.WorkVisitApplyID)">
+                <td>@location</td>
+                <td>@visitApplyStatusName</td>
+                <td>@workPeriod</td>
+                <td>@m.a.CompanyName</td>
+                <td>@m.a.Name</td>
+                <td>@workName</td>
+                <td>@contactName</td>
+                <td><img src='/images/ico/ico-status-chk.svg' style='display:@(m.a.IsSafetyEdu == "Y" ? "inline" : "none")'  alt="check" /></td>
+                <td>
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            if(visitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus_@m.a.VisitApplyPersonID" class="select full">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.a.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameEng</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.a.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.a.VisitStatus == 1 || m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.a.VisitStatus == 3 || m.a.VisitStatus == 1){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameEng</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @* <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.a.VisitStatus))'></select> *@
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }else{
+                            if(visitApplyStatus == 1 && ViewBag.IsEditable){
+                                <select name="VisitStatus_@m.a.VisitApplyPersonID" class="select full">
+                                    @foreach(var m3 in Model.CodeVisitStatus){
+                                        if(m.a.VisitStatus == m3.SubCodeID){
+                                        <option value="@m3.SubCodeID" selected>@m3.CodeNameKor</option>
+                                        } else {
+                                            if(m3.SubCodeID == 1){ // 방문
+                                                if(m.a.VisitStatus == 0){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 2){ // 방문 완료
+                                                if(m.a.VisitStatus == 1 || m.a.VisitStatus == 3){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }else if(m3.SubCodeID == 5){ // 출입증 분실
+                                                if(m.a.VisitStatus == 3 || m.a.VisitStatus == 1){
+                                            <option value="@m3.SubCodeID">@m3.CodeNameKor</option>
+                                                }
+                                            }
+                                        }
+                                        @* <option value="@m3.SubCodeID">@m3.CodeNameKor</option> *@
+                                    }
+                                </select>
+                                @* <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.a.VisitStatus))'></select> *@
+                            }else{
+                                <select class="select full" name="VisitStatus_@m.a.VisitApplyPersonID" asp-items='@(new SelectList(Model.CodeVisitStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @m.a.VisitStatus))' disabled></select>
+                            }
+                        }
+                    }
+                </td>
+@{
+        if(ViewBag.IsEditable){
+                <td>
+                    @* @workApplyStatus @m.a.VisitStatus *@
+                    @{
+                        if(ViewBag.IsMaster){
+                    @* <input type="text" class="inp" name="CardNo_@m.a.VisitApplyPersonID" value='@m.a.CardNo' @(visitApplyStatus == 1 ? "" : "readonly") maxlength="4" /> *@
+                    <input type="text" class="inp" name="CardNo_@m.a.VisitApplyPersonID" value='@m.a.CardNo' @(workApplyStatus == 1 && m.a.VisitStatus == 0  ? "" : "readonly") maxlength="4" />
+                        } else if(ViewBag.IsSecurity){
+                            @* 승인상태이고 방문전인건 활성화 *@
+                    <input type="text" class="inp" name="CardNo_@m.a.VisitApplyPersonID" value='@m.a.CardNo' @(workApplyStatus == 1 && m.a.VisitStatus == 0  ? "" : "readonly") maxlength="4" />
+                        }
+                    }
+                </td>
+                <td>
+                     @* style='display:@(VisitApplyStatus == 1 ? "flex" : "none")' *@
+                     @* 마스터: 승인>미방문 상태에서 활성화, 보안실: 승인>미방문 상태에서 활성화 *@
+                    <button type="button" class="btn-gray" onclick="changeVisitStatus(@m.a.VisitApplyPersonID)" @(workApplyStatus == 1 && m.a.VisitStatus == 0 ? "" : "disabled")>@Localizer["Save"]</button>
+                </td>
+        }
+}
+
+                @* <td><input type="text" class="inp" name="CardNo_@m.a.VisitApplyPersonID" value='@m.a.CardNo' @(workApplyStatus == 1 ? "" : "readonly") /></td>
+                <td>
+                    <button type="button" class="btn-gray" onclick="changeVisitStatus(@m.a.VisitApplyPersonID)" @(workApplyStatus == 1 ? "" : "disabled")>@Localizer["Save"]</button>
+                </td> *@
+
+            </tr>
+
+    }
+}
+        </table>
+</form>        
+    </div>
+    <div class="paging-item-wrap">   
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="VisitList" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

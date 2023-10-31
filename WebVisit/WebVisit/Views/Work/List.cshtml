@@ -1,0 +1,296 @@
+@model WorkApplyListViewModel
+@{
+    @* ViewData["Title"] = "공사 등록 현황"; *@
+    WorkApplyGridData current = Model.CurrentRoute;
+    GridData routes = Model.CurrentRoute.Clone();
+    WorkApplyGridData searchRoute = Model.SearchRoute;
+}
+<script>
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>@Localizer["Collect"]</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>@Localizer["Collection Completed"]</span>";
+        }
+    };
+
+    function downloadExcel(){
+        var myform = document.fmDlExcel;
+        if (myform.action.includes("culture") == false)
+            myform.action = myform.action + "?culture=@CultureInfo.CurrentCulture";
+        myform.submit();
+    }
+    function goReg(){
+        @* window.location = '/work/reg/?culture=@CultureInfo.CurrentCulture' *@
+    }
+    
+    var clickID = -1;
+    function goDetail(dbclickID){
+        if (dbclickID != undefined) {
+            clickID = dbclickID;
+        }
+        if (clickID == -1) {
+            alert('@Localizer["Please select a list to view details"]');
+            return;
+        }
+        var uri = document.getElementById('aDetail').href + '?culture=@CultureInfo.CurrentCulture&workApplyID='+clickID;
+        console.log("[goDetail]"+uri);        
+        window.location = uri;
+    }
+
+    var selectedRowObj;
+    function selectRow(row, idx){
+        if(selectedRowObj != undefined){
+            selectedRowObj.classList.remove('on');
+        }
+        selectedRowObj=row;
+        row.classList.add('on');
+        clickID = idx;
+    }
+
+    function search() {
+        var myform = document.fmSearch;
+        var field1 = myform.searchWorkApplyStatus.options[myform.searchWorkApplyStatus.selectedIndex].value;
+        var keyword1 = myform.searchWorkName.value.trim().replace("/","");
+        var keyword2 = myform.searchWorkStartDate.value.trim().replace("/","");
+        var keyword3 = myform.searchWorkEndDate.value.trim().replace("/","");
+        var keyword4 = myform.searchWorkApplyID.value.trim().replace("/","");
+        var keyword5 = myform.searchContactName.value.trim().replace("/","");
+        var url = myform.action + field1; 
+        console.log("[search] field", field1);
+        console.log("[search] url", url);
+        if (keyword1 != null && keyword1.length > 0) {
+            url += "/"+keyword1;
+        }else {
+            url +="/+"
+        }
+        if (keyword2 != null && keyword2.length > 0) {
+            url += "/"+keyword2;
+        }else {
+            url +="/+"
+        }
+        if (keyword3 != null && keyword3.length > 0) {
+            url += "/"+keyword3;
+        }else {
+            url +="/+"
+        }
+        if (keyword4 != null && keyword4.length > 0) {
+            url += "/"+keyword4;
+        }else {
+            url +="/+"
+        }
+        if (keyword5 != null && keyword5.length > 0) {
+            url += "/"+keyword5;
+        }else {
+            url +="/+"
+        }
+        url += "/?culture=@CultureInfo.CurrentCulture.ToString()";
+        console.log("[search] url", url);
+        window.location = url;
+    }
+</script>
+@if (TempData.Keys.Contains("DATA.WorkApplyID"))
+{
+    var id = @TempData["DATA.WorkApplyID"]?.ToString();
+    if (!string.IsNullOrEmpty(id))
+    {
+<script>
+    window.onload=function(){
+        console.log("window load...");
+        document.getElementById("ifTemp").setAttribute('src', '/approval/work/?workApplyID='+@id);
+    }
+</script>
+    }
+}
+<section class="page-search-wrap">
+    <div class="mob-toggle-wrap">
+        <a href="javascript:void(0)">
+            <span>@Localizer["Filter"]</span>
+            <img src="/images/ico/ico-arr-up01.svg" alt="필터" />
+        </a>
+    </div>
+    <div class="search-group-wrap">
+        <div class="search-form-wrap">
+            <ul>
+@* {searchworkapplystatus?}/{searchworkname?}/{searchworkstartdate?}/{searchworkenddate?}/{searchworkapplyid?}/{searchcontactname?} *@
+<form method="get" name="fmSearch" asp-route-pagenumber="1" 
+    asp-route-pagesize="@current.PageSize" asp-route-sortfield="@current.SortField" asp-route-sortdirection="@current.SortDirection" 
+    asp-route-searchworkapplystatus="" asp-route-searchworkname="" asp-route-searchworkstartdate="" asp-route-searchworkenddate="" asp-route-searchworkapplyid=""
+    asp-route-searchcontactname="">
+                <li>
+                    <div class="label">@Localizer["Work Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Work Name"]' name="searchWorkName" value="@searchRoute.SearchWorkName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Work No"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Work No"]' name="searchWorkApplyID" value="@searchRoute.SearchWorkApplyID" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Contact Name"]</div>
+                    <div class="form-item-wrap">
+                        <input type="text" class="inp full" placeholder='@Localizer["Contact Name"]' name="searchContactName" value="@searchRoute.SearchContactName" />
+                    </div>
+                </li>
+                <li>
+                    <div class="label t01">@Localizer["Approval Classify"]</div>
+                    <div class="form-item-wrap">
+                        @{
+                            if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                                <select class="select full" name="searchWorkApplyStatus" asp-items='@(new SelectList(Model.CodeWorkApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), @searchRoute.SearchWorkApplyStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }else{
+                                <select class="select full" name="searchWorkApplyStatus" asp-items='@(new SelectList(Model.CodeWorkApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), @searchRoute.SearchWorkApplyStatus))'>
+                                    <option value='-1'>@Localizer["Entire"]</option>
+                                </select>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="per02">
+                    <div class="label ">@Localizer["Work Period"]</div>
+                    <div class="form-item-wrap">
+                        <div class="form-item-wrap">
+                            <input type="text" name="searchWorkStartDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchWorkStartDate" onkeyup="generateDateString(this)" maxlength="10" />
+                            <span class="e01">~</span>
+                            <input type="text" name="searchWorkEndDate" placeholder="YYYY-MM-DD" class="inpdate" value="@searchRoute.SearchWorkEndDate" onkeyup="generateDateString(this)" maxlength="10" />
+                        </div>
+                    </div>
+                </li>
+</form>
+            </ul>
+        </div>
+        <div class="search-btn-wrap">
+            <button type="button" onclick="search()">@Localizer["Search"]</button>
+        </div>
+    </div>
+</section>
+
+<section class="grid-item-wrap">
+    <div class="list-func-wrap">
+        <div class="list-info-wrap">
+            <div class="viewrecords">@String.Format(Localizer["A total of {0} was viewed"].Value, Model.TotalCnt)</div>
+        </div>
+        <div class="side-btn-wrap">
+@{
+    if(ViewBag.ExcelDownloadable){
+            <form name="fmDlExcel" method="post" asp-action="ExcelDownload" asp-all-route-data="@current.ToDictionary()" target="ifTemp">
+                <input type="hidden" name="ExTitle" value='@ViewData["Title"]' />
+                <button type="button" class="btn-green" onClick="downloadExcel();">@Localizer["Download Excel"]</button>
+            </form>
+    }
+}            
+            
+            <a asp-action="Reg" asp-all-route-data="@routes.ToDictionary()" >
+                <button type="button" class="btn-green">@Localizer["Register Work"]</button>
+            </a>
+            @* <button type="button" class="btn-green" onClick="goReg();">@Localizer["Register Work"]</button> *@
+
+            <a asp-action="Detail" asp-all-route-data="@routes.ToDictionary()" id="aDetail" style="visibility:invisible;"></a>
+            <button type="button" class="btn-green" onClick="goDetail();" asp-action="Detail" asp-all-route-data="@routes.ToDictionary()">@Localizer["View details"]</button>
+        </div>
+
+    </div>
+    <div class="tbl-item-wrap">
+        <table class="tbl01" aria-label="공사 목록">
+            <tr>
+                <th>@Localizer["Place Of Business"]</th>
+                <th>@Localizer["Work No"]</th>
+                <th>@Localizer["Approval Classify"]</th>
+                <th>@Localizer["Work Period"]</th>
+                <th>@Localizer["Work Name"]</th>
+                @* <th>@Localizer["Company Name"]</th> *@
+                <th>@Localizer["Contact Name"]</th>
+                <th>@Localizer["Contact Department"]</th>
+            </tr>
+@{
+    var location = "";
+    var workApplyStatus = "";
+    foreach(WorkApply workApply in Model.WorkApplys){ 
+        location = "";
+        workApplyStatus = "";
+        if (workApply.Location != null && Model.CodeLocation != null) {
+            foreach(var m in Model.CodeLocation) {
+                if (m.SubCodeDesc != null && m.SubCodeDesc.Equals(workApply.Location)) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        location = m.CodeNameKor;
+                    }else {
+                        location = m.CodeNameEng??"";
+                    }
+                }
+            }
+        }
+        if (workApply.WorkApplyStatus >= 0 && Model.CodeWorkApplyStatus != null) {
+            foreach(var m in Model.CodeWorkApplyStatus) {
+                if (m.SubCodeID == workApply.WorkApplyStatus) {
+                    if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                        workApplyStatus = m.CodeNameKor;
+                    }else {
+                        workApplyStatus = m.CodeNameEng??"";
+                    }
+                }
+            }
+        }
+            <tr onclick="selectRow(this, @workApply.WorkApplyID);" ondblclick="goDetail(@workApply.WorkApplyID)">
+                <td>@location</td>
+                <td>@workApply.WorkApplyNo</td>
+                <td>@workApplyStatus</td>
+                <td>@workApply.WorkStartDate  ~ @workApply.WorkEndDate</td>
+                <td>@workApply.WorkName</td>
+                @* <td>시큐이데아</td> *@
+                <td>@workApply.ContactName</td>                
+                <td>@(CultureInfo.CurrentCulture.ToString().Equals("ko") ? @workApply.ContactOrgNameKor : @workApply.ContactOrgNameEng)</td>
+            </tr>
+    }
+}
+        </table>
+    </div>
+    <div class="paging-item-wrap">
+        @{
+            routes = current.Clone();
+            routes.PageNumber = 1;
+            if (current.PageNumber <= 1){
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }else{
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-first.svg" alt='@Localizer["Go to first page"]' /></a>
+            }
+        }
+        @{
+            if ((current.PageNumber>1)) {
+                routes.PageNumber = current.PageNumber -1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }else{
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-prev.svg" alt='@Localizer["Go to previous page"]' /></a>
+            }            
+        }
+        <div class="value">
+            <input type="text" class="inp" value="@current.PageNumber" />
+            <span>/ @Model.TotalPages</span>
+        </div>
+        @{
+            if (current.PageNumber<Model.TotalPages){
+                routes.PageNumber = current.PageNumber +1;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            } else {
+                <a href="javascript:void(0);"><img src="/images/ico/ico-paging-next.svg" alt='@Localizer["Go to next page"]' /></a>
+            }
+        }
+        @{
+            if (current.PageNumber == Model.TotalPages){
+               <a href="javascript:void(0);"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]'/></a>
+            } else {
+                routes.PageNumber = Model.TotalPages;
+                <a asp-action="List" asp-all-route-data="@routes.ToDictionary()"><img src="/images/ico/ico-paging-last.svg" alt='@Localizer["Go to last page"]' /></a>
+            }
+        }
+    </div>
+</section>
+<iframe name="ifTemp" id="ifTemp" title="temp" border="0" style="display:none;"></iframe>

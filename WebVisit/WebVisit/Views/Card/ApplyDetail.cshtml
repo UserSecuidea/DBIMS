@@ -1,0 +1,337 @@
+@model CardIssueApplyDetailViewModel
+@{
+    ViewData["Title"] = @Localizer["Detail Access Card"]; //"출입증 신청 상세정보";
+}
+<script>
+    function chk01 (cellvalue, options, rowObject) {
+        return "<input type='checkbox' />";
+
+    };
+    function linkFunc (cellvalue, options, rowObject) {
+        return "<a href='javascript:void(0)' class='link-co'>"+cellvalue+"</a>";
+
+    };
+    function statusFunc (cellvalue, options, rowObject) {
+        if(cellvalue == "1"){
+            return "<a href='javascript:void(0)' class='link-co'>회수하기</a>";
+        }else if(cellvalue == "2"){
+            return "<span class='cg'>회수완료</span>";
+        }
+
+    };
+    function goList(){
+        window.location = '/card/applylist/?culture=@CultureInfo.CurrentCulture'
+    }
+    
+    // edit - 담당자가 승인상태 / 처리사유 수정
+    function changeCardApplyStatus(){
+        const myform = document.fmEditCardIssueApply;
+        myform.mode.value="ECardApplyStatus";
+        @* CardApplyStatus Memo *@
+        if(myform.Memo.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for processing"]';
+            myform.Memo.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to edit your status"]');
+        if(con){
+            myform.submit();
+        }
+    }
+
+    // edit - 출입증신청사유 변경
+    function saveEditForm(){
+        const myform = document.fmEditCardIssueApply;
+        if(myform.ApplyReason.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the reason for applying for a pass"]';
+            myform.ApplyReason.focus();
+            return;
+        }
+        var con = confirm('@Localizer["Would you like to save"]');
+        if(con){
+            myform.submit();
+        }
+    }
+    function dl(idx) {
+        var myform = document.fmDL;
+        myform.FileIdx.value = idx;
+        myform.submit();
+        @* window.open('/notice/download/@Model.NoticeID/'+idx, '_blank'); *@
+    }    
+</script>
+
+<form name="fmEditCardIssueApply" method="post">
+    <input type="hidden" name="mode" value="E" />
+    <input type="hidden" name="CardIssueApplyID" value='@Model.CardIssueApply.CardIssueApplyID' />
+    
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Applicant Information"]</div>
+        <div class="side-btn-wrap">
+            @* <button type="button">조회</button> *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["By Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng), Model.CardIssueApply.Location))' disabled></select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor), Model.CardIssueApply.Location))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="CompanyName" value='@Model.CardIssueApply.CompanyName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Name" value='@Model.CardIssueApply.Name' readonly />   
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Sabun"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Sabun" value='@Model.CardIssueApply.Sabun' readonly />   
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Employee Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="PersonType" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CardIssueApply.PersonTypeID))' disabled></select>
+                        }else{
+                            <select class="select" name="PersonType" asp-items='@(new SelectList(Model.CodePersonType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CardIssueApply.PersonTypeID))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+
+            <li>
+                <div class="label s03">@Localizer["Privacy Policy Doc"]</div>
+                <div class="form-item-wrap">
+                    @* TermsPrivarcyFile *@
+                    @* <div class="value"><a href="javascript:void(0)">홍길동동의.PDF</a></div> *@
+                    @{
+                        if(Model.CardIssueApply.TermsPrivarcyFileDataHash != null){ // ViewBag.IsMaster && 
+                            <a href="javascript:void(0);" onclick="dl(0)">@Localizer["Privacy Policy Doc"]</a>
+                        }else{
+                            <text>@Localizer["No Information"]</text>
+                        }
+                    }
+
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Department Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value='@Model.CardIssueApply.OrgNameKor' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Position"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="OrgNameKor" value='@Model.CardIssueApply.GradeName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Home Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Tel" value='@Model.CardIssueApply.Tel' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="Mobile" value='@Model.CardIssueApply.Mobile' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Contact Information"]</div>
+        <div class="side-btn-wrap">
+            @* <button type="button">조회</button> *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s02">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactName" value='@Model.CardIssueApply.ContactName' readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s02">@Localizer["Contact Tel"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="ContactOrgNameKor" value='@Model.CardIssueApply.ContactOrgNameKor' readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Apply Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Issue Classify"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CardIssueApply.CardIssueType))' disabled></select>
+                        }else{
+                            <select class="select" name="CardIssueType" asp-items='@(new SelectList(Model.CodeCardIssueType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CardIssueApply.CardIssueType))' disabled></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li class="empty">&nbsp;</li>
+            <li>
+                <div class="label s03">@Localizer["Access CardNo"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @* placeholder='@Localizer["Access CardNo"]'  *@
+                        <input type="text" class="inp" name="CardNo" value='@Model.CardIssueApply.CardNo' readonly />
+                    </div>                            
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Reissue Number"]</div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        @* placeholder='@Localizer["Reissue Number"]'  *@
+                        <input type="text" class="inp" name="ReissueNo" value='@Model.CardIssueApply.ReissueNo' readonly />
+                    </div>  
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Access Card Application Reason"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Access Card Application Reason"]' name="ApplyReason" value='@Model.CardIssueApply.ApplyReason' readonly="@(!ViewBag.IsEditable)" />
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tit-header-wrap">
+        <div class="rtit">
+            @* 승인정보 *@
+        </div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Approval Status"]<span></span></div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="CardApplyStatus" asp-items='@(new SelectList(Model.CodeCardApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng), Model.CardIssueApply.CardApplyStatus))' disabled="@(!ViewBag.IsEditable)"></select>
+                        }else{
+                            <select class="select" name="CardApplyStatus" asp-items='@(new SelectList(Model.CodeCardApplyStatus, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor), Model.CardIssueApply.CardApplyStatus))' disabled="@(!ViewBag.IsEditable)"></select>
+                        }
+                    }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Processing Reason"]<span></span></div>
+                <div class="form-item-wrap">
+                    <div class="value">
+                        <input type="text" class="inp" placeholder='@Localizer["Processing Reason"]' name="Memo" readonly="@(!ViewBag.IsEditable)" />
+                    </div>                            
+                </div>
+            </li>
+            <li class="full">
+                <div class="form-item-wrap" style="flex-direction: column;">
+                    <table aria-label="승인현황">
+                        <tr>
+                            <th>@Localizer["DateTime"]</th>
+                            <th>@Localizer["Registered person"]</th>
+                            <th>@Localizer["Approval Status"]</th>
+                            <th>@Localizer["Processing Reason"]</th>
+                        </tr>
+                    </table>
+                    <table aria-label="승인현황">
+    @{
+        var num9=0;
+        var cardApplyStatusName = "";
+        var insertUpdateDate=""; 
+        foreach(CardIssueApplyHistory m in Model.CardIssueApplyHistory){
+            num9++; 
+            cardApplyStatusName = "";
+            if (m.CardApplyStatus > -1 && Model.CodeCardApplyStatus != null) {
+                foreach(var a in Model.CodeCardApplyStatus) {
+                    if (a.SubCodeID == m.CardApplyStatus) {
+                        if (CultureInfo.CurrentCulture.ToString().Equals("ko")) {
+                            cardApplyStatusName = a.CodeNameKor;
+                        }else {
+                            cardApplyStatusName = a.CodeNameEng;
+                        }
+                    }
+                }
+            }
+            
+            if(m.InsertUpdateDate != null){
+                insertUpdateDate=string.Format("{0:yyyy-MM-dd}", m.InsertUpdateDate);
+            }                
+                        <tr>
+                            <td>@insertUpdateDate</td>
+                            <td>@m.UpdateName</td>
+                            <td>@cardApplyStatusName</td>
+                            <td>@m.Memo</td>
+                        </tr>
+        }
+    }
+                        @* <tr>
+                            <td>2023-04-29</td>
+                            <td>홍길동</td>
+                            <td>신청</td>
+                            <td>분실출입증 재발행승인</td>
+                        </tr> *@
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @Localizer["This is a required field"]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start-end
+    <div class="lt-item">
+    </div> *@
+    <div class="lt-item">
+@{
+    if(ViewBag.IsEditable){
+        <button type="button" class="btn-green" onclick="saveEditForm();">@Localizer["Save"]</button>
+        <button type="button" class="btn-green" onclick="changeCardApplyStatus();">@Localizer["State Change"]</button>
+        <button type="button" class="btn-org">@Localizer["Delete"]</button>
+    }
+}        
+        <button type="button" class="btn-gray" onClick="goList();">@Localizer["List"]</button>
+    </div>
+</div>
+
+@* for Prev Link *@
+<a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+@* for Download *@
+<form name="fmDL" method="post" asp-action="DownloadCardIssueApply" target="ifTemp">
+    <input type="hidden" name="CardIssueApplyID" value="@Model.CardIssueApply.CardIssueApplyID" />
+    <input type="hidden" name="FileIdx" value="-1" />
+</form>
+<iframe name="ifTemp" title="temp" border="0" style="display:none;"></iframe>

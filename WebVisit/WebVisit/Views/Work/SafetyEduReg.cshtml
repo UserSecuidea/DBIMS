@@ -1,0 +1,405 @@
+@model SafetyEduRegViewModel
+@{
+    ViewData["Title"] = @Localizer["Register Safety Education"]; //"안전교육 등록";
+}
+<script>
+     window.onload = function (){
+        @* console.log("PREV_URL:"+PREV_URL); *@
+        PREV_URL = document.getElementById('aList').href + '?culture=@CultureInfo.CurrentCulture';
+        @* console.log("PREV_URL:"+PREV_URL); *@
+    }
+    $(function(){
+        $("body").on("click", "#btn-add", function(){
+            var _temp = $("#temp").html();
+            $("#add-form-wrap").append(_temp);
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+            $( ".inpdate" ).datepicker({ regional:"@CultureInfo.CurrentCulture", dateFormat: 'yy-mm-dd' });
+        });
+        $("body").on("click", ".reg-header-wrap a", function(){
+            $(this).parents(".reg-form-wrap").eq(0).remove();
+            $("#add-form-wrap .num").each(function(i){
+                $(this).text("0"+(i+1));
+            });
+        });
+    });
+    function goList(){
+        window.location = '/work/visitlist/?culture=@CultureInfo.CurrentCulture'
+    }
+    // add
+    function saveAddForm(){
+        var myform = document.fmAddSafetyEdu;
+        var myform2 = document.fmAddSafetyEduMeta;
+        @* 안전교육신청: mode 
+        workApplyID, EduDate : 공사기간에 해당하는 날짜인지 체크 *@
+        if(myform2.EduDate.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please select a training date"]';
+            myform2.EduDate.focus();
+            return;
+        }
+        if(myform.workApplyID.value.trim().length < 1 ){
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please enter the construction number to search"]';
+            myform.WorkApplyNo.focus();
+            return;
+        }
+        console.log("findLastIndex():"+findLastIndex());
+        if(findLastIndex() == -1) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Please add person information"]';
+            return;
+        }
+        // 공사일 이 공사 기간안의 기간인지 확인
+        var s = new Date(myform2.WorkStartDate.value +" 00:00:00");        
+        var e = new Date(myform2.WorkEndDate.value +" 23:59:59");
+        let t = new Date(myform2.EduDate.value);
+        console.log("s: "+s.getTime()+"/ e: "+e.getTime()+" / t: "+t.getTime());
+        // s: 1690297200000/ e: 1690556399000 / t: 1690389142715
+        @* 
+        if(t.getTime() < s.getTime()) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Construction date must be within the construction period"]'; // Construction date must be within the construction period
+            myform2.EduDate.focus();
+            return;
+        }
+        if(t.getTime() > e.getTime()) {
+            document.getElementById("errormsg").innerHTML = '@Localizer["Construction date must be within the construction period"]'; // Construction date must be within the construction period
+            myform2.EduDate.focus();
+            return;
+        }
+        *@
+        var con = confirm('@Localizer["Would you like to apply for safety training"]');        
+        if(con){
+            myform.EduDate.value = myform2.EduDate.value;
+            myform.submit();
+        }else{
+            return;
+        }
+    }
+    @* 공사 번호 검색 *@
+    function selectWorkApplyInfo(){
+        var myform = document.fmAddSafetyEdu;
+        var myform2 = document.fmAddSafetyEduMeta;
+        var WorkApplyNo = myform2.WorkApplyNo.value.trim();
+        if(WorkApplyNo.length < 1 ){
+            document.getElementById("errormsgWork").innerHTML = '@Localizer["Please enter construction number"]';
+            myform2.WorkApplyNo.focus();
+            return;
+        }
+        $.ajax({
+            url: "/work/getwork",
+            data: { WorkApplyNo },
+            method: "GET",
+            dataType: "JSON"
+        }).done(function(json) {
+            console.log("[selectWorkApplyInfo]", json);
+            if (json != null && json.workName != "") {
+                // P202307250007
+                // {"workApplyID": 0, "workApplyNo": "", "location": "", "contactSabun": "", "contactName": "", "contactOrgID": null, "contactOrgNameKor": "",
+                // "contactOrgNameEng": "", "workName": "", "workMemo": "", "workStartDate": "", "workEndDate": "", "workContractFileData": "", "workContractFileDataHash": null,
+                // "workContractFormFile": null, "formFile1": null, "formFile2": null, "formFile3": null, "formFile4": null, "formFile5": null, "formFile6": null, "formFile7": null, "formFile8": null,
+                // "formFile9": null, "formFile10": null, "workApplyStatus": 0, "isWorkReg": "N", "insertSabun": "", "insertName": "", "insertOrgID": null, "insertOrgNameKor": "", "insertOrgNameEng": "",
+                // "updateDate": null, "insertDate": "0001-01-01T00:00:00", "isDelete": "N" }
+                // Location ContactName ContactOrgNameKor WorkName WorkMemo WorkStartDate WorkEndDate
+                myform2.Location.value = json.location;
+                myform2.ContactName.value = json.contactName;
+                myform2.ContactOrgNameKor.value = json.contactOrgNameKor;
+                myform2.WorkName.value = json.workName;
+                myform2.WorkMemo.value = json.workMemo;
+                myform2.WorkStartDate.value = json.workStartDate;
+                myform2.WorkEndDate.value = json.workEndDate;
+
+                myform.workApplyID.value = json.workApplyID;
+            } else {
+                document.getElementById("errormsgWork").innerHTML = '@Localizer["No construction information"]';
+                myform2.WorkApplyNo.focus();
+                return;
+            }
+        });
+        @* myform.submit(); *@
+    }
+    @* 인원 추가 *@
+    function selectNewPerson(){
+        @* var myform = document.fmAddSafetyEdu; *@
+        popSelectPersonByCallback(callbackSelectPerson, 3, false);
+    }
+    @* 인원 검색 팝업 *@
+    // name, sabun, tel, mobile, email, orgId, orgKor, orgEng, location, locationName, companyId, companyName, gradeId, gradeName, 
+    // personTypeId, personTypeIdName, cardNo, carAllowCnt, carRegCnt, gender, genderName, birthDate, personStatusId, personStatusName, homeAddr, IsVisitorEdu, IsCleanEdu, IsSafetyEdu, WorkTypeCodeID
+    function callbackSelectPerson(name, sabun, tel, mobile, email, orgId, orgKor, orgEng, location, locationName, companyId, companyName, gradeId, gradeName, personTypeId, personTypeIdName, cardNo, carAllowCnt, carRegCnt, gender, genderName, birthDate, personStatusId, personStatusName, homeAddr, isVisitorEdu, isCleanEdu, isSafetyEdu, workTypeCodeID){
+        document.getElementById("btn-add").click();
+        console.log("[callbackSelectPerson] name:"+name+" / "+findLastIndex()+" / "+isVisitorEdu+", "+isCleanEdu+", "+ isSafetyEdu);
+        insertNewPersonValue(name, sabun, gender, birthDate, mobile, companyName, gradeName, isVisitorEdu, isCleanEdu, isSafetyEdu, workTypeCodeID);
+    }
+    // Name[] BirthDate[] Gender[] Mobile[] CompanyName[] GradeName[] ckVisitorEdu[] ckCleanEdu[] ckSafetyEdu[] CarNo[] ckCarryItem[]
+    function insertNewPersonValue(name, sabun, gender, birthDate, mobile, companyName, gradeName, isVisitorEdu, isCleanEdu, isSafetyEdu, workTypeCodeID){
+        var myform = document.fmAddSafetyEdu;
+        var lastIndex = findLastIndex();
+        console.log("[insertNewPersonValue]lastIndex:"+lastIndex);
+        var j = -1;
+        for(var el of myform) {
+            if (el.name == "VisitorType[]"){
+                j++;
+            }
+            if (lastIndex == j) {
+                if (el.name == "Name[]"){
+                    el.value = name;
+                }else if (el.name == "VisitorSabun[]"){
+                    el.value = sabun;
+                }else if (el.name == "BirthDate[]"){
+                    el.value = birthDate;
+                }else if (el.name == "Gender[]"){
+                    el.value = gender;
+                }else if (el.name == "GenderView[]"){
+                    el.value = gender;
+                }else if (el.name == "Mobile[]"){
+                    el.value = mobile;
+                }else if (el.name == "CompanyName[]"){
+                    el.value = companyName;
+                }else if (el.name == "GradeName[]"){
+                    el.value = gradeName;
+                }else if (el.name == "WorkTypeCodeID[]"){
+                    el.value = workTypeCodeID;
+                }else if (el.name == "WorkTypeCodeIDName[]"){
+                    el.value = workTypeCodeID;
+                }
+            }
+        }
+    }
+    function findLastIndex(){
+        var myform = document.fmAddSafetyEdu;
+        var j = -1;
+        for(var el of myform) {
+            if (el.name == "VisitorType[]"){
+                j++;
+            }
+        }
+        return j;
+    }
+</script>
+
+<form name="fmAddSafetyEduMeta" method="post">
+    <div class="reg-form-wrap mt20">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Education Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="EduDate" onkeyup="generateDateString(this)" maxlength="10" />
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Work Information"]</div>
+    </div>
+    <div class="reg-form-wrap">
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Work No"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work No"]' name="WorkApplyNo" value='@Model.WorkApply.WorkApplyNo' />
+                    <button type="button" class="btn-search" onclick="selectWorkApplyInfo();"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Place Of Business"]</div>
+                <div class="form-item-wrap">
+                    @{
+                        if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled>
+                                <option value='-1'></option>
+                            </select>
+                        }else{
+                            <select class="select" name="Location" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled>
+                                <option value='-1'></option>
+                            </select>
+                        }
+                    }
+                    @* <input type="text" class="inp" placeholder='@Localizer["Place Of Business"]' name="Location" readonly /> *@
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Contact Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Contact Name"]' name="ContactName" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Contact Department"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Contact Department"]' name="ContactOrgNameKor" readonly />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Work Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Name"]' name="WorkName" readonly />
+                </div>
+            </li>
+            <li class="full">
+                <div class="label s03">@Localizer["Work Description"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Description"]' name="WorkMemo" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Period"]</div>
+                <div class="form-item-wrap">
+                    <div class="form-item-wrap">
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="WorkStartDate" disabled />
+                        <span class="e01">~</span>
+                        <input type="text" class="inpdate" placeholder="YYYY-MM-DD" name="WorkEndDate" disabled />
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+    <div class="msg-wrap">
+        <div class="label org">
+            @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+            <span id="errormsgWork" class="label org red"></span>
+        </div>
+    </div>
+    <div class="tit-header-wrap">
+        <div class="rtit">@Localizer["Educatee Information"]</div>
+    </div>
+<form name="fmAddSafetyEdu" method="post">
+    <input type="hidden" name="mode" value="AW" />
+    <input type="hidden" name="workApplyID" value='-1' />  @* @Model.WorkApply.WorkApplyID 공사번호를 검색해서 공사정보 가져오기 *@
+    <input type="hidden" name="EduDate" value="" />
+    <input type="hidden" name="ckVisitorEdus" value="" />
+    <input type="hidden" name="ckCleanEdus" value="" />
+    <input type="hidden" name="ckSafetyEdus" value="" />
+    <div id="add-form-wrap"></div>
+</form>
+<div class="msg-wrap">
+    <div class="label org">
+        @* @Localizer["This is a required field"] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *@
+        <span id="errormsg" class="label org red">@ViewBag.ErrorMsg</span>
+    </div>
+</div>
+
+<div class="req-btn-wrap">
+    @* 2023.09.21 신인아 버튼정리 start~end
+    <div class="lt-item">
+    </div>*@
+    <div class="lt-item">
+        <button type="button" id="btn-add" style="visibility:hidden;"></button>
+        <button type="button" class="btn-gray" onclick="selectNewPerson();">@Localizer["Add Educator"]</button>
+        <button type="button" class="btn-green" onclick="saveAddForm()">@Localizer["Application"]</button>
+    </div>
+</div>
+
+<template id="temp" class="template">
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">01</div>            
+            <input type="hidden" name="VisitorType[]" value="0" /> @*방문자구분(방문자): 임직원(0)-비상주업체관리자 또는 비상주사원 /방문자(1)*@
+            <input type="hidden" name="VisitPersonID[]" value="0" /> @*방문객회원ID: "방문자구분(방문자) -> 방문자(1)" 일때 방문자회원의 VisitPersonID*@
+            <input type="hidden" name="VisitorSabun[]" value="" /> @*회원사번(방문자): "방문자구분(방문자) -> 임직원(0)-비상주업체관리자 또는 비상주사원" 일때 회원의 Sabun*@            
+            <a href="javascript:void(0)"><img src="/images/ico/ico-remove01.svg" alt="지우기" /></a>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name[]" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                <input type="text" class="inp" name="BirthDate[]" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Gender"]</div>
+                <div class="form-item-wrap">
+                    <input type="hidden" name="Gender[]" value="" />
+            @{
+                if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                    <select class="select" name="GenderView[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))' disabled></select>                        
+                }else{
+                    <select class="select" name="GenderView[]" asp-items='@(new SelectList(Model.CodeGenderType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))' disabled></select>                        
+                }
+            }
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName[]" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile[]" value="" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Type"]</div>
+                <div class="form-item-wrap">
+                    <input type="hidden" name="WorkTypeCodeID[]" value="" />
+                @{
+                    if(CultureInfo.CurrentCulture.ToString().Equals("en")){
+                        <select class="select" name="WorkTypeCodeIDName[]" asp-items='@(new SelectList(Model.CodeWorkTypeCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))' disabled></select>
+                    }else{
+                        <select class="select" name="WorkTypeCodeIDName[]" asp-items='@(new SelectList(Model.CodeWorkTypeCode, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))' disabled></select>
+                    }
+                }
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
+
+@* for Prev Link *@
+<a asp-action="SafetyEduList" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
+
+@* 
+    <div class="reg-form-wrap">
+        <div class="reg-header-wrap">
+            <div class="num">01</div>
+        </div>
+        <ul>
+            <li>
+                <div class="label s03">@Localizer["Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Name"]' name="Name" value="홍길동"readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Birth Date"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" name="BirthDate" value="2000-05-01" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Gender"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Gender"]' name="Gender" value="남성" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Company Name"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Company Name"]' name="CompanyName" value="시큐이데아" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["CellPhone"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["CellPhone"]' name="Mobile" value="010-9596-9696" readonly />
+                </div>
+            </li>
+            <li>
+                <div class="label s03">@Localizer["Work Type"]</div>
+                <div class="form-item-wrap">
+                    <input type="text" class="inp" placeholder='@Localizer["Work Type"]' name="WorkTypeCodeID" value="토건" readonly />
+                </div>
+            </li>
+        </ul>
+    </div>
+ *@
