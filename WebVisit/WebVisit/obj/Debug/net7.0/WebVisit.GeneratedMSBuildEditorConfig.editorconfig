@@ -9,541 +9,541 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = WebVisit
 build_property.RootNamespace = WebVisit
-build_property.ProjectDir = D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\통합출입관리\WebVisit\WebVisit\
+build_property.ProjectDir = D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\DBIMS\WebVisit\WebVisit\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\통합출입관리\WebVisit\WebVisit
+build_property.MSBuildProjectDirectory = D:\Project\S1\엑세스커스터마이징\DB하이텍\소스\DBIMS\WebVisit\WebVisit
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/AccessRecord/CarList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/AccessRecord/CarList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjZXNzUmVjb3JkXENhckxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/AccessRecord/PersonList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/AccessRecord/PersonList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjZXNzUmVjb3JkXFBlcnNvbkxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/AccessRecord/StatisticsList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/AccessRecord/StatisticsList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjZXNzUmVjb3JkXFN0YXRpc3RpY3NMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalForm.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalForm.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxGb3JtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalTemplateCarryItem.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalTemplateCarryItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxUZW1wbGF0ZUNhcnJ5SXRlbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalTemplateCompany.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalTemplateCompany.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxUZW1wbGF0ZUNvbXBhbnkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalTemplateExportImport.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalTemplateExportImport.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxUZW1wbGF0ZUV4cG9ydEltcG9ydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalTemplateSample.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalTemplateSample.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxUZW1wbGF0ZVNhbXBsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ApprovalTemplateWork.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ApprovalTemplateWork.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQXBwcm92YWxUZW1wbGF0ZVdvcmsuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/CarryItem.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/CarryItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQ2FycnlJdGVtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/Company.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/Company.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcQ29tcGFueS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/ExportImport.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/ExportImport.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcRXhwb3J0SW1wb3J0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/Sample.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/Sample.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcU2FtcGxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Approval/Work.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Approval/Work.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxcV29yay5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/ApplyDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/ApplyDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxBcHBseURldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/ApplyList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/ApplyList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxBcHBseUxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/ApplyReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/ApplyReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxBcHBseVJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/CarApplyDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/CarApplyDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxDYXJBcHBseURldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/CarApplyList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/CarApplyList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxDYXJBcHBseUxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/CarApplyReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/CarApplyReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxDYXJBcHBseVJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/CarDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/CarDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxDYXJEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/CarList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/CarList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxDYXJMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/List_old.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/List_old.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxMaXN0X29sZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/TempDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/TempDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxUZW1wRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/TempList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/TempList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxUZW1wTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/TempReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/TempReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxUZW1wUmVnLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Card/TempReg_old.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Card/TempReg_old.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FyZFxUZW1wUmVnX29sZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/backup/Detail20230913.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/backup/Detail20230913.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXGJhY2t1cFxEZXRhaWwyMDIzMDkxMy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/backup/List20230913.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/backup/List20230913.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXGJhY2t1cFxMaXN0MjAyMzA5MTMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/PersonalAsses.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/PersonalAsses.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXFBlcnNvbmFsQXNzZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXFJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/CarryItem/Reg_old.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/CarryItem/Reg_old.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FycnlJdGVtXFJlZ19vbGQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Company/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Company/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tcGFueVxEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Company/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Company/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tcGFueVxMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Company/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Company/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tcGFueVxSZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/backup/Detail20230918.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/backup/Detail20230918.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XGJhY2t1cFxEZXRhaWwyMDIzMDkxOC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/backup/List20230918.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/backup/List20230918.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XGJhY2t1cFxMaXN0MjAyMzA5MTguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/backup/Reg20230907.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/backup/Reg20230907.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XGJhY2t1cFxSZWcyMDIzMDkwNy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/PrintExportImport.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/PrintExportImport.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XFByaW50RXhwb3J0SW1wb3J0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XFJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/ExportImport/SelfApproval.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/ExportImport/SelfApproval.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwb3J0SW1wb3J0XFNlbGZBcHByb3ZhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/backup/Index20230920.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/backup/Index20230920.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxiYWNrdXBcSW5kZXgyMDIzMDkyMC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/Index.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/PopCleanTestB.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/PopCleanTestB.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQb3BDbGVhblRlc3RCLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/PopCleanTestS.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/PopCleanTestS.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQb3BDbGVhblRlc3RTLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/Privacy.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Home/TT.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Home/TT.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxUVC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/InfoList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/InfoList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxJbmZvTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/InvalidList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/InvalidList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxJbnZhbGlkTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/ManualDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/ManualDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxNYW51YWxEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/ManualList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/ManualList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxNYW51YWxMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/ManualReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/ManualReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxNYW51YWxSZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Meal/PermissionList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Meal/PermissionList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVhbFxQZXJtaXNzaW9uTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Notice/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Notice/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWNlXERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Notice/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Notice/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWNlXExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Notice/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Notice/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWNlXFJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/BlackDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/BlackDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXEJsYWNrRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/BlackList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/BlackList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXEJsYWNrTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/BlackReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/BlackReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXEJsYWNrUmVnLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/MyInfo.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/MyInfo.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXE15SW5mby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Person/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Person/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyc29uXFJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/Error.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_Blank.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_Blank.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9CbGFuay5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_BlankApprovalLine.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_BlankApprovalLine.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9CbGFua0FwcHJvdmFsTGluZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_CleanRoomTest.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_CleanRoomTest.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DbGVhblJvb21UZXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_FirstLayout.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_FirstLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9GaXJzdExheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_Iframe.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_Iframe.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9JZnJhbWUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_Inaccessible.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_Inaccessible.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9JbmFjY2Vzc2libGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_White.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_White.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9XaGl0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/Approval.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/Approval.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXEFwcHJvdmFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/ApprovalDetailList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/ApprovalDetailList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXEFwcHJvdmFsRGV0YWlsTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/ApprovalList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/ApprovalList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXEFwcHJvdmFsTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/CommonCode.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/CommonCode.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXENvbW1vbkNvZGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/CommonCodeDetailList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/CommonCodeDetailList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXENvbW1vbkNvZGVEZXRhaWxMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/CommonCodeList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/CommonCodeList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXENvbW1vbkNvZGVMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/HolidayList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/HolidayList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXEhvbGlkYXlMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/HolidayReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/HolidayReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXEhvbGlkYXlSZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/LevelList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/LevelList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXExldmVsTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Sys/MenuList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Sys/MenuList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzXE1lbnVMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/backup/Detail20230908.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/backup/Detail20230908.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcYmFja3VwXERldGFpbDIwMjMwOTA4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/backup/Edu20230914.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/backup/Edu20230914.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcYmFja3VwXEVkdTIwMjMwOTE0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/backup/List20230908.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/backup/List20230908.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcYmFja3VwXExpc3QyMDIzMDkwOC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/backup/List20230920.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/backup/List20230920.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcYmFja3VwXExpc3QyMDIzMDkyMC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/Edu.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/Edu.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcRWR1LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/ManualDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/ManualDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcTWFudWFsRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/ManualList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/ManualList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcTWFudWFsTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/ManualReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/ManualReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcTWFudWFsUmVnLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Visit/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Visit/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVmlzaXRcUmVnLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/Detail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/List.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/List.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/Reg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/Reg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xSZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyEduDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyEduDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlFZHVEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyEduList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyEduList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlFZHVMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyEduReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyEduReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlFZHVSZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyViolationDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyViolationDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlWaW9sYXRpb25EZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyViolationList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyViolationList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlWaW9sYXRpb25MaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyViolationReasonDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyViolationReasonDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlWaW9sYXRpb25SZWFzb25EZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyViolationReasonList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyViolationReasonList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlWaW9sYXRpb25SZWFzb25MaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/SafetyViolationReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/SafetyViolationReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTYWZldHlWaW9sYXRpb25SZWcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/StatisticsList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/StatisticsList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xTdGF0aXN0aWNzTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/VisitDetail.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/VisitDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xWaXNpdERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/VisitList.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/VisitList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xWaXNpdExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/VisitList20230920.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/VisitList20230920.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xWaXNpdExpc3QyMDIzMDkyMC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Work/VisitReg.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Work/VisitReg.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya1xWaXNpdFJlZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/backup/PopRegCarryItem20230921.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/backup/PopRegCarryItem20230921.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXGJhY2t1cFxQb3BSZWdDYXJyeUl0ZW0yMDIzMDkyMS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/backup/PopVisitPrivacy20230920.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/backup/PopVisitPrivacy20230920.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXGJhY2t1cFxQb3BWaXNpdFByaXZhY3kyMDIzMDkyMC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopPrivacy1.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopPrivacy1.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFByaXZhY3kxLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopPrivacy2.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopPrivacy2.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFByaXZhY3kyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopRegCarryItem.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopRegCarryItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFJlZ0NhcnJ5SXRlbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectApprovalPerson.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectApprovalPerson.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdEFwcHJvdmFsUGVyc29uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectExternalCompany.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectExternalCompany.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdEV4dGVybmFsQ29tcGFueS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectMaterial.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectMaterial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdE1hdGVyaWFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectPerson.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectPerson.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdFBlcnNvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectPR.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectPR.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdFBSLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopSelectRepairCompany.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopSelectRepairCompany.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFNlbGVjdFJlcGFpckNvbXBhbnkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/PopVisitPrivacy.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/PopVisitPrivacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcFZpc2l0UHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_Popup/Porte.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_Popup/Porte.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1BvcHVwXFBvcnRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_ViewImports.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/_ViewStart.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/통합출입관리/WebVisit/WebVisit/Views/Shared/_Layout.cshtml]
+[D:/Project/S1/엑세스커스터마이징/DB하이텍/소스/DBIMS/WebVisit/WebVisit/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-6o0uncnewc

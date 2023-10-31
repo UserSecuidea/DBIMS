@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\WebVisit.csproj": {}
+    "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\WebVisit.csproj": {}
   },
   "projects": {
-    "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\WebVisit.csproj": {
+    "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\WebVisit.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\WebVisit.csproj",
+        "projectUniqueName": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\WebVisit.csproj",
         "projectName": "WebVisit",
-        "projectPath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\WebVisit.csproj",
+        "projectPath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\WebVisit.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\obj\\",
+        "outputPath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

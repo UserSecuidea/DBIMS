@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "D+M9Vnr91N1RVWuYbV71Ylps/+QKLb78hlYMbnddU0LBZbvBQdnCw8Z9zbVy2ngXfmcRQ+O20Ew/ZCqSFFKV3g==",
+  "dgSpecHash": "nRJYqTskFmcXEODLVy8hg2RdNVN3AZwIYN8EkRPf4jU2oN5dGaZYqi9bq76lXN6sshEkVThSOJdZhc/82QgnYw==",
   "success": true,
-  "projectFilePath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\통합출입관리\\WebVisit\\WebVisit\\WebVisit.csproj",
+  "projectFilePath": "D:\\Project\\S1\\엑세스커스터마이징\\DB하이텍\\소스\\DBIMS\\WebVisit\\WebVisit\\WebVisit.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
