@@ -78,6 +78,19 @@
             $("#file1").trigger("click");
         });
 
+        $("#IsSelfNote").on("click", function () {
+    @* 2023/10/19 신인아start*@
+            if ($("#IsSelfNote").is(":checked")) {
+                $('#NoteBookAcceptor').css("display", "inline-block");
+              
+            } else {
+                $('#NoteBookAcceptor').css("display", "none");
+              
+            }   
+        });
+        $("#IsSelfNote").prop("checked", false);
+    @* 2023/10/19~20 신인아start*@
+
     @* 2023/09/17 신인아 start*@
             if ($("#NoteBookRentalType").val() == "0") {
             var IsSelfApprovalFlag = '@ViewBag.IsSelfApproval';
@@ -96,6 +109,7 @@
         }
 
         $("#IsSelfApproval").prop("checked", false);
+       
         $('#divCeoApproval1').css("display", "");
         $('#divCeoApproval2').css("display", "");
         $("#IsSelfApproval").on("change", function () {
@@ -625,9 +639,15 @@
             if (exportType == "4") { // 대여노트북
             $("#NoteBookRentalType").val("1"); @* 2023/09/17 신인아 *@
 
-                $('#spDesc').css("display", "block");
+            var content = $("#spContent").html();
+                $('#spDesc').css("display", "inline-block");
+            $('#spUL').css("height", "auto");
+                $('#spDesc').html(content);
 
-
+                $('#directCheck').css("display", "block"); @* 2023/10/19 신인아 *@
+                $("#IsSelfNote").prop("checked", false); @* 2023/10/19 신인아 체크한거 푼 상태에서 엶*@
+               
+                
             alert('@Localizer["If you need to use the system and take out data from outside, please contact itsecurity in advance"]');
             content = "1. 대여 목적 : 긴급 대응용 / 출장용 中 택 1 \n\n2. 반출 문서 리스트(문서명 기재) \n - 없음\n3. 접속 허용 IT 시스템 리스트 \n- 없음\n4. 기타 협조 요청 사항 :  ";
     @* content = '@Localizer["Purpose of rental"]'; *@
@@ -657,8 +677,16 @@
 
             $("#NoteBookRentalType").val("0");  //개인노트북 @* 2023/09/17 신인아 *@
 
+                $('#spDesc').val("");
             $('#spDesc').css("display", "none");
+            $('#spUL').css("height", "380px");
             $('#spNotebookNumber').css("display", "");
+
+            $('#directCheck').css("display", "none"); //개인노트북 @* 2023/10/19 신인아 *@
+            $('#NoteBookAcceptor').css("display", "none");
+           
+            $("#IsSelfNote").prop("checked", false); @* 2023/10/20 신인아 체크 풀고 개인으로 열어버림 *@
+            
 
     @* 2023/09/17 신인아 start*@
                 $("#ApprovalSabun6").val("");
@@ -1629,11 +1657,11 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddAsset');"></select>  @*2023.09.08 (신인아) start*@
+                                            <select class="select" name="ExportLocation" id="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddAsset');"></select>  @*2023.09.08 (신인아) start*@
                             }
                             else
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddAsset');"></select>   @*2023.09.08 (신인아) start*@
+                                            <select class="select" name="ExportLocation" id="ExportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddAsset');"></select>   @*2023.09.08 (신인아) start*@
                             }
                         }
                     </div>
@@ -1645,11 +1673,11 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="ImportLocation" id="ImportLocation" asp- items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled>@*<option value='-'>-</option>*@@*2023.09.26 (신인아)*@</select> @*2023.09.08 (신인아)*@
+                                            <select class="select" name="ImportLocation" id="ImportLocation" asp- items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled>@*<option value='-'>-</option>*@@*2023.09.26 (신인아)*@</select> @*2023.09.08 (신인아)*@
                             }
                             else
                             {
-                                <select class="select" name="ImportLocation" id="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled>@*<option value='-'>-</option>*@@*2023.09.26 (신인아)*@</select> @*2023.09.08 (신인아)*@
+                                            <select class="select" name="ImportLocation" id="ImportLocation" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled>@*<option value='-'>-</option>*@@*2023.09.26 (신인아)*@</select> @*2023.09.08 (신인아)*@
                             }
                         }
                     </div>
@@ -1703,11 +1731,11 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="DeliveryMethodType" id="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
+                                            <select class="select" name="DeliveryMethodType" id="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
                             }
                             else
                             {
-                                <select class="select" name="DeliveryMethodType" id="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
+                                            <select class="select" name="DeliveryMethodType" id="DeliveryMethodType" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
                             }
                         }
                     </div>
@@ -1865,11 +1893,11 @@
                             @{
                                 if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                                 {
-                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                                        <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
                                 }
                                 else
                                 {
-                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                                        <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
                                 }
                             }
                             @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]"  value="" maxlength="100" /> *@
@@ -1961,11 +1989,11 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddRepairForm');"></select>  @* 2023.09.13 신인아 id주기 *@
+                                            <select class="select" name="ExportLocation" id="ExportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddRepairForm');"></select>  @* 2023.09.13 신인아 id주기 *@
                             }
                             else
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddRepairForm');"></select>   @* 2023.09.13 신인아 id주기 *@
+                                            <select class="select" name="ExportLocation" id="ExportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddRepairForm');"></select>   @* 2023.09.13 신인아 id주기 *@
                             }
                         }
                     </div>
@@ -1976,17 +2004,17 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="ImportLocation" id="ImportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled>
-                                    @*<option value="-">-</option>*@
-                                    @* 2023.09.26 신인아*@
-                                </select>
-                                @* 2023.09.13 신인아 id주기,- option 주기 *@
+                                            <select class="select" name="ImportLocation" id="ImportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' disabled>
+                                                @*<option value="-">-</option>*@
+                                                @* 2023.09.26 신인아*@
+                                            </select>
+                                            @* 2023.09.13 신인아 id주기,- option 주기 *@
                             }
                             else
                             {
-                                <select class="select" name="ImportLocation" id="ImportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled>
-                                    @*<option value="-">-</option>*@@* 2023.09.26 신인아*@
-                                </select> @* 2023.09.13 신인아 id주기,- option 주기 *@
+                                            <select class="select" name="ImportLocation" id="ImportLocation4" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' disabled>
+                                                @*<option value="-">-</option>*@@* 2023.09.26 신인아*@
+                                            </select> @* 2023.09.13 신인아 id주기,- option 주기 *@
                             }
                         }
                     </div>
@@ -2019,11 +2047,11 @@
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="DeliveryMethodType" id="DeliveryMethodType2" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
+                                            <select class="select" name="DeliveryMethodType" id="DeliveryMethodType2" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameEng)))'><option value="-1">@Localizer["Select"]</option></select>
                             }
                             else
                             {
-                                <select class="select" name="DeliveryMethodType" id="DeliveryMethodType2" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
+                                            <select class="select" name="DeliveryMethodType" id="DeliveryMethodType2" asp-items='@(new SelectList(Model.CodeDeliveryMethodType, nameof(CommonCode.SubCodeID), nameof(CommonCode.CodeNameKor)))'><option value="-1">@Localizer["Select"]</option></select>
                             }
                         }
                     </div>
@@ -2222,24 +2250,24 @@
             <div class="rtit" id="notebook" id="ExportType6">@Localizer["ExportImport Information"]</div>
         </div>
         <div class="reg-form-wrap">
-            <ul>
+            <ul id="spUL">
                 <li>
-                    <div class="label s03">@Localizer["Export Affiliation Place Of Business"]<span></span></div>
+                    <div class="label s03">@Localizer["Export Affiliation Place Of Business"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         @{
                             if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation6" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddNotebookForm');"></select>  @* 2023.09.13 신인아 id주기 *@
+                                            <select class="select" name="ExportLocation" id="ExportLocation6" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameEng)))' onchange="selectExportType('fmAddNotebookForm');"></select>  @* 2023.09.13 신인아 id주기 *@
                             }
                             else
                             {
-                                <select class="select" name="ExportLocation" id="ExportLocation6" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddNotebookForm');"></select>   @* 2023.09.13 신인아 id주기 *@
+                                            <select class="select" name="ExportLocation" id="ExportLocation6" asp-items='@(new SelectList(Model.CodeLocation, nameof(CommonCode.SubCodeDesc), nameof(CommonCode.CodeNameKor)))' onchange="selectExportType('fmAddNotebookForm');"></select>   @* 2023.09.13 신인아 id주기 *@
                             }
                         }
                     </div>
                 </li>
                 <li>
-                    <div class="label s03">@Localizer["Classify"]<span></span></div>
+                    <div class="label s03">@Localizer["Classify"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <select class="select" name="ExportType" id="ExportTypeNTB" onchange="selectNotebookExportType();">
                             <option value="3">@Localizer["Personal Notebook"]</option>
@@ -2248,14 +2276,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="label s03">@Localizer["Export DateTime"]<span></span></div>
+                    <div class="label s03">@Localizer["Export DateTime"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <input type="text" class="inpdate" placeholder='@Localizer["Export DateTime"]' name="ExportDate" id="ExportDate6" onkeyup="generateDateString(this)" maxlength="10" autocomplete="off" />
                         <select class="select" name="ExportDateHour" id="ExportDateHour6">
                             @{
                                 for (int i = 0; i <= 22; i++)
                                 {
-                                    <option value='@i'>@i @Localizer["Hour"]</option>
+                                                <option value='@i'>@i @Localizer["Hour"]</option>
                                 }
                             }
                         </select>
@@ -2266,14 +2294,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="label s03">@Localizer["Import DateTime"]<span></span></div>
+                    <div class="label s03">@Localizer["Import DateTime"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <input type="text" class="inpdate" placeholder='@Localizer["Import DateTime"]' name="ImportDate" id="ImportDate6" onkeyup="generateDateString(this)" maxlength="10" autocomplete="off" />
                         <select class="select" name="ImportDateHour" id="ImportDateHour6">
                             @{
                                 for (int i = 0; i <= 22; i++)
                                 {
-                                    <option value='@i'>@i @Localizer["Hour"]</option>
+                                                <option value='@i'>@i @Localizer["Hour"]</option>
                                 }
                             }
                         </select>
@@ -2285,46 +2313,59 @@
                 </li>
                 <span id="spNotebookNumber" style="display:block;">
                 <li style="padding-top:20px;">
-                    <div class="label s03">@Localizer["Notebook Management Number"]<span></span></div>
+                    <div class="label s03">@Localizer["Notebook Management Number"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <input type="text" class="inp" placeholder='@Localizer["Notebook Management Number"]' name="ManagementNo" id="ManagementNo6" />
                     </div>
                 </li>
                 <li style="padding-top:20px;">
-                    <div class="label s03">@Localizer["Notebook Serial Number"]<span></span></div>
+                    <div class="label s03">@Localizer["Notebook Serial Number"]<span></span></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <input type="text" class="inp" placeholder='@Localizer["Notebook Serial Number"]' name="SerialNo" id="SerialNo6" value="" />
                     </div>
                 </li>
                 </span>
                 <li class="full" id="liSelfApproval">
-                    <div class="label s03">@Localizer["Self Payment Status"]</div>
+                    <div class="label s03">@Localizer["Self Payment Status"]</div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <input type="checkbox" name="IsSelfApproval" id="IsSelfApproval" value="Y" />
                     </div>
                 </li>
                 <li class="full">
-                    <div class="label s03">@Localizer["Export Import Reason"]</div>
+                    <div class="label s03">@Localizer["Export Import Reason"]</div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <textarea class="textarea" id="textareaReason" name="textarea" placeholder='@Localizer["Export Import Reason"]'></textarea> @* 2023.09.13 신인아 id, name 명 원래대로 *@
-                        @* <input type="text" class="inp" placeholder='@Localizer["Export Import Reason"]' name="textarea" /> *@
                     </div>
                 </li>
                 <li class="full">
-                    <div class="label s03"></div>
+                    <div class="label s03"></div>&nbsp;&nbsp;
                     <div class="form-item-wrap">
                         <span id="spDesc" style="display:none;font-size:13px;">
-                            < @Localizer["Payment Route"] ><BR />
-                                @Localizer["Review of the security officer of the requesting department"]
-                            <span style="color:#ec2309f1;">
-                                <BR /><BR />
-                                < @Localizer["Caution"] ><BR />
-                                        @Localizer["It must be used only for customer response and business processing purposes, and data download and camera photography are not permitted"]<BR />
-                                        @Localizer["Documents taken out for business and all confidential data and information must be deleted after the purpose is completed"]<BR />
-                            </span>
                         </span>
                     </div>
                 </li>
+                <li style="display:none;" id="directCheck">
+                    <div class="form-item-wrap label s01"><input type="checkbox" name="IsSelfNote" id="IsSelfNote" value="Y" />&nbsp;@Localizer["Direct Transfer"]</div>
+                </li>
+                <li style="visibility:hidden;">
+                    <div></div>
+                    <div class="form-item-wrap"></div>
+                </li>
+                <span id="NoteBookAcceptor" style="display:none;">
+                <li>
+                    <div class="label">인수자</div><div class="form-item-wrap">
+                        <input type="text" class="inp" placeholder="인수자" name="Name" id="Name" readonly onclick="goSearchPerson(1, 'fmAddAsset');" />
+                        <button type="button" class="btn-search" onclick="goSearchPerson(1, 'fmAddAsset');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="label">인수자 정보</div><div class="form-item-wrap">
+                        <input type="text" class="inp" name="OrgNameKor" id="OrgNameKor" value="" readonly />
+                        <input type="hidden" class="inp" name="OrgNameEng" id="OrgNameEng" value="" readonly />
+                        <input type="text" class="inp" name="Tel" id="Tel" value="" readonly />
+                    </div>
+                </li>
+                </span>
             </ul>
         </div>
 
@@ -2386,8 +2427,9 @@
                         <button type="button" class="btn-green" onclick="saveAddNotebookForm();">@Localizer["Application"]</button>
                     </div>
                 </div>
-            </form>
+              </form>
         </div>
+      
 
         <template id="temp1" class="template">
             <div class="reg-form-wrap">
@@ -2416,11 +2458,11 @@
                             @{
                                 if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                                 {
-                                    <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
                                 }
                                 else
                                 {
-                                    <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                                                <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
                                 }
                             }
                             @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
@@ -2482,11 +2524,11 @@
                     @{
                         if (CultureInfo.CurrentCulture.ToString().Equals("en"))
                         {
-                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
+                                        <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameEng), nameof(CommonCode.CodeNameEng)))'></select>
                         }
                         else
                         {
-                            <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
+                                        <select class="select" name="Unit[]" asp-items='@(new SelectList(Model.CodeUnit, nameof(CommonCode.CodeNameKor), nameof(CommonCode.CodeNameKor)))'></select>
                         }
                     }
                     @* <input type="text" class="inp" placeholder='@Localizer["Unit"]' name="Unit[]" value="" maxlength="100" /> *@
@@ -2585,3 +2627,14 @@
 @* for Prev Link *@
 <a asp-action="List" asp-all-route-data="@ViewBag.prevDic" id="aList" style="visibility:invisible;"></a>
 <iframe name="ifTemp" id="ifTemp" src="" title="temp" border="0" style="display:none;"></iframe>
+<div id="spContent" style="display:none;">
+< @Localizer["Payment Route"] >
+<BR />
+    @Localizer["Review of the security officer of the requesting department"]
+<span style="color:#ec2309f1;">
+    <BR /><BR />
+    < @Localizer["Caution"] > <BR />
+            @Localizer["It must be used only for customer response and business processing purposes, and data download and camera photography are not permitted"]<BR />
+            @Localizer["Documents taken out for business and all confidential data and information must be deleted after the purpose is completed"]<BR />
+    </span>
+</div>
