@@ -1502,6 +1502,28 @@
 
     }
 
+    // search - 실/본부 결재자
+    function goSearchSeniorPerson(sMode, fmName) {
+        const myform = eval("document." + fmName + ";");
+        var nameObj = null;
+        var sabunObj = null;
+        var orgIdObj = null;
+        var orgKorObj = null;
+        var orgEngObj = null;
+        var telObj = null;
+        var mobileObj = null;
+
+        nameObj = myform.SeniorName;
+        sabunObj = myform.SeniorSabun;
+        orgIdObj = myform.SeniorOrgID;
+        orgKorObj = myform.SeniorOrgNameKor;
+        orgEngObj = myform.SeniorOrgNameEng;
+        telObj = myform.SeniorTel;
+
+        popSelectSeniorPerson(nameObj, sabunObj, telObj, mobileObj, orgIdObj, orgKorObj, orgEngObj);
+
+    }
+
     // search - 자재
     function goSearchMaterial(obj) {
         var myform;
@@ -2281,7 +2303,7 @@
         <input type="hidden" name="spSabun" id="spSabun6" value="" />
         <input type="hidden" name="spOrgID" id="spOrgID6" value="" />
 
-        @* 부결재자 *@
+        @* 실/본부결재자 *@
         <input type="hidden" name="spContactSabun" id="spContactSabun6" value="" />
         <input type="hidden" name="spContactOrgID" id="spContactOrgID6" value="" />
 
@@ -2434,14 +2456,14 @@
                 <li id="spDivider2"></li>
                 <span id="subJudger" style="display:none;">
                 <li>
-                    <div class="label s03">부결재자<span></span></div>
+                    <div class="label s03">실/본부 결재자<span></span></div>
                     <div class="form-item-wrap">
-                        <input type="text" class="inp" placeholder='부결재자' name="ContactName" id="spContactName6" readonly onclick="goSearchPerson(2, 'fmAddNotebookForm');" />
-                        <button type="button" class="btn-search" id="btnContactName" onclick="goSearchPerson(2, 'fmAddNotebookForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
+                        <input type="text" class="inp" placeholder='실/본부 결재자' name="ContactName" id="spContactName6" readonly onclick="goSearchPerson(2, 'fmAddNotebookForm');" />
+                        <button type="button" class="btn-search" id="btnContactName" onclick="goSearchSeniorPerson(3, 'fmAddNotebookForm');"><img src="/images/ico/ico-search.svg" alt="검색" /></button>
                     </div>
                 </li>
                 <li>
-                    <div class="label s03">부결재자 정보</div>
+                    <div class="label s03">실/본부 결재자 정보</div>
                     <div class="form-item-wrap">
                         <input type="text" class="inp" name="ContactOrgNameKor" id="spContactOrgNameKor6" value="" readonly />
                         <input type="hidden" class="inp" name="ContactOrgNameEng" id="spContactOrgNameEng6" value="" readonly />
@@ -2681,6 +2703,7 @@
 
 <partial name="~/Views/_Popup/PopSelectPerson.cshtml" />
 <partial name="~/Views/_Popup/PopSelectApprovalPerson.cshtml" model="@Model.ApprovalPeople" />
+<partial name="~/Views/_Popup/PopSelectSeniorPerson.cshtml" model="@Model.SeniorPeople" />
 <partial name="~/Views/_Popup/PopSelectExternalCompany.cshtml" />
 <partial name="~/Views/_Popup/PopSelectMaterial.cshtml" />
 <partial name="~/Views/_Popup/PopSelectPR.cshtml" />

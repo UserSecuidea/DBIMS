@@ -1,0 +1,104 @@
+@using WebVisit.Models.DomainModels.Passport
+@model List<SeniorPerson>
+
+<script>
+    /**
+    popSelectPerson(nameObj, sabunObj, telObj, mobileObj, emailObj, orgIdObj, orgKorObj, orgEngObj, locationObj, locationNameObj, companyIdObj, companyNameObj, gradeIdObj, gradeNameObj, personTypeIdObj, personTypeIdNameObj, cardNoObj, carAllowCntObj, carRegCntObj, genderObj, genderNameObj, birthDateObj, personStatusIdObj, personStatusNameObj, homeAddrObj, callbackObj)
+
+    SeniorSabun	SeniorName	SeniorOrgID	SeniorOrgNameKor SeniorOrgNameEng SeniorTel
+    */
+    var searchSeniorNameObj;
+    var searchSeniorSabunObj;
+    var searchSeniorTelObj;
+    var searchSeniorMobileObj;
+    var searchSeniorOrgIDObj;
+    var searchSeniorOrgNameKorObj;
+    var searchSeniorOrgNameEngObj;
+
+    function popSelectSeniorPerson(nameObj, sabunObj, telObj, mobileObj, orgIdObj, orgKorObj, orgEngObj, callbackObj){
+        console.log("[selectSearchPerson]", nameObj, telObj, orgKorObj);
+
+        searchSeniorNameObj = nameObj;
+        searchSeniorTelObj = telObj;
+        searchSeniorMobileObj = mobileObj;
+        searchSeniorOrgNameKorObj = orgKorObj;
+        searchSeniorOrgNameEngObj = orgEngObj;
+        searchSeniorOrgIDObj = orgIdObj;
+        searchSeniorSabunObj = sabunObj;
+
+        common.popOpen(document.getElementById('popSelectSeniorPerson'));
+    }
+
+/*
+        nameObj = myform.SeniorName;
+        sabunObj =  myform.SeniorSabun;
+        orgIdObj =  myform.SeniorOrgID;
+        orgKorObj =  myform.SeniorOrgNameKor;
+        orgEngObj =  myform.SeniorOrgNameEng;
+        telObj = myform.SeniorTel;
+*/
+    function selectSearchSeniorPerson(name, sabun, orgId, orgKor, orgEng, tel, mobile){
+        if(searchSeniorNameObj != null) {
+            searchSeniorNameObj.value=name;
+        }
+        if(searchSeniorSabunObj != null) {
+            searchSeniorSabunObj.value=sabun;
+        }        
+        if(searchSeniorTelObj != null) {
+            searchSeniorTelObj.value=tel;
+        }
+        if(searchSeniorMobileObj != null) {
+            searchSeniorMobileObj.value=mobile;
+        }
+        if(searchSeniorOrgIDObj != null) {
+            searchSeniorOrgIDObj.value=orgId;
+        }
+        if(searchSeniorOrgNameKorObj != null) {
+            searchSeniorOrgNameKorObj.value=orgKor;
+        }
+        if(searchSeniorOrgNameEngObj != null) {
+            searchSeniorOrgNameEngObj.value=orgEng;
+        }
+        common.popClose(document.getElementById('popSelectSeniorPerson'));
+    }
+</script>
+
+<div id="popSelectSeniorPerson" class="dialog" style="z-index:901;">
+    <div class="pop-item-wrap search-type02">
+        <div class="pop-header-wrap">
+            <div class="ptit">@Localizer["Search Approver"]</div>
+            @* @Localizer["Search Person"] *@
+            <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
+        </div>
+            <section class="grid-item-wrap">
+                <div class="tbl-item-wrap t01">
+                    <table class="tbl02" aria-label="실/본부 결재자 리스트">
+                        <tr>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["Department Name"]</th>
+                            <th>@Localizer["Position"]</th>
+                            @* <th>@Localizer["Sabun"]</th>
+                            <th>@Localizer["Tel"]</th>
+                            <th>@Localizer["CellPhone"]</th>
+                            <th>@Localizer["Email"]</th> *@
+                            
+                        </tr>
+                    </table>
+                </div>
+                <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
+                     <table class="tbl02" id="dvSearchSeniorPersonList" aria-label="결재자 리스트">
+                        @{
+                            foreach(var m in Model){
+                            <tr onclick="selectSearchSeniorPerson('@m.MemberName', '@m.MemberId', '@m.SapDeptCode', '@m.DepartmentName', '', '@m.TelephoneNo');">
+                                    <td>@m.MemberName</td>
+                                    <td>@m.DepartmentName</td>
+                                    <td>@m.Position</td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

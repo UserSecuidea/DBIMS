@@ -3,6 +3,11 @@ namespace WebVisit.Models
 {
     public class ExportImportRegViewModel
     {
+
+        public List<ApprovalPerson> ApprovalPeople { get; set; } = new();
+
+        public List<SeniorPerson> SeniorPeople { get; set; } = new();
+
         // 사업장 Location : 1000 서울, 2000 부천, 3000 상우, 6000 글로벌칩스
         public List<CommonCode> CodeLocation { get; set; } = new(); 
         
@@ -23,6 +28,6 @@ namespace WebVisit.Models
         // 반출물전달방법 DeliveryMethodType : 0	방문수령, 1	우편/택배, 2	대리인수령, 3	핸드캐리, 4	물류차량
         public List<CommonCode> CodeDeliveryMethodType { get; set; } = new();
         public ExportImport ExportImport { get; set; } = new ExportImport();
-        public List<ApprovalPerson> ApprovalPeople { get; set; } = new();
+        
     }
 }

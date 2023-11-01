@@ -1340,7 +1340,142 @@ namespace WebVisit.Controllers
             return list;
         }
 
-         protected List<ViewDuty> GetViewDudies(string? location){
+        protected List<SeniorPerson> GetSeniorPerson()
+        {
+            List<SeniorPerson> list = new();
+            var my = GetMe();
+            try
+            {
+                if (DbPASSPORT != null && DbPASSPORT.Database.CanConnect() && !string.IsNullOrEmpty(my.SapDeptCode))
+                {
+                    StringBuilder sb = new();
+                    sb.Append("exec PROC_FIND_SENIOR @DEPT_CD='");
+                    sb.Append(my.SapDeptCode);
+                    sb.Append("';");
+                    using var command = DbPASSPORT.Database.GetDbConnection().CreateCommand();
+                    WriteLog("query: " + sb.ToString());
+                    command.CommandText = sb.ToString();
+                    command.CommandType = CommandType.Text;
+                    DbPASSPORT.Database.OpenConnection(); // DbSVISIT.Database.GetDbConnection()
+                    using var reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            SeniorPerson p = new()
+                            {
+                                DeptCode = my.SapDeptCode,
+                            };
+                            for (var fieldCount = 0; fieldCount < reader.FieldCount; fieldCount++)
+                            {
+                                if (reader.GetName(fieldCount) != null && reader[fieldCount] != null && reader[fieldCount] != DBNull.Value)
+                                {
+                                    var n = reader.GetName(fieldCount);
+                                    var v = reader[fieldCount];
+                                    if (v != null)
+                                    {
+                                        try
+                                        {
+                                            // WriteLog("read data["+fieldCount+"] "+n+"="+v);
+                                            if (fieldCount == 0)
+                                            {
+                                                p.SapPositionName = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 1)
+                                            {
+                                                p.SapPositionCode = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 2)
+                                            {
+                                                p.SapDeptCode = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 3)
+                                            {
+                                                p.Objid = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 4)
+                                            {
+                                                p.MemberId = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 5)
+                                            {
+                                                p.MemberName = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 6)
+                                            {
+                                                p.CompanyName = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 7)
+                                            {
+                                                p.Position = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 8)
+                                            {
+                                                p.Email = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 9)
+                                            {
+                                                p.IsPersonnel = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 10)
+                                            {
+                                                p.MobileNo = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 11)
+                                            {
+                                                p.TelephoneNo = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 12)
+                                            {
+                                                p.BirthDate = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 13)
+                                            {
+                                                p.ResignationDate = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 14)
+                                            {
+                                                p.CompanyRegistrationNo = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 15)
+                                            {
+                                                p.MemberType = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 15)
+                                            {
+                                                p.MemberTypeName = v.ToString() ?? "";
+                                            }
+                                            else if (fieldCount == 15)
+                                            {
+                                                p.DepartmentName = v.ToString() ?? "";
+                                            }
+                                            // WriteLog("read data: "+n.GetType()+"="+v.GetType());
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            WriteLog(e.ToString());
+                                        }
+                                    }
+                                }
+                            }
+                            list.Add(p);
+                        }
+                    }
+                    DbPASSPORT.Database.CloseConnection();
+                }
+            }
+            catch (Exception e)
+            {
+                WriteLog(e.ToString());
+            }
+            finally
+            {
+                DbPASSPORT?.Database.CloseConnection();
+            }
+            return list;
+        }
+
+        protected List<ViewDuty> GetViewDudies(string? location){
             List<ViewDuty> list = new();
             var cnt = 0;
             if (DbPASSPORT != null){

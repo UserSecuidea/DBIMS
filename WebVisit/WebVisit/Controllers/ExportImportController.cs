@@ -265,9 +265,14 @@ namespace WebVisit.Controllers
 
                 List<ApprovalPerson> approvalPeople = GetApprovalPerson();
                 WriteLog("approvalPeople:" + Dump(approvalPeople));
+                List<SeniorPerson> seniorPeople = GetSeniorPerson();
+                WriteLog("seniorPeople:" + Dump(seniorPeople));
                 ExportImportRegViewModel vm = new()
                 {
                     ApprovalPeople = approvalPeople,
+
+                    SeniorPeople = seniorPeople,
+
                     // 사업장 Location : 1000 서울, 2000 부천, 3000 상우, 6000 글로벌칩스
                     CodeLocation = GetCommonCodes((int)VisitEnum.CommonCode.Location),
 
