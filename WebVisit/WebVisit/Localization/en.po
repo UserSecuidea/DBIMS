@@ -2072,6 +2072,12 @@ msgstr "Please enter your laptop serial number"
 msgid "Please select a approver"
 msgstr "Please select a approver"
 
+msgid "Please select a acceptor"
+msgstr "Please select a acceptor"
+
+msgid "Please select a senior"
+msgstr "Please select a senior"
+
 msgid "Do you want to handle import export"
 msgstr "Do you want to handle import/export?"
 

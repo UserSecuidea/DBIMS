@@ -1441,13 +1441,13 @@ namespace WebVisit.Controllers
                                             {
                                                 p.MemberType = v.ToString() ?? "";
                                             }
-                                            else if (fieldCount == 15)
+                                            else if (fieldCount == 16)
                                             {
                                                 p.MemberTypeName = v.ToString() ?? "";
                                             }
-                                            else if (fieldCount == 15)
+                                            else if (fieldCount == 17)
                                             {
-                                                p.DepartmentName = v.ToString() ?? "";
+                                                p.DeptName = v.ToString() ?? "";
                                             }
                                             // WriteLog("read data: "+n.GetType()+"="+v.GetType());
                                         }

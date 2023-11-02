@@ -66,7 +66,7 @@
 <div id="popSelectSeniorPerson" class="dialog" style="z-index:901;">
     <div class="pop-item-wrap search-type02">
         <div class="pop-header-wrap">
-            <div class="ptit">@Localizer["Search Approver"]</div>
+            <div class="ptit">@*Localizer["Search Approver"]*@실/본부 결재자 조회</div>
             @* @Localizer["Search Person"] *@
             <a href="javascript:void(0)"><img src="/images/ico/ico-close.svg" alt='@Localizer["Close Popup"]' /></a>
         </div>
@@ -86,12 +86,12 @@
                     </table>
                 </div>
                 <div class="tbl-item-wrap t01" style="overflow-y:auto;height:250px;">
-                     <table class="tbl02" id="dvSearchSeniorPersonList" aria-label="결재자 리스트">
+                     <table class="tbl02" id="dvSearchSeniorPersonList" aria-label="실/본부 결재자 리스트">
                         @{
                             foreach(var m in Model){
-                            <tr onclick="selectSearchSeniorPerson('@m.MemberName', '@m.MemberId', '@m.SapDeptCode', '@m.DepartmentName', '', '@m.TelephoneNo');">
+                            <tr onclick="selectSearchSeniorPerson('@m.MemberName', '@m.MemberId', '@m.SapDeptCode', '@m.DeptName', '', '@m.TelephoneNo');">
                                     <td>@m.MemberName</td>
-                                    <td>@m.DepartmentName</td>
+                                    <td>@m.DeptName</td>
                                     <td>@m.Position</td>
                                 </tr>
                             }

@@ -2072,6 +2072,12 @@ msgstr "노트북시리얼번호를 입력해 주세요"
 msgid "Please select a approver"
 msgstr "결재자를 선택해 주세요"
 
+msgid "Please select a acceptor"
+msgstr "본인직접반출란을 체크하거나, 인수자정보를 입력해주세요"
+
+msgid "Please select a senior"
+msgstr "실/본부 결재자를 입력해주세요"
+
 msgid "Do you want to handle import export"
 msgstr "반입/반출 처리하시겠습니까?"
 
